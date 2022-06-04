@@ -70,7 +70,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <Icon_MainIcon>JPGFileCompress_Icon2.ico</Icon_MainIcon>
+        <Icon_MainIcon>JPGFileCompress_Icon.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>Assets\compressG44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <DCC_UnitSearchPath>.\Dependancies\image32_4.1\source;.\Dependancies\superobject;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -92,6 +92,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
+        <Icon_MainIcon>JPGFileCompress_Icon.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -104,7 +105,7 @@
         <DCC_UnitSearchPath>.\Dependencies\image32_4.1\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Icon_MainIcon>JPGFileCompress_Icon3.ico</Icon_MainIcon>
+        <Icon_MainIcon>JPGFileCompress_Icon1.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>Assets\compressG44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
@@ -113,11 +114,12 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="uFrmJPGFileCompress.pas">
-            <Form>cbShrink</Form>
+        <DCCReference Include="Source\uFrmJPGFileCompress.pas">
+            <Form>FrmMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="uJPEGCompressor.pas"/>
+        <DCCReference Include="Source\uImageConfig.pas"/>
+        <DCCReference Include="Source\uJPEGCompressor.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

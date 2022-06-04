@@ -415,6 +415,22 @@ begin
   end;
 end;
 
+{ If DevExpress is installed, force the use of TdxSmartImage Graphic. This result in better image quality
+  of large images that get squashed into the TImage control. Using this, removes the need for the ApplyBestFit() method.
+procedure TFrmMain.LoadImagePreview(const AMS: TMemoryStream);
+var
+  AGraphic: TdxSmartImage;
+begin
+  AGraphic := TdxSmartImage.Create;
+  try
+    AMS.Position := 0;
+    imgHome.Picture.Graphic := AGraphic;
+    imgHome.Picture.Graphic.LoadFromStream(AMS);
+  finally
+    AGraphic.Free;
+  end;
+end;}
+
 procedure TFrmMain.LoadSelectedFromFile(const ALoadForm: boolean=true);
 var
   a: integer;
@@ -544,8 +560,8 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
-
-procedure TFrmMain.ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage); //improves load times and image quality (by reducing the amount the image gets squashed down)
+//ApplyBestFit improves load times and image quality (by reducing the amount the image gets squashed down to fit inside the TImage control)
+procedure TFrmMain.ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage);
 var
   scale: integer;
 begin
