@@ -133,8 +133,12 @@ begin
         fSourceFilename := AFilename;
         fJPEG.LoadFromFile(fSourceFilename);
         fJPEG.SaveToStream(fMemoryStreamOrig);
+        fMemoryStreamOrig.Position := 0;
         fJPEGOriginal.LoadFromStream(fMemoryStreamOrig);
         fOriginalFilesize := Round(fMemoryStreamOrig.Size / cBytesToKB);
+      end else begin
+        fMemoryStreamOrig.Position := 0;
+        fJPEG.LoadFromStream(fMemoryStreamOrig);
       end;
       ShrinkAndRotate;
       if fCompress then begin
@@ -172,9 +176,9 @@ end;
 
 procedure TJPEGCompressor.CompressJPG(const AJPEG: TJPEGImage; const ACompressionQuality: integer);
 begin
-  if (ACompressionQuality >= cMinQuality) and
-     (ACompressionQuality <= cMaxQuality) and
-     (ACompressionQuality < 100) then begin //Don't apply any compression
+  if (ACompressionQuality < 100) and
+     (ACompressionQuality >= cMinQuality) and
+     (ACompressionQuality <= cMaxQuality) then begin
     try
       fAlreadyCompressed := true;
       fJPEG.CompressionQuality := ACompressionQuality;
