@@ -17,3 +17,7 @@ You have an option to include a json file in the output directory, you may impor
 In View options, Apply Best Fit will increase image preview quality by apply a scale to the JPEG to prevent the TImage from squashing it down to fit which results in pixellation. If DevExpress is installed, a TdxSmartImage graphic may be applied to the TImage, this results in better image preview quality at all sizes, removing the need for Apply Best Fit.
 
 This currently only supports .JPG image files.
+
+# License
+
+Distributed under the MIT License. See LICENSE.txt for more information.
