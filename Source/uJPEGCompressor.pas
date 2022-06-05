@@ -8,7 +8,7 @@ uses
 const
   cMinQuality = 1;
   cMaxQuality = 100;
-  cDefaultQuality = 100;
+  cDefaultQuality = 50;
   cTargetInterval = 5;
   cBytesToKB = 1024;
   cDefaultMaxWidth = 2560;

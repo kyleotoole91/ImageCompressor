@@ -2,7 +2,7 @@ object FrmMain: TFrmMain
   Left = 0
   Top = 0
   Anchors = [akLeft, akTop, akRight]
-  Caption = 'Turbo JPEG Compressor'
+  Caption = 'Turbo Image Compressor'
   ClientHeight = 731
   ClientWidth = 1431
   Color = clBtnFace

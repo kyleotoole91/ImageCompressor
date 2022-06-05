@@ -70,7 +70,7 @@ begin
   fAddToJSON := true;
   fSourcePrefix := 'images/';
   fDescription := '';
-  fCompress := false;
+  fCompress := true;
   fShrink := false;
   fPreviewCompression := false;
   fStretch := false;
