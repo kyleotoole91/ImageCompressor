@@ -91,16 +91,16 @@ type
     pnlOriginal: TPanel;
     imgOriginal: TImage;
     Label4: TLabel;
-    lbImgSizeOrigKBVal: TLabel;
+    lbImgOrigSizeKBVal: TLabel;
     lbImgOrigWidth: TLabel;
     lbImgOrigWidthVal: TLabel;
     lbImgOrigHeight: TLabel;
     lbImgOrigHeightVal: TLabel;
-    cbStretchOriginal: TCheckBox;
     spOriginal: TSplitter;
-    Label5: TLabel;
+    lbImgOrigSize: TLabel;
     miShowOriginal: TMenuItem;
     miApplyBestFit: TMenuItem;
+    cbStretchOriginal: TCheckBox;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -167,6 +167,8 @@ type
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fLoading: boolean;
+    procedure ResizeEvent;
+    procedure CheckHideLabels;
     procedure ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage);
     procedure LoadImageConfig(const AFilename: string);
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
@@ -252,15 +254,8 @@ end;
 
 procedure TFrmMain.FormResize(Sender: TObject);
 begin
-  if not fFormClosing then begin
-    Screen.Cursor := crHourGlass;
-    try
-      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-      ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
-    finally
-      Screen.Cursor := crDefault;
-    end;
-  end;
+  if not fFormClosing then
+    ResizeEvent;
 end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
@@ -406,7 +401,7 @@ begin
         fJPEGCompressor.JPEGOriginal.LoadFromFile(AFilename);
         lbImgOrigWidthVal.Caption := fJPEGCompressor.JPEGOriginal.Width.ToString;
         lbImgOrigHeightVal.Caption := fJPEGCompressor.JPEGOriginal.Height.ToString;
-        lbImgSizeOrigKBVal.Caption := SizeOfFile(AFilename).ToString;
+        lbImgOrigSizeKBVal.Caption := SizeOfFile(AFilename).ToString;
         ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
       end;
     finally
@@ -685,6 +680,31 @@ begin
   end;
 end;
 
+procedure TFrmMain.CheckHideLabels;
+const
+  previewMaxWidth=525;
+  origMaxWidth=425;
+begin
+  cbStretchOriginal.Visible := false;
+  try
+    lbImgSizeKB.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgSizeKBVal.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgWidth.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgWidthVal.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgHeight.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgHeightVal.Visible := pnlImage.Width >= previewMaxWidth;
+    lbImgOrigSize.Visible := pnlOriginal.Width >= origMaxWidth;
+    lbImgOrigSizeKBVal.Visible := pnlOriginal.Width > origMaxWidth;
+    lbImgOrigWidth.Visible := pnlOriginal.Width > origMaxWidth;
+    lbImgOrigWidthVal.Visible := pnlOriginal.Width > origMaxWidth;
+    lbImgOrigHeight.Visible := pnlOriginal.Width > origMaxWidth;
+    lbImgOrigHeightVal.Visible := pnlOriginal.Width > origMaxWidth;
+  finally
+    if not cbStretchOriginal.Visible then
+      cbStretchOriginal.Visible := true; //workaround painting issues
+  end;
+end;
+
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
   btnStart.Enabled := FileIsSelected and
@@ -787,6 +807,18 @@ end;
 procedure TFrmMain.Refresh1Click(Sender: TObject);
 begin
   Scan;
+end;
+
+procedure TFrmMain.ResizeEvent;
+begin
+  Screen.Cursor := crHourGlass;
+  try
+    CheckHideLabels;
+    ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
+    ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TFrmMain.ScanDisk;
@@ -941,13 +973,7 @@ end;
 
 procedure TFrmMain.spOriginalMoved(Sender: TObject);
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-    ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
-  finally
-    Screen.Cursor := crDefault;
-  end;
+  ResizeEvent;
 end;
 
 procedure TFrmMain.tbQualityChange(Sender: TObject);
@@ -1064,8 +1090,8 @@ procedure TFrmMain.cbStretchOriginalClick(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    if cbStretch.Checked then begin
-      fJPEGCompressor.JPEG.Scale := jsFullSize;
+    if cbStretchOriginal.Checked then begin
+      fJPEGCompressor.JPEGOriginal.Scale := jsFullSize;
       imgOriginal.Picture.Assign(fJPEGCompressor.JPEGOriginal);
     end else
       ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
