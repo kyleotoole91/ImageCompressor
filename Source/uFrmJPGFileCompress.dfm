@@ -4,7 +4,7 @@ object FrmMain: TFrmMain
   Anchors = [akLeft, akTop, akRight]
   Caption = 'Turbo Image Compressor'
   ClientHeight = 731
-  ClientWidth = 1418
+  ClientWidth = 1429
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -34,7 +34,7 @@ object FrmMain: TFrmMain
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1412
+    Width = 1423
     Height = 690
     ActivePage = tsHome
     Align = alClient
@@ -46,7 +46,7 @@ object FrmMain: TFrmMain
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 1398
+        Width = 1409
         Height = 656
         Align = alClient
         BevelOuter = bvNone
@@ -60,7 +60,7 @@ object FrmMain: TFrmMain
           ExplicitHeight = 443
         end
         object spOriginal: TSplitter
-          Left = 783
+          Left = 784
           Top = 154
           Height = 502
           Align = alRight
@@ -71,7 +71,7 @@ object FrmMain: TFrmMain
         object pnlConfig: TPanel
           Left = 0
           Top = 0
-          Width = 1398
+          Width = 1409
           Height = 154
           Align = alTop
           BevelOuter = bvNone
@@ -80,7 +80,7 @@ object FrmMain: TFrmMain
           TabOrder = 0
           ExplicitWidth = 1411
           DesignSize = (
-            1398
+            1409
             154)
           object Label2: TLabel
             Left = 13
@@ -321,7 +321,7 @@ object FrmMain: TFrmMain
           object ebStartPath: TEdit
             Left = 103
             Top = 12
-            Width = 1293
+            Width = 1304
             Height = 21
             Hint = 'Double click to show select dialog'
             Anchors = [akLeft, akTop, akRight]
@@ -337,7 +337,7 @@ object FrmMain: TFrmMain
           object ebOutputDir: TEdit
             Left = 103
             Top = 39
-            Width = 1293
+            Width = 1304
             Height = 21
             Hint = 'Double click to show select dialog'
             Anchors = [akLeft, akTop, akRight]
@@ -402,13 +402,13 @@ object FrmMain: TFrmMain
           object GroupBox2: TGroupBox
             Left = 788
             Top = 73
-            Width = 608
+            Width = 619
             Height = 75
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 8
             ExplicitWidth = 621
             DesignSize = (
-              608
+              619
               75)
             object lbPrefix: TLabel
               AlignWithMargins = True
@@ -430,7 +430,7 @@ object FrmMain: TFrmMain
             object ebPrefix: TEdit
               Left = 90
               Top = 17
-              Width = 510
+              Width = 521
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
@@ -442,7 +442,7 @@ object FrmMain: TFrmMain
             object ebDescription: TEdit
               Left = 90
               Top = 45
-              Width = 510
+              Width = 521
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
@@ -500,21 +500,21 @@ object FrmMain: TFrmMain
         object pnlImage: TPanel
           Left = 158
           Top = 154
-          Width = 625
+          Width = 626
           Height = 502
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
-          ExplicitWidth = 623
+          ExplicitWidth = 639
           DesignSize = (
-            621
+            622
             498)
           object imgHome: TImage
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 615
+            Width = 616
             Height = 472
             Margins.Top = 26
             Margins.Bottom = 0
@@ -535,16 +535,17 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 340
+            Left = 341
             Top = 4
             Width = 46
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
             Enabled = False
+            ExplicitLeft = 340
           end
           object lbImgSizeKBVal: TLabel
-            Left = 374
+            Left = 375
             Top = 4
             Width = 46
             Height = 13
@@ -552,18 +553,20 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
             Enabled = False
+            ExplicitLeft = 374
           end
           object lbImgWidth: TLabel
-            Left = 435
+            Left = 436
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
             Enabled = False
+            ExplicitLeft = 435
           end
           object lbImgWidthVal: TLabel
-            Left = 466
+            Left = 467
             Top = 4
             Width = 54
             Height = 13
@@ -571,18 +574,20 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
+            ExplicitLeft = 466
           end
           object lbImgHeight: TLabel
-            Left = 527
+            Left = 528
             Top = 4
             Width = 58
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
             Enabled = False
+            ExplicitLeft = 527
           end
           object lbImgHeightVal: TLabel
-            Left = 563
+            Left = 564
             Top = 4
             Width = 54
             Height = 13
@@ -590,6 +595,7 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
+            ExplicitLeft = 563
           end
           object cbCompressPreview: TCheckBox
             Left = 117
@@ -613,19 +619,19 @@ object FrmMain: TFrmMain
           end
         end
         object pnlOriginal: TPanel
-          Left = 786
+          Left = 787
           Top = 154
-          Width = 612
+          Width = 622
           Height = 502
           Align = alRight
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 3
           DesignSize = (
-            608
+            618
             498)
           object lbImgOrigSize: TLabel
-            Left = 311
+            Left = 321
             Top = 4
             Width = 46
             Height = 13
@@ -634,7 +640,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 324
           end
           object lbImgOrigSizeKBVal: TLabel
-            Left = 361
+            Left = 371
             Top = 4
             Width = 31
             Height = 13
@@ -644,7 +650,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 374
           end
           object lbImgOrigWidth: TLabel
-            Left = 404
+            Left = 414
             Top = 4
             Width = 55
             Height = 13
@@ -653,7 +659,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 417
           end
           object lbImgOrigWidthVal: TLabel
-            Left = 439
+            Left = 449
             Top = 4
             Width = 54
             Height = 13
@@ -663,7 +669,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 452
           end
           object lbImgOrigHeight: TLabel
-            Left = 510
+            Left = 520
             Top = 4
             Width = 58
             Height = 13
@@ -672,7 +678,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 523
           end
           object lbImgOrigHeightVal: TLabel
-            Left = 547
+            Left = 557
             Top = 4
             Width = 54
             Height = 13
@@ -685,7 +691,7 @@ object FrmMain: TFrmMain
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 602
+            Width = 612
             Height = 472
             Margins.Top = 26
             Margins.Bottom = 0
@@ -724,7 +730,7 @@ object FrmMain: TFrmMain
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 1398
+        Width = 1409
         Height = 656
         Align = alClient
         BevelOuter = bvNone
@@ -733,7 +739,7 @@ object FrmMain: TFrmMain
         object mmMessages: TMemo
           Left = 0
           Top = 0
-          Width = 1398
+          Width = 1409
           Height = 656
           Align = alClient
           Lines.Strings = (
@@ -750,17 +756,17 @@ object FrmMain: TFrmMain
   object Panel3: TPanel
     Left = 0
     Top = 696
-    Width = 1418
+    Width = 1429
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
     ExplicitWidth = 1431
     DesignSize = (
-      1418
+      1429
       35)
     object btnStart: TButton
-      Left = 1333
+      Left = 1344
       Top = 3
       Width = 80
       Height = 25
@@ -772,7 +778,7 @@ object FrmMain: TFrmMain
       ExplicitLeft = 1346
     end
     object btnScan: TButton
-      Left = 1071
+      Left = 1082
       Top = 3
       Width = 80
       Height = 25
@@ -793,7 +799,7 @@ object FrmMain: TFrmMain
       Visible = False
     end
     object btnApply: TButton
-      Left = 1247
+      Left = 1258
       Top = 3
       Width = 80
       Height = 25

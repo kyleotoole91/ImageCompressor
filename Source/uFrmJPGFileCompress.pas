@@ -235,9 +235,9 @@ begin
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+'Compressed\';
   ebOutputDir.Text := fOutputDir;
   pcMain.ActivePage := tsHome;
-  ClientWidth := 1434;
-  ClientHeight := 731;
-  spOriginal.Left := 783;
+  Width := 1445;
+  Height := 731;
+  spOriginal.Left := 784;
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -814,8 +814,10 @@ begin
   Screen.Cursor := crHourGlass;
   try
     CheckHideLabels;
-    ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-    ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+    if not cbStretch.Checked then
+      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
+    if not cbStretchOriginal.Checked then
+      ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
   finally
     Screen.Cursor := crDefault;
   end;
