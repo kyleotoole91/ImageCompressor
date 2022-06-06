@@ -1,4 +1,4 @@
-# ImageCompressor
+# Turbo Image Compressor
 
 
 ![Compressor](https://user-images.githubusercontent.com/49255786/172027377-40bf8501-e70c-4c2c-82ab-fcf1b74d0ef1.JPG)
