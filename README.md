@@ -28,6 +28,7 @@ In View options, Apply Best Fit will increase image preview quality by apply a s
 This currently only supports .JPG image files.
 
 The installer can be downloaded from this link https://drive.google.com/file/d/1ipCqEGBb5ujVEBiBlNoWplAEHzDpniRW/view?usp=sharing
+Ignore any warnings, it is not a virus.
 
 # License
 
