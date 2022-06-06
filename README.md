@@ -5,6 +5,7 @@
 
 This project was written in Delphi (Object Pascal), built using RAD Studio 10.4. 
 It makes use of the Image32 graphics library and the superobject JSON writer/parser.
+InnoSetup was used for the installation wizard.
 
 This was created to quickly and easily compress images for websites or email attachments.
 
