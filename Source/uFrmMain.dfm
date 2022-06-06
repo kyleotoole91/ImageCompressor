@@ -39,7 +39,6 @@ object FrmMain: TFrmMain
     ActivePage = tsHome
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1425
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
@@ -51,7 +50,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1411
         object Splitter1: TSplitter
           Left = 155
           Top = 154
@@ -78,7 +76,6 @@ object FrmMain: TFrmMain
           Color = clBtnHighlight
           ParentBackground = False
           TabOrder = 0
-          ExplicitWidth = 1411
           DesignSize = (
             1409
             154)
@@ -104,11 +101,10 @@ object FrmMain: TFrmMain
             TabOrder = 4
             object lbQuality: TLabel
               Left = 14
-              Top = 21
+              Top = 20
               Width = 38
               Height = 13
               Caption = 'Quality:'
-              Enabled = False
             end
             object lbTargetKB: TLabel
               Left = 116
@@ -116,7 +112,6 @@ object FrmMain: TFrmMain
               Width = 59
               Height = 13
               Caption = 'Target (KB):'
-              Enabled = False
             end
             object seQuality: TSpinEdit
               Left = 58
@@ -124,7 +119,6 @@ object FrmMain: TFrmMain
               Width = 47
               Height = 22
               Hint = 'Values below 25 yeald poor results'
-              Enabled = False
               MaxValue = 100
               MinValue = 10
               ParentShowHint = False
@@ -139,8 +133,7 @@ object FrmMain: TFrmMain
               Top = 17
               Width = 80
               Height = 22
-              Hint = '0 means disabled'
-              Enabled = False
+              Hint = 'Set to 0 to disable'
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -158,7 +151,6 @@ object FrmMain: TFrmMain
               Height = 20
               Hint = 'Quality'
               DoubleBuffered = True
-              Enabled = False
               Max = 100
               Min = 10
               ParentDoubleBuffered = False
@@ -216,7 +208,7 @@ object FrmMain: TFrmMain
             end
             object lbRotation: TLabel
               Left = 196
-              Top = 46
+              Top = 48
               Width = 45
               Height = 13
               Caption = 'Rotation:'
@@ -332,7 +324,6 @@ object FrmMain: TFrmMain
             OnDblClick = ShowFolderSelect
             OnExit = ebStartPathExit
             OnKeyDown = ebStartPathKeyDown
-            ExplicitWidth = 1306
           end
           object ebOutputDir: TEdit
             Left = 103
@@ -345,7 +336,6 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 1
             OnDblClick = ShowFileSelect
-            ExplicitWidth = 1306
           end
           object cbShrink: TCheckBox
             Left = 444
@@ -406,7 +396,6 @@ object FrmMain: TFrmMain
             Height = 75
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 8
-            ExplicitWidth = 621
             DesignSize = (
               619
               75)
@@ -437,7 +426,6 @@ object FrmMain: TFrmMain
               TabOrder = 0
               Text = 'images/'
               OnChange = ebPrefixChange
-              ExplicitWidth = 523
             end
             object ebDescription: TEdit
               Left = 90
@@ -448,11 +436,10 @@ object FrmMain: TFrmMain
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
-              ExplicitWidth = 523
             end
           end
           object cbCreateJSONFile: TCheckBox
-            Left = 801
+            Left = 800
             Top = 66
             Width = 110
             Height = 17
@@ -506,7 +493,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
-          ExplicitWidth = 639
           DesignSize = (
             622
             498)
@@ -735,7 +721,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1411
         object mmMessages: TMemo
           Left = 0
           Top = 0
@@ -748,7 +733,6 @@ object FrmMain: TFrmMain
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitWidth = 1411
         end
       end
     end
@@ -761,7 +745,6 @@ object FrmMain: TFrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 1431
     DesignSize = (
       1429
       35)
@@ -775,7 +758,6 @@ object FrmMain: TFrmMain
       Enabled = False
       TabOrder = 1
       OnClick = btnStartClick
-      ExplicitLeft = 1346
     end
     object btnScan: TButton
       Left = 1082
@@ -787,7 +769,6 @@ object FrmMain: TFrmMain
       TabOrder = 2
       Visible = False
       OnClick = btnScanClick
-      ExplicitLeft = 1084
     end
     object cbDeepScan: TCheckBox
       Left = 433
@@ -807,7 +788,6 @@ object FrmMain: TFrmMain
       Caption = 'Apply'
       TabOrder = 0
       OnClick = btnApplyClick
-      ExplicitLeft = 1260
     end
   end
   object pmCheckBoxList: TPopupMenu

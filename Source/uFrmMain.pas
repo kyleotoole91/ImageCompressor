@@ -1,4 +1,4 @@
-unit uFrmJPGFileCompress;
+unit uFrmMain;
 
 interface
 
@@ -260,6 +260,7 @@ end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
 begin
+  inherited;
   ebStartPath.Text := fWorkingDir;
   mmMessages.Clear;
   Scan;
