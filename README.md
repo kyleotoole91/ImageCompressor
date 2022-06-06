@@ -31,6 +31,8 @@ This currently only supports .JPG image files.
 The installer can be downloaded from this link https://drive.google.com/file/d/1Jee02JEiYA5mq21h_p7YR6k9aWNmeg2k/view?usp=sharing
 Extract the executable from the archive and run it to install.
 
+Please make a donation if you found this program usefull https://www.paypal.me/TurboImageCompressor
+
 # License
 
 Distributed under the MIT License. See LICENSE.txt for more information.
