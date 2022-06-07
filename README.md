@@ -11,7 +11,8 @@ This was created to quickly and easily compress images for websites or email att
 
 The application lets you scan a directory for images, apply compression, resizing, resampling and rotation to images.
 
-You can change compression settings independantly for each image and execute the compression for multiple or all images found. You can select which images you wish to include, indicated by the ticked state of the checkboxes in the images list.
+You can change compression settings independantly for each image and execute the compression in a batch of selected images.
+You can select which images you wish to include, indicated by the ticked state of the checkboxes in the images list.
 
 You can activate Preview Compression to see the image quality change in realtime as you adjust the compression settings.
 
@@ -27,8 +28,10 @@ In View options, Apply Best Fit will increase image preview quality by apply a s
 
 This currently only supports .JPG image files.
 
-The installer can be downloaded from this link https://drive.google.com/file/d/1ipCqEGBb5ujVEBiBlNoWplAEHzDpniRW/view?usp=sharing
-Ignore any warnings, it is not a virus.
+The installer can be downloaded from this link https://drive.google.com/file/d/1Jee02JEiYA5mq21h_p7YR6k9aWNmeg2k/view?usp=sharing
+Extract the executable from the archive and run it to install.
+
+Please make a donation if you found this program usefull https://www.paypal.me/TurboImageCompressor
 
 # License
 
