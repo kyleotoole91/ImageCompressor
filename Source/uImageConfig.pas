@@ -15,7 +15,7 @@ type
     fSourcePrefix: string;
     fDescription: string;
     fCompress: boolean;
-    fShrink: boolean;
+    fApplyGraphics: boolean;
     fQuality: integer;
     fTagetKB: Int64;
     fShrinkByWidth: boolean;
@@ -26,7 +26,7 @@ type
   private
     procedure SetCompress(const Value: boolean);
     procedure SetQuality(const Value: integer);
-    procedure SetShrink(const Value: boolean);
+    procedure SetApplyGraphics(const Value: boolean);
     procedure SetShrinkByValue(const Value: integer);
     procedure SetShrinkByWidth(const Value: boolean);
     procedure SetTagetKB(const Value: Int64);
@@ -44,7 +44,7 @@ type
     property Compress: boolean read fCompress write SetCompress;
     property Quality: integer read fQuality write SetQuality;
     property TagetKB: Int64 read fTagetKB write SetTagetKB;
-    property Shrink: boolean read fShrink write SetShrink;
+    property ApplyGraphics: boolean read fApplyGraphics write SetApplyGraphics;
     property ShrinkByWidth: boolean read fShrinkByWidth write SetShrinkByWidth;
     property ShrinkByValue: integer read fShrinkByValue write SetShrinkByValue;
     property RecordModified: boolean read fRecordModified write fRecordModified;
@@ -71,7 +71,7 @@ begin
   fSourcePrefix := 'images/';
   fDescription := '';
   fCompress := true;
-  fShrink := false;
+  fApplyGraphics := false;
   fPreviewCompression := false;
   fStretch := false;
   fQuality := cDefaultQuality;
@@ -104,10 +104,10 @@ begin
   fRotateAmount := Value;
 end;
 
-procedure TImageConfig.SetShrink(const Value: boolean);
+procedure TImageConfig.SetApplyGraphics(const Value: boolean);
 begin
-  fRecordModified := fRecordModified or (fShrink <> Value);
-  fShrink := Value;
+  fRecordModified := fRecordModified or (fApplyGraphics <> Value);
+  fApplyGraphics := Value;
 end;
 
 procedure TImageConfig.SetShrinkByValue(const Value: integer);

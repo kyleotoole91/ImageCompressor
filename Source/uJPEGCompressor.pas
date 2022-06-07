@@ -25,7 +25,7 @@ type
     fCompressedFilesize: Int64;
     fSourceFilename: string;
     fOutputDir: string;
-    fShrink,
+    fApplyGraphics,
     fCompress: boolean;
     fShrinkByHeight: boolean;
     fShrinkByMaxPx: integer;
@@ -55,7 +55,7 @@ type
     function SaveToStream: boolean;
     property SourceFilename: string read fSourceFilename;
     property OutputDir: string read fOutputDir write SetOutputDir;
-    property Shrink: boolean read fShrink write fShrink;
+    property ApplyGraphics: boolean read fApplyGraphics write fApplyGraphics;
     property Compress: boolean read fCompress write fCompress;
     property ShrinkByHeight: boolean read fShrinkByHeight write fShrinkByHeight;
     property ShrinkByMaxPx: integer read fShrinkByMaxPx write fShrinkByMaxPx;
@@ -87,7 +87,7 @@ begin
   fTargetKB := 0;
   fShrinkByHeight := false;
   fShrinkByMaxPx := cDefaultMaxWidth;
-  fShrink := false;
+  fApplyGraphics := false;
   fBitmap := TBitmap.Create;
   fJPEG := TJPEGImage.Create;
   fJPEGOriginal := TJPEGImage.Create;
@@ -201,7 +201,7 @@ begin
     size := fJPEG.Height
   else
     size := fJPEG.Width;
-  if fShrink then begin
+  if fApplyGraphics then begin
     ms := TMemoryStream.Create;
     img32 := TImage32.Create;
     shrinked := false;
@@ -229,7 +229,7 @@ begin
       if ((not shrinked) and (fShrinkByMaxPx > 0)) or
          ((fRotateAmount <> raNone)) then begin
         img32.LoadFromStream(fMemoryStream);
-        if fShrink and (not shrinked) and ((fShrinkByMaxPx > 0) and (fShrinkByMaxPx < size)) then
+        if fApplyGraphics and (not shrinked) and ((fShrinkByMaxPx > 0) and (fShrinkByMaxPx < size)) then
           img32.Resize(Round(fJPEG.Width * reducePC), Round(fJPEG.Height * reducePC));
         case fRotateAmount of
           ra90: img32.Rotate(angle90);

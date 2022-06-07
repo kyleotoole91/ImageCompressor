@@ -5,11 +5,15 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
-  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig;
+  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi,
+  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator;
 
 const
   oversizeAllowance=75;
+  cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
+  cGumRoadLink = 'https://kyleotoole.gumroad.com/l/ticw';
+  cActivatedCaption = 'Turbo Image Compressor';
+  cEvaluationCaption = 'Turbo Image Compressor - Evaluation';
 
 type
   TFrmMain = class(TForm)
@@ -40,7 +44,7 @@ type
     ebOutputDir: TEdit;
     Label2: TLabel;
     Label1: TLabel;
-    cbShrink: TCheckBox;
+    cbApplyGraphics: TCheckBox;
     pnlFiles: TPanel;
     lbFiles: TLabel;
     cblFiles: TCheckListBox;
@@ -66,10 +70,10 @@ type
     mmiOpen: TMenuItem;
     cbStretch: TCheckBox;
     View1: TMenuItem;
-    mmiShowConfig: TMenuItem;
+    miHideConfig: TMenuItem;
     seMaxWidthPx: TSpinEdit;
     seMaxHeightPx: TSpinEdit;
-    mmiShowFiles: TMenuItem;
+    miHideFiles: TMenuItem;
     GroupBox4: TGroupBox;
     GroupBox2: TGroupBox;
     lbPrefix: TLabel;
@@ -98,9 +102,12 @@ type
     lbImgOrigHeightVal: TLabel;
     spOriginal: TSplitter;
     lbImgOrigSize: TLabel;
-    miShowOriginal: TMenuItem;
+    miHideOriginal: TMenuItem;
     miApplyBestFit: TMenuItem;
     cbStretchOriginal: TCheckBox;
+    miUpgrade: TMenuItem;
+    miPurchaseLicense: TMenuItem;
+    miEnterLicense: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -126,8 +133,8 @@ type
     procedure ShowFolderSelect(Sender: TObject);
     procedure ShowFileSelect(Sender: TObject);
     procedure cbStretchClick(Sender: TObject);
-    procedure mmiShowConfigClick(Sender: TObject);
-    procedure mmiShowFilesClick(Sender: TObject);
+    procedure miHideConfigClick(Sender: TObject);
+    procedure miHideFilesClick(Sender: TObject);
     procedure ebStartPathChange(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
     procedure Refresh1Click(Sender: TObject);
@@ -143,14 +150,17 @@ type
     procedure cbResampleModeChange(Sender: TObject);
     procedure cbStretchOriginalClick(Sender: TObject);
     procedure miShowOriginalClick(Sender: TObject);
-    procedure pmPreviewPopup(Sender: TObject);
-    procedure cbShrinkClick(Sender: TObject);
+    procedure cbApplyGraphicsClick(Sender: TObject);
     procedure spOriginalMoved(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure miApplyBestFitClick(Sender: TObject);
+    procedure miPurchaseLicenseClick(Sender: TObject);
+    procedure miHideOriginalClick(Sender: TObject);
+    procedure miEnterLicenseClick(Sender: TObject);
   private
     { Private declarations }
+    fEvaluationMode: boolean;
     fFormClosing: boolean;
     fJSON: ISuperObject;
     fWorkingDir: string;
@@ -167,6 +177,10 @@ type
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fLoading: boolean;
+    fLicenseValidator: TLicenseValidator;
+    procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages: boolean);
+    procedure OpenURL(const AURL: string);
+    function ValidSelection: boolean;
     procedure ResizeEvent;
     procedure CheckHideLabels;
     procedure ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage);
@@ -179,6 +193,7 @@ type
     procedure LoadImagePreview(const AFilename: string); overload;
     procedure LoadSelectedFromFile(const ALoadForm: boolean=true);
     function FileIsSelected: boolean;
+    function SelectedFileCount: integer;
     function SizeOfFile(const AFilename: string): Int64;
     procedure Scan;
     procedure ScanDisk;
@@ -186,8 +201,10 @@ type
     procedure ProcessFile(const AFilename: string);
     procedure CreateJSONFile(const AJSON: ISuperObject);
     procedure ClearConfigList;
+    procedure SetEvaluationMode(const Value: boolean);
   public
     { Public declarations }
+    property EvaluationMode: boolean read fEvaluationMode write SetEvaluationMode;
   end;
 
 var
@@ -218,6 +235,8 @@ end;
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  fEvaluationMode := true;
+  fLicenseValidator := TLicenseValidator.Create;
   fJPEGCompressor := TJPEGCompressor.Create;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   fMessages := TStringList.Create;
@@ -247,6 +266,8 @@ begin
     fImageConfigList.Free;
     fMessages.Free;
     fJPEGCompressor.Free;
+    fLicenseValidator.Free;
+    fJSON := nil;
   finally
     inherited;
   end;
@@ -261,8 +282,16 @@ end;
 procedure TFrmMain.FormShow(Sender: TObject);
 begin
   inherited;
-  ebStartPath.Text := fWorkingDir;
-  mmMessages.Clear;
+  Screen.Cursor := crHourGlass;
+  try
+    mmMessages.Clear;
+    EvaluationMode := not fLicenseValidator.LicenseIsValid;
+    if fEvaluationMode then
+      mmMessages.Lines.Add('Running in evaluation mode: '+fLicenseValidator.Message);
+    ebStartPath.Text := fWorkingDir;
+  finally
+    Screen.Cursor := crDefault;
+  end;
   Scan;
 end;
 
@@ -280,7 +309,7 @@ begin
       AddToJSON := cbCreateJSONFile.Checked;
       Description := ebDescription.Text;
       SourcePrefix := ebPrefix.Text;
-      Shrink := cbShrink.Checked;
+      ApplyGraphics := cbApplyGraphics.Checked;
       Filename := fSelectedFilename;
       ShrinkByWidth := rbByWidth.Checked;
       PreviewCompression := cbCompressPreview.Checked;
@@ -295,6 +324,29 @@ begin
     end;
   end else
     result := nil;
+end;
+
+procedure TFrmMain.HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages: boolean);
+var
+  key: string;
+  imgConfig: TImageConfig;
+begin
+  AHasMultipleImages := SelectedFileCount > 1;
+  if cbApplyToAll.Checked then begin
+    AHasTargetKB := cbCompress.Checked and (seTargetKBs.Value > 0);
+    AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > 0);
+  end else begin
+    AHasTargetKB := false;
+    AHasResampling := false;
+    for key in fImageConfigList.Keys do begin
+      if fImageConfigList.TryGetValue(key, imgConfig) then begin
+        AHasTargetKB := AHasTargetKB or (imgConfig.Compress and (imgConfig.TagetKB > 0));
+        AHasResampling := AHasResampling or (imgConfig.ApplyGraphics and (imgConfig.ResampleMode <> rmNone));
+        if AHasTargetKB and AHasResampling then
+          Break;
+      end;
+    end;
+  end;
 end;
 
 procedure TFrmMain.LoadImageConfig(const AFilename: string);
@@ -326,7 +378,7 @@ begin
         cbCreateJSONFile.Checked := AddToJSON;
         ebDescription.Text := Description;
         ebPrefix.Text := SourcePrefix;
-        cbShrink.Checked := Shrink;
+        cbApplyGraphics.Checked := ApplyGraphics;
         fSelectedFilename := Filename;
         rbByWidth.Checked := ShrinkByWidth;
         rbByHeight.Checked := not ShrinkByWidth;
@@ -346,18 +398,10 @@ begin
   end;
 end;
 
-procedure TFrmMain.pmPreviewPopup(Sender: TObject);
-begin
-  if pnlOriginal.Visible then
-    miShowOriginal.Caption := 'Hide Original'
-  else
-    miShowOriginal.Caption := 'Show Original';
-end;
-
 procedure TFrmMain.LoadCompressedPreview;
 begin
   if cbCompress.Checked or
-     cbShrink.Checked then begin
+     cbApplyGraphics.Checked then begin
     Screen.Cursor := crHourGlass;
     try
       LoadImageConfig(fSelectedFilename);
@@ -366,7 +410,7 @@ begin
          (fJPEGCompressor.SourceFilename <> fSelectedFilename) then begin
         fJPEGCompressor.OutputDir := ebOutputDir.Text;
         fJPEGCompressor.Compress := fImageConfig.Compress;
-        fJPEGCompressor.Shrink := fImageConfig.Shrink;
+        fJPEGCompressor.ApplyGraphics := fImageConfig.ApplyGraphics;
         fJPEGCompressor.CompressionQuality := fImageConfig.Quality;
         fJPEGCompressor.TargetKB := fImageConfig.TagetKB;
         fJPEGCompressor.ShrinkByHeight := not fImageConfig.ShrinkByWidth;
@@ -463,7 +507,7 @@ var
 begin
   for a := 0 to cblFiles.Count-1 do
     cblFiles.Checked[a] := true;
-  btnStart.Enabled := (cblFiles.Count > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbShrink.Checked);
+  btnStart.Enabled := (cblFiles.Count > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
 end;
 
 procedure TFrmMain.mniUnSelectAllClick(Sender: TObject);
@@ -475,13 +519,10 @@ begin
   btnStart.Enabled := false;
 end;
 
-procedure TFrmMain.mmiShowConfigClick(Sender: TObject);
+procedure TFrmMain.miHideConfigClick(Sender: TObject);
 begin
   pnlConfig.Visible := not pnlConfig.Visible;
-  if not pnlConfig.Visible then
-    mmiShowConfig.Caption := 'Show Config'
-  else
-    mmiShowConfig.Caption := 'Hide Confg';
+  miHideConfig.Checked := not pnlConfig.Visible;
 end;
 
 procedure TFrmMain.miClearClick(Sender: TObject);
@@ -492,6 +533,27 @@ begin
     mmMessages.Lines.Clear;
   finally
     mmMessages.Lines.EndUpdate;
+  end;
+end;
+
+procedure TFrmMain.miEnterLicenseClick(Sender: TObject);
+var
+  licenseKey, currentKey: string;
+begin
+  currentKey := fLicenseValidator.GetLicenseKey;
+  licenseKey := InputBox('Enter License Key', 'Key:', currentKey);
+  if licenseKey <> currentKey then begin
+    Screen.Cursor := crHourGlass;
+    try
+      fLicenseValidator.LicenseKey := licenseKey;
+      EvaluationMode := not fLicenseValidator.LicenseIsValid;
+      if not fEvaluationMode then
+        MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtInformation, [mbOk], 0)
+      else
+        MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+    finally
+      Screen.Cursor := crDefault;
+    end;
   end;
 end;
 
@@ -550,7 +612,7 @@ begin
     mmMessages.Lines.Add(fMessages.Text);
     fMessages.Clear;
     cbApplyToAll.Checked := true;
-    btnStart.Enabled := (okCount > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbShrink.Checked);
+    btnStart.Enabled := (okCount > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
     SetControlState(okCount > 0);
     cblFiles.Items.EndUpdate;
     Screen.Cursor := crDefault;
@@ -610,10 +672,10 @@ begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
   try
-    if (ExtractFileName(ebStartPath.Text) = '') or
-       (ExtractFilePath(ebStartPath.Text) <> ExtractFilePath(ebOutputDir.Text)) or
-       (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                           'Are you sure you want to continue? ', mtWarning, [mbYes, mbNo], 0)) then begin
+    if ((ExtractFileName(ebStartPath.Text) = '') or
+        (ExtractFilePath(ebStartPath.Text) <> ExtractFilePath(ebOutputDir.Text)) or
+        (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
+                           'Are you sure you want to continue? ', mtWarning, [mbYes, mbNo], 0))) and ValidSelection then begin
       Screen.Cursor := crHourGlass;
       try
         fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
@@ -638,7 +700,7 @@ begin
       finally
         if fNumProcessed = 0 then
           MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
-        else if (cbShrink.Checked or cbCompress.Checked) then begin
+        else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
           fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
           fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
           MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
@@ -667,10 +729,10 @@ begin
       if (Sender = cbCompressPreview) and (not cbCompressPreview.Checked) then
         LoadSelectedFromFile(false)
       else if cbCompressPreview.Checked then begin
-        if cbCompress.Checked or cbShrink.Checked then
+        if cbCompress.Checked or cbApplyGraphics.Checked then
           LoadCompressedPreview
         else if Assigned(Sender) and (Sender=cbCompressPreview) or
-                ((not cbCompress.Checked) and (not cbShrink.Checked)) then
+                ((not cbCompress.Checked) and (not cbApplyGraphics.Checked)) then
           LoadSelectedFromFile(false);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
@@ -709,7 +771,7 @@ end;
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
   btnStart.Enabled := FileIsSelected and
-                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbShrink.Checked) and
+                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
 end;
 
@@ -735,6 +797,19 @@ begin
        (AJSON.AsArray.Count > 0) then
       AJSON.SaveTo(newfilename, true);
   end;
+end;
+
+procedure TFrmMain.miPurchaseLicenseClick(Sender: TObject);
+begin
+  OpenURL(cGumRoadLink);
+end;
+
+procedure TFrmMain.OpenURL(const AURL: string);
+var
+  url: string;
+begin
+  url := StringReplace(AURL, '"', '%22', [rfReplaceAll]);
+  ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TFrmMain.ebDescriptionChange(Sender: TObject);
@@ -777,11 +852,11 @@ begin
       AddToJSONFile;
     if Assigned(fImageConfig) and
        (fImageConfig.Compress or
-        fImageConfig.Shrink) then begin
+        fImageConfig.ApplyGraphics) then begin
       with TJPEGCompressor.Create do begin
         try
           Compress := fImageConfig.Compress;
-          Shrink := fImageConfig.Shrink;
+          ApplyGraphics := fImageConfig.ApplyGraphics;
           CompressionQuality := fImageConfig.Quality;
           TargetKB := fImageConfig.TagetKB;
           OutputDir := ebOutputDir.Text;
@@ -832,6 +907,17 @@ begin
     fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soTopDirectoryOnly);
 end;
 
+function TFrmMain.SelectedFileCount: integer;
+var
+  a: integer;
+begin
+  result := 0;
+  for a:=0 to cblFiles.Count-1 do begin
+    if cblFiles.Checked[a] then
+      Inc(result);
+  end;
+end;
+
 procedure TFrmMain.SetChildControlES(const AParentControl: TControl; const AEnabled: Boolean);
 var
   i: Integer;
@@ -861,19 +947,29 @@ begin
   imgHome.Enabled := AEnabled;
 end;
 
+procedure TFrmMain.SetEvaluationMode(const Value: boolean);
+begin
+  fEvaluationMode := Value;
+  miPurchaseLicense.Enabled := fEvaluationMode;
+  if fEvaluationMode then
+    Caption := cEvaluationCaption
+  else
+    Caption := cActivatedCaption;
+end;
+
 procedure TFrmMain.SetShrinkState(Sender: TObject);
 begin
   if not fLoading then begin
-    rbByWidth.Enabled := cbShrink.Checked;
-    rbByHeight.Enabled := cbShrink.Checked;
+    rbByWidth.Enabled := cbApplyGraphics.Checked;
+    rbByHeight.Enabled := cbApplyGraphics.Checked;
     seMaxWidthPx.Enabled := rbByWidth.Enabled and rbByWidth.Checked;
     lbMaxWidthPx.Enabled := rbByWidth.Enabled and rbByWidth.Checked;
     seMaxHeightPx.Enabled := rbByHeight.Enabled and rbByHeight.Checked;
     lbMaxHeightPx.Enabled := rbByHeight.Enabled and rbByHeight.Checked;
-    cbResampleMode.Enabled := cbShrink.Checked;
-    cbRotateAmount.Enabled := cbShrink.Checked;
-    lbResampling.Enabled := cbShrink.Checked;
-    lbRotation.Enabled := cbShrink.Checked;
+    cbResampleMode.Enabled := cbApplyGraphics.Checked;
+    cbRotateAmount.Enabled := cbApplyGraphics.Checked;
+    lbResampling.Enabled := cbApplyGraphics.Checked;
+    lbRotation.Enabled := cbApplyGraphics.Checked;
     CheckCompressPreviewLoad;
     CheckStartOk(Sender);
   end;
@@ -896,14 +992,17 @@ begin
   end;
 end;
 
-procedure TFrmMain.mmiShowFilesClick(Sender: TObject);
+procedure TFrmMain.miHideFilesClick(Sender: TObject);
 begin
   pnlFiles.Visible := not pnlFiles.Visible;
-  if pnlFiles.Visible then begin
-    pnlFiles.Width := 177;
-    mmiShowFiles.Caption := 'Hide JPEG(S) Found';
-  end else
-    mmiShowFiles.Caption := 'Show JPEG(S) Found';
+  miHideFiles.Checked := not pnlFiles.Visible;
+end;
+
+procedure TFrmMain.miHideOriginalClick(Sender: TObject);
+begin
+  miHideOriginal.Checked := not miHideOriginal.Checked;
+  pnlOriginal.Visible := not miHideOriginal.Checked;
+  spOriginal.Visible := not miHideOriginal.Checked;
 end;
 
 procedure TFrmMain.ShowFileSelect(Sender: TObject);
@@ -922,7 +1021,7 @@ begin
         cblFiles.Items.Add(ExtractFileName(fSelectedFilename));
         if cblFiles.Items.Count > 0 then begin
           cblFiles.Checked[0] := true;
-          btnStart.Enabled := cbCompress.Checked or cbShrink.Checked or cbCreateJSONFile.Checked;
+          btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbCreateJSONFile.Checked;
           if btnStart.Enabled and
              cbCompressPreview.Checked then
             LoadCompressedPreview
@@ -991,6 +1090,38 @@ begin
     CheckCompressPreviewLoad(Sender);
 end;
 
+function TFrmMain.ValidSelection: boolean;
+var
+  sl: TStringList;
+  hasTargetKB, hasResampling, hasMultipleImages: boolean;
+begin
+  sl := TStringList.Create;
+  try
+    if not FileIsSelected then
+      MessageDlg('• Please select at least one image to process', mtError, mbOKCancel, 0)
+    else if fEvaluationMode then begin
+      HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages);
+      if hasMultipleImages then
+        sl.Add('• Batch image processing is not available in evaluation mode. Please process one image at time.');
+      if hasTargetKB then
+        sl.Add('• Target (KB) is not available in evaluation mode.');
+      if hasResampling then
+        sl.Add('• Resampling is not available in evaluation mode.');
+      if sl.Count > 0 then begin
+        sl.Add(' ');
+        sl.Add('Would you like to purchase the Pro version in order to avail of these exclusive features?');
+      end;
+    end;
+    result := sl.Count = 0;
+    if not result then begin
+      if fEvaluationMode and (MessageDlg(sl.Text, mtWarning, mbOKCancel, 0) = mrOk) then
+        OpenURL(cGumRoadLink);
+    end;
+  finally
+    sl.Free;
+  end;
+end;
+
 procedure TFrmMain.cblFilesClick(Sender: TObject);
 var
   oldfilename: string;
@@ -1004,7 +1135,7 @@ begin
   LoadSelectedFromFile;
   CheckCompressPreviewLoad;
   cbCompressClick(nil);
-  cbShrinkClick(nil);
+  cbApplyGraphicsClick(nil);
   if Assigned(oldObj) and
      oldObj.RecordModified and
      (oldfilename <> fSelectedFilename) then
@@ -1014,7 +1145,7 @@ end;
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);
 begin
   btnStart.Enabled := FileIsSelected and
-                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbShrink.Checked);
+                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
 end;
 
 procedure TFrmMain.cbResampleModeChange(Sender: TObject);
@@ -1059,19 +1190,19 @@ begin
   spOriginal.Visible := pnlOriginal.Visible;
 end;
 
-procedure TFrmMain.cbShrinkClick(Sender: TObject);
+procedure TFrmMain.cbApplyGraphicsClick(Sender: TObject);
 begin
   CheckCompressPreviewLoad(Sender);
-  rbByWidth.Enabled := cbShrink.Checked;
-  rbByHeight.Enabled := cbShrink.Checked;
+  rbByWidth.Enabled := cbApplyGraphics.Checked;
+  rbByHeight.Enabled := cbApplyGraphics.Checked;
   seMaxWidthPx.Enabled := rbByWidth.Enabled and rbByWidth.Checked;
   lbMaxWidthPx.Enabled := rbByWidth.Enabled and rbByWidth.Checked;
   seMaxHeightPx.Enabled := rbByHeight.Enabled and rbByHeight.Checked;
   lbMaxHeightPx.Enabled := rbByHeight.Enabled and rbByHeight.Checked;
-  cbResampleMode.Enabled := cbShrink.Checked;
-  cbRotateAmount.Enabled := cbShrink.Checked;
-  lbResampling.Enabled := cbShrink.Checked;
-  lbRotation.Enabled := cbShrink.Checked;
+  cbResampleMode.Enabled := cbApplyGraphics.Checked;
+  cbRotateAmount.Enabled := cbApplyGraphics.Checked;
+  lbResampling.Enabled := cbApplyGraphics.Checked;
+  lbRotation.Enabled := cbApplyGraphics.Checked;
 end;
 
 procedure TFrmMain.cbStretchClick(Sender: TObject);

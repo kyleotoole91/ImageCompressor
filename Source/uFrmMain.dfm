@@ -2,7 +2,7 @@ object FrmMain: TFrmMain
   Left = 0
   Top = 0
   Anchors = [akLeft, akTop, akRight]
-  Caption = 'Turbo Image Compressor'
+  Caption = 'Turbo Image Compressor - Evaluation'
   ClientHeight = 731
   ClientWidth = 1429
   Color = clBtnFace
@@ -337,14 +337,14 @@ object FrmMain: TFrmMain
             TabOrder = 1
             OnDblClick = ShowFileSelect
           end
-          object cbShrink: TCheckBox
+          object cbApplyGraphics: TCheckBox
             Left = 444
             Top = 66
             Width = 61
             Height = 17
             Caption = 'Graphics'
             TabOrder = 5
-            OnClick = cbShrinkClick
+            OnClick = cbApplyGraphicsClick
           end
           object GroupBox4: TGroupBox
             Left = 0
@@ -832,22 +832,34 @@ object FrmMain: TFrmMain
     end
     object View1: TMenuItem
       Caption = 'View'
-      object mmiShowConfig: TMenuItem
+      object miHideConfig: TMenuItem
         Caption = 'Hide Config'
-        OnClick = mmiShowConfigClick
+        OnClick = miHideConfigClick
       end
-      object mmiShowFiles: TMenuItem
-        Caption = 'Hide JPEG(S) Found'
-        OnClick = mmiShowFilesClick
+      object miHideFiles: TMenuItem
+        Caption = 'Hide Images Found'
+        OnClick = miHideFilesClick
       end
-      object miShowOriginal: TMenuItem
-        Caption = 'Show Original'
+      object miHideOriginal: TMenuItem
+        Caption = 'Hide Original'
+        OnClick = miHideOriginalClick
       end
       object miApplyBestFit: TMenuItem
         Caption = 'Apply Best Fit'
         Checked = True
         Hint = 'Improves image preview quality for large images'
         OnClick = miApplyBestFitClick
+      end
+    end
+    object miUpgrade: TMenuItem
+      Caption = 'License'
+      object miPurchaseLicense: TMenuItem
+        Caption = 'Purchase License Key'
+        OnClick = miPurchaseLicenseClick
+      end
+      object miEnterLicense: TMenuItem
+        Caption = 'Enter License Key'
+        OnClick = miEnterLicenseClick
       end
     end
   end

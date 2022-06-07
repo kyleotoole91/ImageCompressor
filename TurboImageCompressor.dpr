@@ -5,7 +5,8 @@ uses
   uFrmMain in 'Source\uFrmMain.pas' {FrmMain},
   uImageConfig in 'Source\uImageConfig.pas',
   uJPEGCompressor in 'Source\uJPEGCompressor.pas',
-  uFrmSplash in 'Source\uFrmSplash.pas' {frmSplash};
+  uFrmSplash in 'Source\uFrmSplash.pas' {frmSplash},
+  uLicenseValidator in 'Source\uLicenseValidator.pas';
 
 {$R *.res}
 

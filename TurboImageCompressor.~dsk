@@ -9,25 +9,25 @@ File_6=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\
 File_7=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\TurboCompressor\Dependancies\superobject\superobject.pas',0,1,943,33,961,0,0,,
 
 [Modules]
-Module0=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
-Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
-Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas
-Module3=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
+Module0=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmJPGFileCompress.pas
+Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas
+Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
+Module3=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
 Module4=c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Graphics.pas
 Module5=default.htm
 Count=6
 EditWindowCount=1
 
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas]
-ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas]
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmJPGFileCompress.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas]
+ModuleType=TSourceModule
+
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas]
 ModuleType=TSourceModule
 
 [c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Graphics.pas]
@@ -38,7 +38,7 @@ ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=6
-CurrentEditView=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
+CurrentEditView=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmJPGFileCompress.pas
 View0=0
 View1=1
 View2=2
@@ -53,17 +53,17 @@ State=0
 Left=0
 Top=0
 Width=8766
-Height=7067
+Height=7365
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=8766
-ClientHeight=7067
+ClientHeight=7365
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1568
+LeftPanelSize=1474
 LeftPanelClients=DockSite2
-LeftPanelData=00000800010200000000E30A0000000000000232180000000000000100000000E30A000009000000446F636B5369746532FFFFFFFF
+LeftPanelData=000008000102000000003C0A00000000000002511900000000000001000000003C0A000009000000446F636B5369746532FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=537
 BottomPanelClients=DockSite1,MessageView
@@ -100,14 +100,14 @@ EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompresso
 
 [View3]
 CustomEditViewType=TEditView
-Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
-CursorX=72
-CursorY=732
-TopLine=722
+Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmJPGFileCompress.pas
+CursorX=87
+CursorY=21
+TopLine=1
 LeftCol=1
 Elisions=
-Bookmarks={1,746,15}
-EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
+Bookmarks=
+EditViewName=Borland.FormDesignerView
 
 [View4]
 CustomEditViewType=TEditView
@@ -189,16 +189,16 @@ PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
-State=1
-Left=203
-Top=606
+State=0
+Left=943
+Top=721
 Width=8932
 Height=8519
 MaxLeft=-5
 MaxTop=-10
 ClientWidth=8849
-ClientHeight=8144
-BottomPanelSize=6806
+ClientHeight=8442
+BottomPanelSize=7093
 BottomPanelClients=EditWindow0
 BottomPanelData=0000080000000000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
@@ -267,22 +267,22 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1568
-Height=5894
+Width=1474
+Height=6192
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1568
-ClientHeight=5894
+ClientWidth=1474
+ClientHeight=6192
 TBDockHeight=9010
 LRDockWidth=1896
 Dockable=1
 StayOnTop=0
-SplitPos=142
+SplitPos=105
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Caption,CustomHint
-ExpandedItems=Anchors=0,Constraints=0,Font=0,"LiveBindings Designer=0",Margins=0,StyleElements=0,LiveBindings=0,Touch=0
+SelectedItem=Enabled,
+ExpandedItems=Anchors=0,Constraints=0,LiveBindings=0,"LiveBindings Designer=0",Margins=0,Touch=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -309,8 +309,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1536
-Top=177
+Left=-1693
+Top=11
 Width=276
 Height=365
 MaxLeft=-1
@@ -514,8 +514,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1536
-Top=-192
+Left=-1693
+Top=-358
 Width=1849
 Height=3144
 MaxLeft=-1
@@ -709,13 +709,13 @@ Docked=1
 State=0
 Left=0
 Top=28
-Width=1568
-Height=6163
+Width=1474
+Height=6462
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1568
-ClientHeight=6163
-TBDockHeight=6163
+ClientWidth=1474
+ClientHeight=6462
+TBDockHeight=6462
 LRDockWidth=2000
 Dockable=1
 StayOnTop=0
