@@ -36,7 +36,7 @@ object FrmMain: TFrmMain
     Top = 3
     Width = 1423
     Height = 690
-    ActivePage = tsHome
+    ActivePage = tsLogs
     Align = alClient
     TabOrder = 0
     object tsHome: TTabSheet
@@ -709,7 +709,7 @@ object FrmMain: TFrmMain
         end
       end
     end
-    object tsResults: TTabSheet
+    object tsLogs: TTabSheet
       Caption = 'Logs'
       ImageIndex = 1
       object Panel2: TPanel

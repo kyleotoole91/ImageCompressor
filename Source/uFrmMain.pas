@@ -19,7 +19,7 @@ type
   TFrmMain = class(TForm)
     pcMain: TPageControl;
     tsHome: TTabSheet;
-    tsResults: TTabSheet;
+    tsLogs: TTabSheet;
     pnlMain: TPanel;
     Panel2: TPanel;
     mmMessages: TMemo;
@@ -285,14 +285,20 @@ begin
   Screen.Cursor := crHourGlass;
   try
     mmMessages.Clear;
-    EvaluationMode := not fLicenseValidator.LicenseIsValid;
-    if fEvaluationMode then
+    EvaluationMode := not fLicenseValidator.LicenseIsValid(true);
+    if fEvaluationMode then begin
       mmMessages.Lines.Add('Running in evaluation mode: '+fLicenseValidator.Message);
+      if fLicenseValidator.LicenseKey <> '' then begin
+        mmMessages.Lines.Add('Ensure you have an active internet connection so we can verify your license');
+        pcMain.ActivePage := tsLogs;
+      end else
+        pcMain.ActivePage := tsHome;
+    end;
     ebStartPath.Text := fWorkingDir;
   finally
     Screen.Cursor := crDefault;
+    Scan;
   end;
-  Scan;
 end;
 
 function TFrmMain.FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
