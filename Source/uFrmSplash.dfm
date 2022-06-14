@@ -16,6 +16,7 @@ object frmSplash: TfrmSplash
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -83,7 +84,7 @@ object frmSplash: TfrmSplash
       Left = 0
       Top = 55
       Width = 558
-      Height = 341
+      Height = 317
       Align = alClient
       Center = True
       Picture.Data = {
@@ -138,10 +139,27 @@ object frmSplash: TfrmSplash
       ExplicitWidth = 105
       ExplicitHeight = 105
     end
+    object lbMessage: TLabel
+      AlignWithMargins = True
+      Left = 3
+      Top = 375
+      Width = 552
+      Height = 18
+      Align = alBottom
+      Alignment = taCenter
+      Caption = 'Validating License, please wait...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clHighlightText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 208
+    end
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 336
-    Top = 208
+    Left = 104
+    Top = 104
   end
 end

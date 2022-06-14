@@ -41,11 +41,13 @@ type
     fMemoryStreamOrig: TMemoryStream;
     fAlreadyCompressed: boolean;
     fImageWidth,
-    fImageHeight: integer;
+    fImageHeight,
+    fMinQuality: integer;
     procedure CompressJPG(const AJPEG: TJPEGImage; const ACompressionQuality: integer);
     function SizeOfJPEG(const AJPEG: TJPEGImage): Int64;
     procedure TryCompression(const AQuality: integer=cMinQuality);
     procedure SetOutputDir(const Value: string);
+    procedure RetryWithReducedScale;
   public
     constructor Create;
     destructor Destroy; override;
@@ -99,6 +101,7 @@ begin
   fRotateAmount := raNone;
   fMemoryStream := TMemoryStream.Create;
   fMemoryStreamOrig := TMemoryStream.Create;
+  fMinQuality := cMinQuality;
 end;
 
 destructor TJPEGCompressor.Destroy;
@@ -144,8 +147,16 @@ begin
       if fCompress then begin
         if fTargetKB > 0 then begin
           if (fCompressedFilesize = 0) or
-             (fCompressedFilesize > fTargetKB) then
-            TryCompression(cMaxQuality-cTargetInterval);
+             (fCompressedFilesize > fTargetKB) then begin
+            fMinQuality := 20; //Retry with reduced scale beyond this level
+            try
+              TryCompression(cMaxQuality-cTargetInterval);
+              if fCompressedFilesize > fTargetKB then
+                RetryWithReducedScale;
+            finally
+              fMinQuality := cMinQuality;
+            end;
+          end;
         end else
           TryCompression(fCompressionQuality);
       end else if fAlreadyCompressed then begin
@@ -171,6 +182,23 @@ begin
       result := false;
       fMessages.Add('Error processing '+ExtractFileName(SourceFilename)+e.Classname+' '+e.Message);
     end;
+  end;
+end;
+
+procedure TJPEGCompressor.RetryWithReducedScale;
+var
+  scale: TJPEGScale;
+begin
+  scale := jsFullSize;
+  while (fCompressedFilesize > fTargetKB) and
+        (scale <= TJPEGScale.jsQuarter) do begin
+    fMemoryStreamOrig.Position := 0;
+    fJPEG.LoadFromStream(fMemoryStreamOrig);
+    scale := TJPEGScale(integer(scale) + 1);
+    fJPEG.Scale := scale;
+    fCompressionQuality := 90;
+    fJPEG.CompressionQuality := 90;
+    TryCompression(cMaxQuality-cTargetInterval);
   end;
 end;
 
@@ -263,7 +291,7 @@ end;
 
 procedure TJPEGCompressor.TryCompression(const AQuality: integer=cMinQuality);
 begin
-  if (AQuality >= cMinQuality) and
+  if (AQuality >= fMinQuality) and
      (AQuality < cMaxQuality) then begin
     CompressJPG(fJPEG, AQuality);
     if (fTargetKB > 0) and

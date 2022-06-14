@@ -11,11 +11,22 @@ uses
 
 {$R *.res}
 
+  procedure ValidateStartup;
+  begin
+    with TfrmSplash.Create(nil) do begin
+      try
+        ShowModal;
+        FrmMain.EvaluationMode := not HasValidLicense;
+      finally
+        Free;
+      end;
+    end;
+  end;
+
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFrmMain, FrmMain);
-  Application.CreateForm(TfrmSplash, frmSplash);
-  frmSplash.ShowModal;
+  ValidateStartup;
   Application.Run;
 end.

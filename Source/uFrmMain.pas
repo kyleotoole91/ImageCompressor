@@ -12,8 +12,8 @@ const
   oversizeAllowance=75;
   cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
   cGumRoadLink = 'https://kyleotoole.gumroad.com/l/ticw';
-  cActivatedCaption = 'Turbo Image Compressor';
-  cEvaluationCaption = 'Turbo Image Compressor - Evaluation';
+  cActivatedCaption = 'Turbo Image Compressor - Pro';
+  cEvaluationCaption = 'Turbo Image Compressor - Free';
 
 type
   TFrmMain = class(TForm)
@@ -158,10 +158,12 @@ type
     procedure miPurchaseLicenseClick(Sender: TObject);
     procedure miHideOriginalClick(Sender: TObject);
     procedure miEnterLicenseClick(Sender: TObject);
+    procedure LoadCompressedPreview(Sender: TObject);
   private
     { Private declarations }
     fEvaluationMode: boolean;
-    fFormClosing: boolean;
+    fFormClosing,
+    fLoadingPreview: boolean;
     fJSON: ISuperObject;
     fWorkingDir: string;
     fFilename: string;
@@ -178,18 +180,18 @@ type
     fImageConfigList: TDictionary<string, TImageConfig>;
     fLoading: boolean;
     fLicenseValidator: TLicenseValidator;
+    fFormCreating: boolean;
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages: boolean);
     procedure OpenURL(const AURL: string);
     function ValidSelection: boolean;
     procedure ResizeEvent;
     procedure CheckHideLabels;
-    procedure ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage);
+    procedure LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
     procedure LoadImageConfig(const AFilename: string);
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     procedure ObjToForm;
     procedure SetControlState(const AEnabled: boolean);
     procedure SetChildControlES(const AParentControl: TControl; const AEnabled: Boolean);
-    procedure LoadCompressedPreview;
     procedure LoadImagePreview(const AFilename: string); overload;
     procedure LoadSelectedFromFile(const ALoadForm: boolean=true);
     function FileIsSelected: boolean;
@@ -235,9 +237,11 @@ end;
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  fFormCreating := true;
+  fLoadingPreview := false;
+  fJPEGCompressor := TJPEGCompressor.Create;
   fEvaluationMode := true;
   fLicenseValidator := TLicenseValidator.Create;
-  fJPEGCompressor := TJPEGCompressor.Create;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   fMessages := TStringList.Create;
   fFormClosing := false;
@@ -281,23 +285,16 @@ end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
 begin
-  inherited;
   Screen.Cursor := crHourGlass;
   try
     mmMessages.Clear;
-    EvaluationMode := not fLicenseValidator.LicenseIsValid(true);
-    if fEvaluationMode then begin
-      mmMessages.Lines.Add('Running in evaluation mode: '+fLicenseValidator.Message);
-      if fLicenseValidator.LicenseKey <> '' then begin
-        mmMessages.Lines.Add('Ensure you have an active internet connection so we can verify your license');
-        pcMain.ActivePage := tsLogs;
-      end else
-        pcMain.ActivePage := tsHome;
-    end;
+    pcMain.ActivePage := tsHome;
     ebStartPath.Text := fWorkingDir;
+    fFormCreating := false;
   finally
     Screen.Cursor := crDefault;
     Scan;
+    inherited;
   end;
 end;
 
@@ -340,7 +337,7 @@ begin
   AHasMultipleImages := SelectedFileCount > 1;
   if cbApplyToAll.Checked then begin
     AHasTargetKB := cbCompress.Checked and (seTargetKBs.Value > 0);
-    AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > 0);
+    AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > integer(rmFastest)); //allow fastest
   end else begin
     AHasTargetKB := false;
     AHasResampling := false;
@@ -368,6 +365,8 @@ begin
       fImageConfigList.Add(fSelectedFilename, fImageConfig);
     end;
   end;
+  if Assigned(fImageConfig) and fEvaluationMode then
+    fImageConfig.ResampleMode := rmFastest;
 end;
 
 procedure TFrmMain.ObjToForm;
@@ -388,7 +387,7 @@ begin
         fSelectedFilename := Filename;
         rbByWidth.Checked := ShrinkByWidth;
         rbByHeight.Checked := not ShrinkByWidth;
-        cbCompressPreview.Checked := fImageConfig.PreviewCompression;
+        cbCompressPreview.Checked := false; //PreviewCompression; it's best not to wait for compression when changing images
         cbStretch.Checked := Stretch;
         cbRotateAmount.ItemIndex := integer(RotateAmount);
         cbResampleMode.ItemIndex := integer(ResampleMode);
@@ -404,15 +403,19 @@ begin
   end;
 end;
 
-procedure TFrmMain.LoadCompressedPreview;
+procedure TFrmMain.LoadCompressedPreview(Sender: TObject);
+var
+  stretch: boolean;
 begin
   if cbCompress.Checked or
      cbApplyGraphics.Checked then begin
     Screen.Cursor := crHourGlass;
+    fLoadingPreview := true;
+    stretch := cbStretch.Checked;
     try
       LoadImageConfig(fSelectedFilename);
       fImageConfig := FormToObj;
-      if fImageConfig.RecordModified or
+      if fImageConfig.RecordModified or (Sender = cbCompressPreview) or
          (fJPEGCompressor.SourceFilename <> fSelectedFilename) then begin
         fJPEGCompressor.OutputDir := ebOutputDir.Text;
         fJPEGCompressor.Compress := fImageConfig.Compress;
@@ -424,14 +427,18 @@ begin
         fJPEGCompressor.ResampleMode := fImageConfig.ResampleMode;
         fJPEGCompressor.RotateAmount := fImageConfig.RotateAmount;
         fJPEGCompressor.Process(fSelectedFilename, false);
-        ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-        lbImgSizeKBVal.Caption := fJPEGCompressor.CompressedFilesize.ToString;
-        lbImgWidthVal.Caption := fJPEGCompressor.ImageWidth.ToString;
-        lbImgHeightVal.Caption := fJPEGCompressor.ImageHeight.ToString;
       end;
     finally
-      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
+      cbStretch.Checked := false;
+      LoadImage(fJPEGCompressor.JPEG, imgHome);
+      lbImgSizeKBVal.Caption := fJPEGCompressor.CompressedFilesize.ToString;
+      lbImgWidthVal.Caption := fJPEGCompressor.ImageWidth.ToString;
+      lbImgHeightVal.Caption := fJPEGCompressor.ImageHeight.ToString;
+      seQuality.Value := fJPEGCompressor.JPEG.CompressionQuality;
+      tbQuality.Position := seQuality.Value;
+      cbStretch.Checked := stretch;
       Screen.Cursor := crDefault;
+      fLoadingPreview := false;
     end;
   end;
 end;
@@ -446,14 +453,14 @@ begin
       lbImgWidthVal.Caption := fJPEGCompressor.JPEG.Width.ToString;
       lbImgHeightVal.Caption := fJPEGCompressor.JPEG.Height.ToString;
       lbImgSizeKBVal.Caption := SizeOfFile(AFilename).ToString;
-      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
+      LoadImage(fJPEGCompressor.JPEG, imgHome);
       if imgOriginal.Visible then begin
         fJPEGCompressor.JPEGOriginal.Scale := jsFullsize;
         fJPEGCompressor.JPEGOriginal.LoadFromFile(AFilename);
         lbImgOrigWidthVal.Caption := fJPEGCompressor.JPEGOriginal.Width.ToString;
         lbImgOrigHeightVal.Caption := fJPEGCompressor.JPEGOriginal.Height.ToString;
         lbImgOrigSizeKBVal.Caption := SizeOfFile(AFilename).ToString;
-        ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+        LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
       end;
     finally
       Screen.Cursor := crDefault;
@@ -462,7 +469,7 @@ begin
 end;
 
 { If DevExpress is installed, force the use of TdxSmartImage Graphic. This result in better image quality
-  of large images that get squashed into the TImage control. Using this, removes the need for the ApplyBestFit() method.
+  of large images that get squashed into the TImage control. Using this, removes the need for the LoadImage() method.
 procedure TFrmMain.LoadImagePreview(const AMS: TMemoryStream);
 var
   AGraphic: TdxSmartImage;
@@ -545,6 +552,7 @@ end;
 procedure TFrmMain.miEnterLicenseClick(Sender: TObject);
 var
   licenseKey, currentKey: string;
+  isValid: boolean;
 begin
   currentKey := fLicenseValidator.GetLicenseKey;
   licenseKey := InputBox('Enter License Key', 'Key:', currentKey);
@@ -552,7 +560,9 @@ begin
     Screen.Cursor := crHourGlass;
     try
       fLicenseValidator.LicenseKey := licenseKey;
-      EvaluationMode := not fLicenseValidator.LicenseIsValid;
+      isValid := fLicenseValidator.LicenseIsValid;
+      if EvaluationMode then
+        EvaluationMode := not isValid;
       if not fEvaluationMode then
         MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtInformation, [mbOk], 0)
       else
@@ -592,20 +602,20 @@ begin
           cblFiles.Items.Add(filename)
         else
           cblFiles.Items.Add(ExtractFileName(filename));
-        cblFiles.Checked[cblFiles.Count-1] := true;
+        cblFiles.Checked[cblFiles.Count-1] := false;
       end else
         fMessages.Add('Error: Unsupported filename '+filename+': contains ''!'' ');
     end;
-    btnStart.Enabled := false;
     if cblFiles.Count > 0 then begin
       for a := 0 to cblFiles.Count-1 do begin
         try
-          if not cblFiles.Items[a].Contains('!') then begin
+          if ExtractFilePath(cblFiles.Items[a]) <> '' then
+            fSelectedFilename := cblFiles.Items[a]
+          else
             fSelectedFilename := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
-            LoadSelectedFromFile;
-            Inc(okCount);
-            Break;
-          end;
+          LoadSelectedFromFile;
+          Inc(okCount);
+          Break;
         except
           on e: exception do begin
             cblFiles.Checked[a] := false;
@@ -618,30 +628,44 @@ begin
     mmMessages.Lines.Add(fMessages.Text);
     fMessages.Clear;
     cbApplyToAll.Checked := true;
-    btnStart.Enabled := (okCount > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
+    btnStart.Enabled := false;
     SetControlState(okCount > 0);
     cblFiles.Items.EndUpdate;
     Screen.Cursor := crDefault;
   end;
 end;
-//ApplyBestFit improves load times and image quality (by reducing the amount the image gets squashed down to fit inside the TImage control)
-procedure TFrmMain.ApplyBestFit(const AJPEG: TJPEGImage; const AImage: TImage);
+
+procedure TFrmMain.LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
 var
   scale: integer;
+  jsScale: TJPEGScale;
 begin
   if Assigned(AJPEG) and
-     Assigned(AImage) then begin
-    AJPEG.Scale := jsFullsize;
-    if miApplyBestFit.Checked then begin
-      scale := 1;
-      while (scale <= 3) and
-            ((AJPEG.Width > (AImage.Width+oversizeAllowance)) or
-             (AJPEG.Height > (AImage.Height+oversizeAllowance))) do begin
-        AJPEG.Scale := TJPEGScale(scale);
-        Inc(scale);
+     Assigned(AImage) and
+     (not fFormCreating) then begin
+    jsScale := AJPEG.Scale;
+    try
+      //involke change so compression quality preview shows accurately
+      if AJPEG.Scale <> jsFullSize then
+        AJPEG.Scale := jsFullSize
+      else
+        AJPEG.Scale := jsEighth;
+      //Set scale for improved image quality
+      if miApplyBestFit.Checked then begin
+        scale := integer(jsFullSize);
+        AJPEG.Scale := jsFullSize;
+        while (scale <= 3) and
+              ((AJPEG.Width > (AImage.Width+oversizeAllowance)) or
+               (AJPEG.Height > (AImage.Height+oversizeAllowance))) do begin
+          jsScale := TJPEGScale(scale);
+          AJPEG.Scale := jsScale;
+          Inc(scale);
+        end;
       end;
+    finally
+      AJPEG.Scale := jsScale;
+      AImage.Picture.Assign(AJPEG);
     end;
-    AImage.Picture.Assign(AJPEG);
   end;
 end;
 
@@ -650,8 +674,8 @@ begin
   miApplyBestFit.Checked := not miApplyBestFit.Checked;
   Screen.Cursor := crHourGlass;
   try
-    ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-    ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+    LoadImage(fJPEGCompressor.JPEG, imgHome);
+    LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -736,7 +760,7 @@ begin
         LoadSelectedFromFile(false)
       else if cbCompressPreview.Checked then begin
         if cbCompress.Checked or cbApplyGraphics.Checked then
-          LoadCompressedPreview
+          LoadCompressedPreview(Sender)
         else if Assigned(Sender) and (Sender=cbCompressPreview) or
                 ((not cbCompress.Checked) and (not cbApplyGraphics.Checked)) then
           LoadSelectedFromFile(false);
@@ -897,9 +921,9 @@ begin
   try
     CheckHideLabels;
     if not cbStretch.Checked then
-      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
+      LoadImage(fJPEGCompressor.JPEG, imgHome);
     if not cbStretchOriginal.Checked then
-      ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+      LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1030,7 +1054,7 @@ begin
           btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbCreateJSONFile.Checked;
           if btnStart.Enabled and
              cbCompressPreview.Checked then
-            LoadCompressedPreview
+            LoadCompressedPreview(Sender)
           else
             LoadImagePreview(fSelectedFilename);
         end else
@@ -1086,8 +1110,10 @@ end;
 
 procedure TFrmMain.tbQualityChange(Sender: TObject);
 begin
-  CheckCompressPreviewLoad(Sender);
-  seQuality.Value := tbQuality.Position;
+  if not fLoadingPreview then begin
+    CheckCompressPreviewLoad(Sender);
+    seQuality.Value := tbQuality.Position;
+  end;
 end;
 
 procedure TFrmMain.tbQualityKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1108,11 +1134,11 @@ begin
     else if fEvaluationMode then begin
       HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages);
       if hasMultipleImages then
-        sl.Add('• Batch image processing is not available in evaluation mode. Please process one image at time.');
+        sl.Add('• Batch image processing is not available in the free version. Please process one image at time.');
       if hasTargetKB then
-        sl.Add('• Target (KB) is not available in evaluation mode.');
+        sl.Add('• Target (KB) is not available in the free version.');
       if hasResampling then
-        sl.Add('• Resampling is not available in evaluation mode.');
+        sl.Add('• The selected resampling mode is not available in the free version.');
       if sl.Count > 0 then begin
         sl.Add(' ');
         sl.Add('Would you like to purchase the Pro version in order to avail of these exclusive features?');
@@ -1215,12 +1241,12 @@ procedure TFrmMain.cbStretchClick(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
+    imgHome.Stretch := cbStretch.Checked;
     if cbStretch.Checked then begin
       fJPEGCompressor.JPEG.Scale := jsFullSize;
       imgHome.Picture.Assign(fJPEGCompressor.JPEG);
-    end else
-      ApplyBestFit(fJPEGCompressor.JPEG, imgHome);
-    imgHome.Stretch := cbStretch.Checked;
+    end;
+    LoadImage(fJPEGCompressor.JPEG, imgHome);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1234,7 +1260,7 @@ begin
       fJPEGCompressor.JPEGOriginal.Scale := jsFullSize;
       imgOriginal.Picture.Assign(fJPEGCompressor.JPEGOriginal);
     end else
-      ApplyBestFit(fJPEGCompressor.JPEGOriginal, imgOriginal);
+      LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
     imgOriginal.Stretch := cbStretchOriginal.Checked;
   finally
     Screen.Cursor := crDefault;

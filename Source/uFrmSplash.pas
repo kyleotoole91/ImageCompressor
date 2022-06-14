@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Imaging.jpeg,
-  Vcl.ExtCtrls, Vcl.Imaging.pngimage;
+  Vcl.ExtCtrls, Vcl.Imaging.pngimage, uLicenseValidator;
 
 type
   TfrmSplash = class(TForm)
@@ -15,14 +15,19 @@ type
     Label1: TLabel;
     lbVersion: TLabel;
     Image1: TImage;
+    lbMessage: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
+    fLicenseValidator: TLicenseValidator;
+    fHasValidLicense: boolean;
   public
     { Public declarations }
+    property HasValidLicense: boolean read fHasValidLicense;
   end;
 
   procedure GetBuildInfo(var V1, V2, V3, V4: word);
@@ -32,6 +37,9 @@ var
   frmSplash: TfrmSplash;
 
 implementation
+
+uses
+  System.UITypes;
 
 {$R *.dfm}
 
@@ -43,10 +51,18 @@ end;
 procedure TfrmSplash.FormCreate(Sender: TObject);
 begin
   inherited;
+  fHasValidLicense := false;
+  fLicenseValidator := TLicenseValidator.Create;
   lbVersion.Caption := 'V'+GetBuildInfoAsString;
-  Timer1.Interval := 1000;
+  Timer1.Interval := 1;
   lbYear.Caption := lbYear.Caption+FormatDateTime('YYYY', Now);
   pnlMain.Color := 5209163;
+end;
+
+procedure TfrmSplash.FormDestroy(Sender: TObject);
+begin
+  fLicenseValidator.Free;
+  inherited;
 end;
 
 procedure TfrmSplash.FormShow(Sender: TObject);
@@ -57,8 +73,30 @@ end;
 
 procedure TfrmSplash.Timer1Timer(Sender: TObject);
 begin
-  Timer1.Enabled := false;
-  Close;
+  try
+    Timer1.Enabled := false;
+    Screen.Cursor := crHourGlass;
+    lbMessage.Caption := 'Checking license, please wait...';
+    Application.ProcessMessages;
+    fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
+    if not fHasValidLicense then begin
+      if fLicenseValidator.LicenseKey <> '' then begin
+        Screen.Cursor := crDefault;
+        MessageDlg('Your license key could not be validated.'+sLineBreak+
+                   'Please ensure you have an active internet connection. '+sLineBreak+
+                   'The free version of the application will now launch. '+sLineBreak+sLineBreak+
+                   'Error returned:'+sLineBreak+
+                    fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+      end else begin
+        lbMessage.Caption := 'Starting free version..';
+        Application.ProcessMessages;
+        Sleep(1000);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+    Close;
+  end;
 end;
 
 procedure GetBuildInfo(var V1, V2, V3, V4: word);

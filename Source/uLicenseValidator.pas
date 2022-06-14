@@ -3,7 +3,7 @@ unit uLicenseValidator;
 interface
 
 uses
-  idHTTP, System.Net.HttpClient, System.Classes, Winapi.Windows, System.SysUtils, System.Win.Registry, SuperObject, uSecrets;
+  idHTTP, System.Net.HttpClient, System.Classes, Winapi.Windows, System.SysUtils, System.Win.Registry, SuperObject;
 
 const
   cGumRoadPerma = 'ticw';
@@ -11,6 +11,7 @@ const
   cGumRoadKeyParam = 'license_key';
   cRegKey = 'Software\KOTSoftwareSolutions\TurboImageCompressor';
   cGumRoadTokenParam = 'access_token';
+  cGumRoadIncUsesCount = 'increment_uses_count';
   cMaxUses = 3;
 
 type
@@ -28,18 +29,17 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function LicenseIsValid(const ADecrementUsesCount: boolean=false): boolean;
+    function LicenseIsValid(const AIncrementUsesCount: boolean=true): boolean;
     function GetLicenseKey: string;
     property LicenseKey: string read fLicenseKey write fLicenseKey;
     property Message: string read fMessage write fMessage;
-    procedure DecrementUsesCount;
   end;
 
 implementation
 
 const
   cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
-  cGumRoadDecrementURL = 'https://api.gumroad.com/v2/licenses/decrement_uses_count';
+  //cGumRoadDecrementURL = 'https://api.gumroad.com/v2/licenses/decrement_uses_count';
 
 { TLicenceValidator }
 
@@ -61,7 +61,7 @@ begin
   end;
 end;
 
-function TLicenseValidator.LicenseIsValid(const ADecrementUsesCount: boolean=false): boolean;
+function TLicenseValidator.LicenseIsValid(const AIncrementUsesCount: boolean=true): boolean;
 var
   machinesLeft: integer;
 begin
@@ -74,6 +74,10 @@ begin
     else begin
       fMessage := '';
       fParams.Clear;
+      if AIncrementUsesCount then
+        fParams.Add(cGumRoadIncUsesCount+'=true')
+      else
+        fParams.Add(cGumRoadIncUsesCount+'=false');
       fParams.Add(cGumRoadPermaParam+'='+cGumRoadPerma);
       fParams.Add(cGumRoadKeyParam+'='+fLicenseKey);
       fResp := fHTTP.Post(cGumRoadLicenseURL, fParams);
@@ -100,8 +104,6 @@ begin
           else
             fMessage := 'Product activated! You can use this key on '+machinesLeft.ToString+' more machine(s).';
           AddKeyToRegistry;
-          if ADecrementUsesCount then
-            DecrementUsesCount;
         end else
           fMessage := 'This key has been used on too many machines. Please purchase a new license key';
       end;
@@ -150,23 +152,6 @@ begin
     end;
   finally
     fReg.Free;
-  end;
-end;
-
-procedure TLicenseValidator.DecrementUsesCount;
-begin
-  try
-    if fLicenseKey = '' then
-      fLicenseKey := GetLicenseKey;
-    fMessage := '';
-    fParams.Clear;
-    fParams.Add(cGumRoadTokenParam+'='+cGumRoadAccessToken);
-    fParams.Add(cGumRoadPermaParam+'='+cGumRoadPerma);
-    fParams.Add(cGumRoadKeyParam+'='+fLicenseKey);
-    fResp := fHTTP.Put(cGumRoadDecrementURL, fParams);
-  except
-    on e: exception do
-      fMessage := e.ClassName+': '+e.Message;
   end;
 end;
 

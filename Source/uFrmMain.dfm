@@ -36,7 +36,7 @@ object FrmMain: TFrmMain
     Top = 3
     Width = 1423
     Height = 690
-    ActivePage = tsLogs
+    ActivePage = tsHome
     Align = alClient
     TabOrder = 0
     object tsHome: TTabSheet
@@ -460,9 +460,9 @@ object FrmMain: TFrmMain
           object lbFiles: TLabel
             Left = 3
             Top = 4
-            Width = 74
+            Width = 83
             Height = 13
-            Caption = 'JPEG(s) Found:'
+            Caption = 'Selected Images:'
             Enabled = False
           end
           object cblFiles: TCheckListBox
