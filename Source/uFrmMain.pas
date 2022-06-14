@@ -688,6 +688,7 @@ end;
 procedure TFrmMain.btnApplyClick(Sender: TObject);
 begin
   FormToObj;
+  //LoadCompressedPreview(Sender);
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
   btnApply.Enabled := false;
@@ -770,6 +771,7 @@ begin
           LoadSelectedFromFile(false);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
+      btnApply.Enabled := true;
     finally
       Screen.Cursor := crDefault;
     end;
