@@ -786,6 +786,7 @@ object FrmMain: TFrmMain
       Height = 25
       Anchors = [akTop, akRight]
       Caption = 'Apply'
+      Enabled = False
       TabOrder = 0
       OnClick = btnApplyClick
     end

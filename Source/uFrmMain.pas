@@ -415,7 +415,7 @@ begin
     try
       LoadImageConfig(fSelectedFilename);
       fImageConfig := FormToObj;
-      if fImageConfig.RecordModified or (Sender = cbCompressPreview) or
+      if fImageConfig.RecordModified or
          (fJPEGCompressor.SourceFilename <> fSelectedFilename) then begin
         fJPEGCompressor.OutputDir := ebOutputDir.Text;
         fJPEGCompressor.Compress := fImageConfig.Compress;
@@ -427,6 +427,9 @@ begin
         fJPEGCompressor.ResampleMode := fImageConfig.ResampleMode;
         fJPEGCompressor.RotateAmount := fImageConfig.RotateAmount;
         fJPEGCompressor.Process(fSelectedFilename, false);
+      end else if (not fImageConfig.RecordModified) then begin
+        fJPEGCompressor.MemoryStream.Position := 0;
+        fJPEGCompressor.JPEG.LoadFromStream(fJPEGCompressor.MemoryStream);
       end;
     finally
       cbStretch.Checked := false;
@@ -766,7 +769,6 @@ begin
           LoadSelectedFromFile(false);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
-      btnApply.Enabled := true;
     finally
       Screen.Cursor := crDefault;
     end;
@@ -1172,6 +1174,7 @@ begin
      oldObj.RecordModified and
      (oldfilename <> fSelectedFilename) then
     oldObj.Reset;
+  btnApply.Enabled := false;
 end;
 
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);
@@ -1299,6 +1302,7 @@ procedure TFrmMain.seTargetKBsChange(Sender: TObject);
 begin
   seQuality.Enabled := seTargetKBs.Value <= 0;
   tbQuality.Enabled := seQuality.Enabled;
+  btnApply.Enabled := true;
 end;
 
 procedure TFrmMain.seTargetKBsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
