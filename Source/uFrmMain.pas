@@ -438,6 +438,7 @@ begin
       lbImgWidthVal.Caption := fJPEGCompressor.ImageWidth.ToString;
       lbImgHeightVal.Caption := fJPEGCompressor.ImageHeight.ToString;
       seQuality.Value := fJPEGCompressor.JPEG.CompressionQuality;
+      seMaxWidthPx.Value := fJPEGCompressor.ImageWidth;
       tbQuality.Position := seQuality.Value;
       cbStretch.Checked := stretch;
       Screen.Cursor := crDefault;
