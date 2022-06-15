@@ -8,6 +8,7 @@ uses
 type
   TImageConfig = class(TObject)
   strict private
+    fPreviewModified: boolean;
     fPreviewCompression: boolean;
     fStretch: boolean;
     fFilename: string;
@@ -32,6 +33,8 @@ type
     procedure SetTagetKB(const Value: Int64);
     procedure SetResampleMode(const Value: TResampleMode);
     procedure SetRotateAmount(const Value: TRotateAmount);
+    procedure SetRecordModified(const Value: boolean);
+    procedure SetPreviewModified(const Value: boolean);
   public
     constructor Create;
     procedure Reset;
@@ -47,9 +50,10 @@ type
     property ApplyGraphics: boolean read fApplyGraphics write SetApplyGraphics;
     property ShrinkByWidth: boolean read fShrinkByWidth write SetShrinkByWidth;
     property ShrinkByValue: integer read fShrinkByValue write SetShrinkByValue;
-    property RecordModified: boolean read fRecordModified write fRecordModified;
     property ResampleMode: TResampleMode read fResampleMode write SetResampleMode;
     property RotateAmount: TRotateAmount read fRotateAmount write SetRotateAmount;
+    property RecordModified: boolean read fRecordModified write SetRecordModified;
+    property PreviewModified: boolean read fPreviewModified write SetPreviewModified;
   end;
 
 implementation
@@ -66,6 +70,7 @@ end;
 
 procedure TImageConfig.Reset;
 begin
+  fPreviewModified := false;
   fRecordModified := false;
   fAddToJSON := true;
   fSourcePrefix := 'images/';
@@ -82,49 +87,61 @@ end;
 
 procedure TImageConfig.SetCompress(const Value: boolean);
 begin
-  fRecordModified := fRecordModified or (fCompress <> Value);
+  RecordModified := fRecordModified or (fCompress <> Value);
   fCompress := Value;
+end;
+
+procedure TImageConfig.SetPreviewModified(const Value: boolean);
+begin
+  fPreviewModified := Value;
 end;
 
 procedure TImageConfig.SetQuality(const Value: integer);
 begin
-  fRecordModified := fRecordModified or (fQuality <> Value);
+  RecordModified := fRecordModified or (fQuality <> Value);
   fQuality := Value;
+end;
+
+procedure TImageConfig.SetRecordModified(const Value: boolean);
+begin
+  fRecordModified := Value;
+  if fRecordModified then
+    fPreviewModified := true;
 end;
 
 procedure TImageConfig.SetResampleMode(const Value: TResampleMode);
 begin
-  fRecordModified := fRecordModified or (fResampleMode <> Value);
+  RecordModified := fRecordModified or (fResampleMode <> Value);
   fResampleMode := Value;
 end;
 
 procedure TImageConfig.SetRotateAmount(const Value: TRotateAmount);
 begin
-  fRecordModified := fRecordModified or (fRotateAmount <> Value);
+  RecordModified := fRecordModified or (fRotateAmount <> Value);
   fRotateAmount := Value;
 end;
 
 procedure TImageConfig.SetApplyGraphics(const Value: boolean);
 begin
-  fRecordModified := fRecordModified or (fApplyGraphics <> Value);
+  RecordModified := fRecordModified or (fApplyGraphics <> Value);
   fApplyGraphics := Value;
 end;
 
 procedure TImageConfig.SetShrinkByValue(const Value: integer);
 begin
-  fRecordModified := fRecordModified or (fShrinkByValue <> Value);
+  RecordModified := fRecordModified or (fShrinkByValue <> Value);
   fShrinkByValue := Value;
 end;
 
 procedure TImageConfig.SetShrinkByWidth(const Value: boolean);
 begin
-  fRecordModified := fRecordModified or (fShrinkByWidth <> Value);
+  RecordModified := fRecordModified or (fShrinkByWidth <> Value);
   fShrinkByWidth := Value;
 end;
 
 procedure TImageConfig.SetTagetKB(const Value: Int64);
 begin
-  fRecordModified := fRecordModified or (fTagetKB <> Value);
+  RecordModified := fRecordModified or (fTagetKB <> Value);
   fTagetKB := Value;
 end;
 

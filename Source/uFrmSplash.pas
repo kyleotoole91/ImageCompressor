@@ -83,7 +83,7 @@ begin
       if fLicenseValidator.LicenseKey <> '' then begin
         Screen.Cursor := crDefault;
         MessageDlg('Your license key could not be validated.'+sLineBreak+
-                   'Please ensure you have an active internet connection. '+sLineBreak+
+                   //'Please ensure you have an active internet connection. '+sLineBreak+
                    'The free version of the application will now launch. '+sLineBreak+sLineBreak+
                    'Error returned:'+sLineBreak+
                     fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);

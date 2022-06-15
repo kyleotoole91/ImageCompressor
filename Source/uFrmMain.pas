@@ -125,7 +125,7 @@ type
     procedure cblFilesClick(Sender: TObject);
     procedure ebStartPathExit(Sender: TObject);
     procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure CheckCompressPreviewLoad(Sender: TObject=nil);
+    procedure CheckCompressPreviewLoad(Sender: TObject);
     procedure seMaxWidthPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure seMaxHeightPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure seTargetKBsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -161,7 +161,8 @@ type
     procedure LoadCompressedPreview(Sender: TObject);
   private
     { Private declarations }
-    fEvaluationMode: boolean;
+    fEvaluationMode,
+    fImageChanged: boolean;
     fFormClosing,
     fLoadingPreview: boolean;
     fJSON: ISuperObject;
@@ -184,7 +185,7 @@ type
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages: boolean);
     procedure OpenURL(const AURL: string);
     function ValidSelection: boolean;
-    procedure ResizeEvent;
+    procedure ResizeEvent(Sender: TObject);
     procedure CheckHideLabels;
     procedure LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
     procedure LoadImageConfig(const AFilename: string);
@@ -237,6 +238,7 @@ end;
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  fImageChanged := true;
   fFormCreating := true;
   fLoadingPreview := false;
   fJPEGCompressor := TJPEGCompressor.Create;
@@ -280,7 +282,7 @@ end;
 procedure TFrmMain.FormResize(Sender: TObject);
 begin
   if not fFormClosing then
-    ResizeEvent;
+    ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
@@ -387,7 +389,7 @@ begin
         fSelectedFilename := Filename;
         rbByWidth.Checked := ShrinkByWidth;
         rbByHeight.Checked := not ShrinkByWidth;
-        cbCompressPreview.Checked := false; //PreviewCompression; it's best not to wait for compression when changing images
+        cbCompressPreview.Checked := false;
         cbStretch.Checked := Stretch;
         cbRotateAmount.ItemIndex := integer(RotateAmount);
         cbResampleMode.ItemIndex := integer(ResampleMode);
@@ -406,28 +408,30 @@ end;
 procedure TFrmMain.LoadCompressedPreview(Sender: TObject);
 var
   stretch: boolean;
+  imageConfig: TImageConfig;
 begin
   if cbCompress.Checked or
      cbApplyGraphics.Checked then begin
     Screen.Cursor := crHourGlass;
     fLoadingPreview := true;
     stretch := cbStretch.Checked;
+    imageConfig := TImageConfig.Create;
     try
-      LoadImageConfig(fSelectedFilename);
-      fImageConfig := FormToObj;
-      if fImageConfig.RecordModified or
+      FormToObj(imageConfig);
+      if (fImageConfig.PreviewModified) or
          (fJPEGCompressor.SourceFilename <> fSelectedFilename) then begin
         fJPEGCompressor.OutputDir := ebOutputDir.Text;
-        fJPEGCompressor.Compress := fImageConfig.Compress;
-        fJPEGCompressor.ApplyGraphics := fImageConfig.ApplyGraphics;
-        fJPEGCompressor.CompressionQuality := fImageConfig.Quality;
-        fJPEGCompressor.TargetKB := fImageConfig.TagetKB;
-        fJPEGCompressor.ShrinkByHeight := not fImageConfig.ShrinkByWidth;
-        fJPEGCompressor.ShrinkByMaxPx := fImageConfig.ShrinkByValue;
-        fJPEGCompressor.ResampleMode := fImageConfig.ResampleMode;
-        fJPEGCompressor.RotateAmount := fImageConfig.RotateAmount;
+        fJPEGCompressor.Compress := imageConfig.Compress;
+        fJPEGCompressor.ApplyGraphics := imageConfig.ApplyGraphics;
+        fJPEGCompressor.CompressionQuality := imageConfig.Quality;
+        fJPEGCompressor.TargetKB := imageConfig.TagetKB;
+        fJPEGCompressor.ShrinkByHeight := not imageConfig.ShrinkByWidth;
+        fJPEGCompressor.ShrinkByMaxPx := imageConfig.ShrinkByValue;
+        fJPEGCompressor.ResampleMode := imageConfig.ResampleMode;
+        fJPEGCompressor.RotateAmount := imageConfig.RotateAmount;
         fJPEGCompressor.Process(fSelectedFilename, false);
-      end else if (not fImageConfig.RecordModified) then begin
+        fImageConfig.PreviewModified := false;
+      end else if (not fImageConfig.PreviewModified) then begin
         fJPEGCompressor.MemoryStream.Position := 0;
         fJPEGCompressor.JPEG.LoadFromStream(fJPEGCompressor.MemoryStream);
       end;
@@ -437,12 +441,15 @@ begin
       lbImgSizeKBVal.Caption := fJPEGCompressor.CompressedFilesize.ToString;
       lbImgWidthVal.Caption := fJPEGCompressor.ImageWidth.ToString;
       lbImgHeightVal.Caption := fJPEGCompressor.ImageHeight.ToString;
-      seQuality.Value := fJPEGCompressor.JPEG.CompressionQuality;
-      seMaxWidthPx.Value := fJPEGCompressor.ImageWidth;
-      tbQuality.Position := seQuality.Value;
+      if (Sender <> seQuality) and
+         (Sender <> tbQuality) then begin
+        seQuality.Value := fJPEGCompressor.JPEG.CompressionQuality;
+        tbQuality.Position := seQuality.Value;
+      end;
       cbStretch.Checked := stretch;
       Screen.Cursor := crDefault;
       fLoadingPreview := false;
+      imageConfig.Free;
     end;
   end;
 end;
@@ -491,21 +498,26 @@ end;}
 procedure TFrmMain.LoadSelectedFromFile(const ALoadForm: boolean=true);
 var
   a: integer;
+  imageFound: boolean;
 begin
   try
     Screen.Cursor := crHourGlass;
     try
-      if fSelectedFilename = '' then begin
-        for a := 0 to cblFiles.Count-1 do begin
-          if cblFiles.Selected[a] then begin
+      fImageChanged := true;
+      imageFound := false;
+      for a := 0 to cblFiles.Count-1 do begin
+        imageFound := cblFiles.Selected[a];
+        if imageFound then begin
+          fImageChanged := fSelectedFilename <> IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
+          if fImageChanged then
             fSelectedFilename := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
-            LoadImagePreview(fSelectedFilename);
-            Break;
-          end;
+          LoadImagePreview(fSelectedFilename);
+          Break;
         end;
-      end else
+      end;
+      if not imageFound then
         LoadImagePreview(fSelectedFilename);
-      if ALoadForm then begin
+      if ALoadForm and fImageChanged then begin
         LoadImageConfig(fSelectedFilename);
         ObjToForm;
       end;
@@ -688,7 +700,6 @@ end;
 procedure TFrmMain.btnApplyClick(Sender: TObject);
 begin
   FormToObj;
-  //LoadCompressedPreview(Sender);
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
   btnApply.Enabled := false;
@@ -756,11 +767,13 @@ begin
   end;
 end;
 
-procedure TFrmMain.CheckCompressPreviewLoad(Sender: TObject=nil);
+procedure TFrmMain.CheckCompressPreviewLoad(Sender: TObject);
 begin
   if not fLoading then begin
     Screen.Cursor := crHourGlass;
     try
+      if Sender <> cbCompressPreview then
+        fImageConfig.PreviewModified := true;
       if (Sender = cbCompressPreview) and (not cbCompressPreview.Checked) then
         LoadSelectedFromFile(false)
       else if cbCompressPreview.Checked then begin
@@ -771,7 +784,9 @@ begin
           LoadSelectedFromFile(false);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
-      btnApply.Enabled := true;
+      if (Sender <> cblFiles) and
+         (Sender <> cbCompressPreview) then
+        btnApply.Enabled := true;
     finally
       Screen.Cursor := crDefault;
     end;
@@ -805,7 +820,7 @@ end;
 
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
-  btnStart.Enabled := FileIsSelected and
+  btnStart.Enabled := FileIsSelected and fImageChanged and
                       (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
 end;
@@ -920,17 +935,19 @@ begin
   Scan;
 end;
 
-procedure TFrmMain.ResizeEvent;
+procedure TFrmMain.ResizeEvent(Sender: TObject);
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    CheckHideLabels;
-    if not cbStretch.Checked then
-      LoadImage(fJPEGCompressor.JPEG, imgHome);
-    if not cbStretchOriginal.Checked then
-      LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
-  finally
-    Screen.Cursor := crDefault;
+  if not fFormClosing then begin
+    Screen.Cursor := crHourGlass;
+    try
+      CheckHideLabels;
+      if not cbStretch.Checked then
+        LoadImage(fJPEGCompressor.JPEG, imgHome);
+      if not cbStretchOriginal.Checked then
+        LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
+    finally
+      Screen.Cursor := crDefault;
+    end;
   end;
 end;
 
@@ -1005,7 +1022,7 @@ begin
     cbRotateAmount.Enabled := cbApplyGraphics.Checked;
     lbResampling.Enabled := cbApplyGraphics.Checked;
     lbRotation.Enabled := cbApplyGraphics.Checked;
-    CheckCompressPreviewLoad;
+    CheckCompressPreviewLoad(Sender);
     CheckStartOk(Sender);
   end;
 end;
@@ -1081,7 +1098,7 @@ begin
     lbQuality.Enabled := cbCompress.Checked;
     lbTargetKB.Enabled := cbCompress.Checked;
     tbQuality.Enabled := cbCompress.Checked;
-    CheckCompressPreviewLoad;
+    CheckCompressPreviewLoad(Sender);
     CheckStartOk(Sender);
   end;
 end;
@@ -1110,7 +1127,7 @@ end;
 
 procedure TFrmMain.spOriginalMoved(Sender: TObject);
 begin
-  ResizeEvent;
+  ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.tbQualityChange(Sender: TObject);
@@ -1160,24 +1177,15 @@ begin
 end;
 
 procedure TFrmMain.cblFilesClick(Sender: TObject);
-var
-  oldfilename: string;
-  oldObj: TImageConfig;
 begin
   inherited;
-  oldfilename := fSelectedFilename;
-  fSelectedFilename := '';
   cbCompressPreview.Checked := false;
-  oldObj := fImageConfig;
   LoadSelectedFromFile;
-  CheckCompressPreviewLoad;
-  cbCompressClick(nil);
-  cbApplyGraphicsClick(nil);
-  if Assigned(oldObj) and
-     oldObj.RecordModified and
-     (oldfilename <> fSelectedFilename) then
-    oldObj.Reset;
-  btnApply.Enabled := false;
+  CheckCompressPreviewLoad(Sender);
+  cbCompressClick(Sender);
+  cbApplyGraphicsClick(Sender);
+  if fImageChanged then
+    btnApply.Enabled := false;
 end;
 
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);

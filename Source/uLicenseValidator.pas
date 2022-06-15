@@ -12,7 +12,11 @@ const
   cRegKey = 'Software\KOTSoftwareSolutions\TurboImageCompressor';
   cGumRoadTokenParam = 'access_token';
   cGumRoadIncUsesCount = 'increment_uses_count';
+  {$IFDEF DEBUG}
+  cMaxUses = 10;
+  {$ELSE}
   cMaxUses = 3;
+  {$ENDIF}
 
 type
   TLicenseValidator = class(TObject)
@@ -105,7 +109,7 @@ begin
             fMessage := 'Product activated! You can use this key on '+machinesLeft.ToString+' more machine(s).';
           AddKeyToRegistry;
         end else
-          fMessage := 'This key has been used on too many machines. Please purchase a new license key';
+          fMessage := 'This key has been used on too many machines. '+sLineBreak+' Please purchase a new license key';
       end;
     end;
   except

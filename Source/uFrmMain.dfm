@@ -542,14 +542,13 @@ object FrmMain: TFrmMain
             ExplicitLeft = 374
           end
           object lbImgWidth: TLabel
-            Left = 436
+            Left = 433
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
             Enabled = False
-            ExplicitLeft = 435
           end
           object lbImgWidthVal: TLabel
             Left = 467
@@ -588,8 +587,13 @@ object FrmMain: TFrmMain
             Top = 3
             Width = 124
             Height = 17
+            Hint = 
+              'Tip: Apply settings for improved performance when toggling Previ' +
+              'ew Compression '
             Caption = 'Preview Compression'
             Enabled = False
+            ParentShowHint = False
+            ShowHint = False
             TabOrder = 1
             OnClick = CheckCompressPreviewLoad
           end
@@ -794,13 +798,13 @@ object FrmMain: TFrmMain
   object pmCheckBoxList: TPopupMenu
     Left = 122
     Top = 318
-    object mniUnSelectAll: TMenuItem
-      Caption = 'Deselect All'
-      OnClick = mniUnSelectAllClick
-    end
     object mniSelectAll: TMenuItem
       Caption = 'Select All'
       OnClick = mniSelectAllClick
+    end
+    object mniUnSelectAll: TMenuItem
+      Caption = 'Deselect All'
+      OnClick = mniUnSelectAllClick
     end
     object N1: TMenuItem
       Caption = '-'
