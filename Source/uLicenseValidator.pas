@@ -114,8 +114,11 @@ begin
     end;
   except
     on e: exception do begin
-      result := false;
-      fMessage := e.ClassName+': '+e.Message;
+      result := false;      
+      if e.Message.Contains('Error sending data: (12007)') then
+        fMessage := 'Please make sure you have an active internet connection and restart the application' 
+      else
+        fMessage := e.ClassName+': '+e.Message;
     end;
   end;
 end;

@@ -26,14 +26,18 @@ object frmSplash: TfrmSplash
     Width = 558
     Height = 407
     Align = alClient
+    BevelEdges = []
     BevelOuter = bvNone
+    BiDiMode = bdLeftToRight
     Color = clTeal
+    ParentBiDiMode = False
     ParentBackground = False
     TabOrder = 0
     object lbYear: TLabel
-      Left = 0
-      Top = 396
-      Width = 29
+      AlignWithMargins = True
+      Left = 3
+      Top = 393
+      Width = 552
       Height = 11
       Align = alBottom
       Alignment = taCenter
@@ -44,11 +48,14 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 396
+      ExplicitWidth = 29
     end
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 445
+      Width = 558
       Height = 42
       Align = alTop
       Alignment = taCenter
@@ -61,11 +68,12 @@ object frmSplash: TfrmSplash
       Font.Style = [fsBold, fsItalic]
       ParentColor = False
       ParentFont = False
+      ExplicitTop = -6
     end
     object lbVersion: TLabel
       Left = 0
       Top = 42
-      Width = 43
+      Width = 558
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -76,12 +84,13 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 43
     end
     object Image1: TImage
       Left = 0
       Top = 55
       Width = 558
-      Height = 317
+      Height = 311
       Align = alClient
       Center = True
       Picture.Data = {
@@ -139,8 +148,8 @@ object frmSplash: TfrmSplash
     object lbMessage: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 375
-      Width = 208
+      Top = 369
+      Width = 552
       Height = 18
       Align = alBottom
       Alignment = taCenter
@@ -151,6 +160,8 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitTop = 375
+      ExplicitWidth = 208
     end
   end
   object Timer1: TTimer

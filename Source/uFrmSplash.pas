@@ -78,22 +78,24 @@ begin
     Screen.Cursor := crHourGlass;
     lbMessage.Caption := 'Checking license, please wait...';
     Application.ProcessMessages;
+    {$IFDEF DEBUG}
+    Sleep(1500); //Simulate slow startup, gives time to check splash screen layout
+    {$ENDIF}
     fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
     if not fHasValidLicense then begin
-      if fLicenseValidator.LicenseKey <> '' then begin
-        Screen.Cursor := crDefault;
-        MessageDlg('Your license key could not be validated.'+sLineBreak+
-                   //'Please ensure you have an active internet connection. '+sLineBreak+
-                   'The free version of the application will now launch. '+sLineBreak+sLineBreak+
-                   'Error returned:'+sLineBreak+
-                    fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
-      end else begin
-        lbMessage.Caption := 'Starting free version..';
-        Application.ProcessMessages;
-        Sleep(1000);
-      end;
-    end;
+      Screen.Cursor := crDefault;
+      lbMessage.Caption := 'Your license key could not be validated.';
+      MessageDlg('Your license key could not be validated.'+sLineBreak+
+                 //'Please ensure you have an active internet connection. '+sLineBreak+
+                 'The free version of the application will now launch. '+sLineBreak+sLineBreak+
+                 'Error returned:'+sLineBreak+
+                  fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+      lbMessage.Caption := 'Starting Free version..';
+    end else
+      lbMessage.Caption := 'Starting Pro version...';
   finally
+    Application.ProcessMessages;
+    Sleep(500); //Give time to read which version is launching
     Screen.Cursor := crDefault;
     Close;
   end;

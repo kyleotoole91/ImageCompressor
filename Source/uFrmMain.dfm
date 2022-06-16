@@ -11,7 +11,7 @@ object FrmMain: TFrmMain
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  Menu = mmFile
+  Menu = mmMenu
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
@@ -118,7 +118,7 @@ object FrmMain: TFrmMain
               Top = 17
               Width = 47
               Height = 22
-              Hint = 'Values below 25 yeald poor results'
+              Hint = 'Press Enter key or leave field to set the value'
               MaxValue = 100
               MinValue = 10
               ParentShowHint = False
@@ -133,7 +133,9 @@ object FrmMain: TFrmMain
               Top = 17
               Width = 80
               Height = 22
-              Hint = 'Set to 0 to disable'
+              Hint = 
+                ' Will reduce scale if needed to reach the target. Set to 0 to di' +
+                'sable'
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -279,7 +281,12 @@ object FrmMain: TFrmMain
               Top = 19
               Width = 92
               Height = 21
+              Hint = 
+                'Higher values result in improved quality when resizing and/or ro' +
+                'tating'
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 4
               Text = 'Recommened '
               OnChange = cbResampleModeChange
@@ -320,7 +327,6 @@ object FrmMain: TFrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
-            OnChange = ebStartPathChange
             OnDblClick = ShowFolderSelect
             OnExit = ebStartPathExit
             OnKeyDown = ebStartPathKeyDown
@@ -463,7 +469,6 @@ object FrmMain: TFrmMain
             Width = 83
             Height = 13
             Caption = 'Selected Images:'
-            Enabled = False
           end
           object cblFiles: TCheckListBox
             AlignWithMargins = True
@@ -757,9 +762,12 @@ object FrmMain: TFrmMain
       Top = 3
       Width = 80
       Height = 25
+      Hint = 'Start processing all of the selected images'
       Anchors = [akTop, akRight]
       Caption = 'Start'
       Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
       OnClick = btnStartClick
     end
@@ -788,9 +796,11 @@ object FrmMain: TFrmMain
       Top = 3
       Width = 80
       Height = 25
+      Hint = 'Apply settings to the current image'
       Anchors = [akTop, akRight]
       Caption = 'Apply'
-      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
       OnClick = btnApplyClick
     end
@@ -822,7 +832,7 @@ object FrmMain: TFrmMain
       OnClick = miClearClick
     end
   end
-  object mmFile: TMainMenu
+  object mmMenu: TMainMenu
     Left = 144
     object File1: TMenuItem
       Caption = 'File'
@@ -837,13 +847,13 @@ object FrmMain: TFrmMain
     end
     object View1: TMenuItem
       Caption = 'View'
+      object miHideFiles: TMenuItem
+        Caption = 'Hide Image List'
+        OnClick = miHideFilesClick
+      end
       object miHideConfig: TMenuItem
         Caption = 'Hide Config'
         OnClick = miHideConfigClick
-      end
-      object miHideFiles: TMenuItem
-        Caption = 'Hide Images Found'
-        OnClick = miHideFilesClick
       end
       object miHideOriginal: TMenuItem
         Caption = 'Hide Original'
@@ -854,6 +864,10 @@ object FrmMain: TFrmMain
         Checked = True
         Hint = 'Improves image preview quality for large images'
         OnClick = miApplyBestFitClick
+      end
+      object miFullscreen: TMenuItem
+        Caption = 'Fullscreen'
+        OnClick = miFullscreenClick
       end
     end
     object miUpgrade: TMenuItem

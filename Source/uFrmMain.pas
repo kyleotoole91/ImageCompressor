@@ -64,7 +64,7 @@ type
     lbImgWidthVal: TLabel;
     lbImgHeight: TLabel;
     lbImgHeightVal: TLabel;
-    mmFile: TMainMenu;
+    mmMenu: TMainMenu;
     File1: TMenuItem;
     mmiScan: TMenuItem;
     mmiOpen: TMenuItem;
@@ -108,6 +108,7 @@ type
     miUpgrade: TMenuItem;
     miPurchaseLicense: TMenuItem;
     miEnterLicense: TMenuItem;
+    miFullscreen: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -135,7 +136,6 @@ type
     procedure cbStretchClick(Sender: TObject);
     procedure miHideConfigClick(Sender: TObject);
     procedure miHideFilesClick(Sender: TObject);
-    procedure ebStartPathChange(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
     procedure Refresh1Click(Sender: TObject);
     procedure ebPrefixChange(Sender: TObject);
@@ -159,6 +159,10 @@ type
     procedure miHideOriginalClick(Sender: TObject);
     procedure miEnterLicenseClick(Sender: TObject);
     procedure LoadCompressedPreview(Sender: TObject);
+    procedure ResizeEvent(Sender: TObject);
+    procedure Scan(Sender: TObject);
+    procedure miFullscreenClick(Sender: TObject);
+    procedure tmrResizeTimer(Sender: TObject);
   private
     { Private declarations }
     fEvaluationMode,
@@ -185,7 +189,6 @@ type
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages: boolean);
     procedure OpenURL(const AURL: string);
     function ValidSelection: boolean;
-    procedure ResizeEvent(Sender: TObject);
     procedure CheckHideLabels;
     procedure LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
     procedure LoadImageConfig(const AFilename: string);
@@ -198,7 +201,6 @@ type
     function FileIsSelected: boolean;
     function SelectedFileCount: integer;
     function SizeOfFile(const AFilename: string): Int64;
-    procedure Scan;
     procedure ScanDisk;
     procedure AddToJSONFile;
     procedure ProcessFile(const AFilename: string);
@@ -279,23 +281,19 @@ begin
   end;
 end;
 
-procedure TFrmMain.FormResize(Sender: TObject);
-begin
-  if not fFormClosing then
-    ResizeEvent(Sender);
-end;
-
 procedure TFrmMain.FormShow(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
+    fFormClosing := true;
     mmMessages.Clear;
     pcMain.ActivePage := tsHome;
     ebStartPath.Text := fWorkingDir;
     fFormCreating := false;
   finally
     Screen.Cursor := crDefault;
-    Scan;
+    Scan(Sender);
+    fFormClosing := false;
     inherited;
   end;
 end;
@@ -307,25 +305,27 @@ begin
       result := AImageConfig
     else
       result := fImageConfig;
-    with result do begin
-      Compress := cbCompress.Checked;
-      Quality := seQuality.Value;
-      TagetKB := seTargetKBs.Value;
-      AddToJSON := cbCreateJSONFile.Checked;
-      Description := ebDescription.Text;
-      SourcePrefix := ebPrefix.Text;
-      ApplyGraphics := cbApplyGraphics.Checked;
-      Filename := fSelectedFilename;
-      ShrinkByWidth := rbByWidth.Checked;
-      PreviewCompression := cbCompressPreview.Checked;
-      Stretch := cbStretch.Checked;
-      RotateAmount := TRotateAmount(cbRotateAmount.ItemIndex);
-      ResampleMode := TResampleMode(cbResampleMode.ItemIndex);
-      if ShrinkByWidth then
-        ShrinkByValue := seMaxWidthPx.Value
-      else
-        ShrinkByValue := seMaxHeightPx.Value;
-      Filename := fSelectedFilename;
+    if Assigned(result) then begin
+      with result do begin
+        Compress := cbCompress.Checked;
+        Quality := seQuality.Value;
+        TagetKB := seTargetKBs.Value;
+        AddToJSON := cbCreateJSONFile.Checked;
+        Description := ebDescription.Text;
+        SourcePrefix := ebPrefix.Text;
+        ApplyGraphics := cbApplyGraphics.Checked;
+        Filename := fSelectedFilename;
+        ShrinkByWidth := rbByWidth.Checked;
+        PreviewCompression := cbCompressPreview.Checked;
+        Stretch := cbStretch.Checked;
+        RotateAmount := TRotateAmount(cbRotateAmount.ItemIndex);
+        ResampleMode := TResampleMode(cbResampleMode.ItemIndex);
+        if ShrinkByWidth then
+          ShrinkByValue := seMaxWidthPx.Value
+        else
+          ShrinkByValue := seMaxHeightPx.Value;
+        Filename := fSelectedFilename;
+      end;
     end;
   end else
     result := nil;
@@ -525,8 +525,10 @@ begin
       Screen.Cursor := crDefault;
     end;
   except
-    on e: exception do
+    on e: exception do begin
       MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
+      btnApply.Enabled := false;
+    end;
   end;
 end;
 
@@ -589,6 +591,17 @@ begin
   end;
 end;
 
+procedure TFrmMain.miFullscreenClick(Sender: TObject);
+begin
+  miFullscreen.Checked := not miFullscreen.Checked;
+  miHideConfig.Checked := miFullscreen.Checked;
+  miHideFiles.Checked := miFullscreen.Checked;
+  miHideOriginal.Checked := miFullscreen.Checked;
+  pnlFiles.Visible := not miFullscreen.Checked;
+  pnlOriginal.Visible := not miFullscreen.Checked;
+  pnlConfig.Visible := not miFullscreen.Checked;
+end;
+
 procedure TFrmMain.AddToJSONFile;
 begin
   with fJSON.AsArray do begin
@@ -599,7 +612,7 @@ begin
   fMessages.Add('Added '+ExtractFileName(fImageConfig.Filename)+' to JSON file')
 end;
 
-procedure TFrmMain.Scan;
+procedure TFrmMain.Scan(Sender: TObject);
 var
   filename: string;
   a,
@@ -610,32 +623,36 @@ begin
   okCount := 0;
   cblFiles.Items.BeginUpdate;
   try
-    cblFiles.Items.Clear;
-    ClearConfigList;
-    for filename in fFilenames do begin
-      if not filename.Contains('!') then begin
-        if cbDeepScan.Checked then
-          cblFiles.Items.Add(filename)
-        else
-          cblFiles.Items.Add(ExtractFileName(filename));
-        cblFiles.Checked[cblFiles.Count-1] := false;
-      end else
-        fMessages.Add('Error: Unsupported filename '+filename+': contains ''!'' ');
-    end;
-    if cblFiles.Count > 0 then begin
-      for a := 0 to cblFiles.Count-1 do begin
-        try
-          if ExtractFilePath(cblFiles.Items[a]) <> '' then
-            fSelectedFilename := cblFiles.Items[a]
+    if (fWorkingDir <> ebStartPath.Text) or (Sender <> ebStartPath) then begin
+      CheckStartOk(Sender);
+      fWorkingDir := ebStartPath.Text;
+      cblFiles.Items.Clear;
+      ClearConfigList;
+      for filename in fFilenames do begin
+        if not filename.Contains('!') then begin
+          if cbDeepScan.Checked then
+            cblFiles.Items.Add(filename)
           else
-            fSelectedFilename := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
-          LoadSelectedFromFile;
-          Inc(okCount);
-          Break;
-        except
-          on e: exception do begin
-            cblFiles.Checked[a] := false;
-            fMessages.Add('Error processing '+cblFiles.Items[a]+': '+e.Classname+' raised: '+e.Message);
+            cblFiles.Items.Add(ExtractFileName(filename));
+          cblFiles.Checked[cblFiles.Count-1] := false;
+        end else
+          fMessages.Add('Error: Unsupported filename '+filename+': contains ''!'' ');
+      end;
+      if cblFiles.Count > 0 then begin
+        for a := 0 to cblFiles.Count-1 do begin
+          try
+            if ExtractFilePath(cblFiles.Items[a]) <> '' then
+              fSelectedFilename := cblFiles.Items[a]
+            else
+              fSelectedFilename := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
+            LoadSelectedFromFile;
+            Inc(okCount);
+            Break;
+          except
+            on e: exception do begin
+              cblFiles.Checked[a] := false;
+              fMessages.Add('Error processing '+cblFiles.Items[a]+': '+e.Classname+' raised: '+e.Message);
+            end;
           end;
         end;
       end;
@@ -698,8 +715,21 @@ begin
 end;
 
 procedure TFrmMain.btnApplyClick(Sender: TObject);
+  procedure SelectCurrentImage;
+  var
+    a: integer;
+  begin
+    for a := 0 to cblFiles.Items.Count-1 do begin
+      if cblFiles.Items[a] = ExtractFileName(fSelectedFilename) then begin
+        cblFiles.Selected[a] := true;
+        cblFiles.Checked[a] := true;
+        Break;
+      end;
+    end;
+  end;
 begin
   FormToObj;
+  SelectCurrentImage;
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
   btnApply.Enabled := false;
@@ -708,7 +738,7 @@ end;
 
 procedure TFrmMain.btnScanClick(Sender: TObject);
 begin
-  Scan;
+  Scan(Sender);
 end;
 
 procedure TFrmMain.btnStartClick(Sender: TObject);
@@ -872,21 +902,14 @@ begin
   btnApply.Enabled := true;
 end;
 
-procedure TFrmMain.ebStartPathChange(Sender: TObject);
-begin
-  CheckStartOk(Sender);
-  fWorkingDir := ebStartPath.Text;
-end;
-
 procedure TFrmMain.ebStartPathExit(Sender: TObject);
 begin
-  Scan;
+  Scan(Sender);
 end;
 
 procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = vkReturn then
-    Scan;
+  Scan(Sender);
 end;
 
 procedure TFrmMain.ProcessFile(const AFilename: string);
@@ -898,8 +921,6 @@ begin
     LoadImageConfig(fFilename);
     if cbApplyToAll.Checked then
       FormToObj;
-    if fImageConfig.AddToJSON then
-      AddToJSONFile;
     if Assigned(fImageConfig) and
        (fImageConfig.Compress or
         fImageConfig.ApplyGraphics) then begin
@@ -921,6 +942,9 @@ begin
           Free;
         end;
       end;
+      if fImageConfig.AddToJSON and
+         FileExists(AFilename) then
+        AddToJSONFile;
       fEndTime := Now;
     end;
     Inc(fNumProcessed);
@@ -932,7 +956,7 @@ end;
 
 procedure TFrmMain.Refresh1Click(Sender: TObject);
 begin
-  Scan;
+  Scan(Sender);
 end;
 
 procedure TFrmMain.ResizeEvent(Sender: TObject);
@@ -993,7 +1017,7 @@ end;
 procedure TFrmMain.SetControlState(const AEnabled: boolean);
 begin
   SetChildControlES(pnlImage, AEnabled);
-  lbFiles.Enabled := AEnabled;
+  //lbFiles.Enabled := AEnabled;
   cbCompressPreview.Enabled := AEnabled;
   cbStretch.Enabled := AEnabled;
   imgHome.Enabled := AEnabled;
@@ -1036,7 +1060,7 @@ begin
       if Execute then begin
         fWorkingDir := FileName;
         ebStartPath.Text := fWorkingDir;
-        Scan;
+        Scan(Sender);
       end;
     finally
       Free;
@@ -1046,8 +1070,8 @@ end;
 
 procedure TFrmMain.miHideFilesClick(Sender: TObject);
 begin
-  pnlFiles.Visible := not pnlFiles.Visible;
   miHideFiles.Checked := not pnlFiles.Visible;
+  pnlFiles.Visible := not pnlFiles.Visible;
 end;
 
 procedure TFrmMain.miHideOriginalClick(Sender: TObject);
@@ -1108,7 +1132,8 @@ begin
   ebPrefix.Enabled := cbCreateJSONFile.Checked;
   lbPrefix.Enabled := cbCreateJSONFile.Checked;
   lbDescription.Enabled := cbCreateJSONFile.Checked;
-  ebDescription.Enabled := cbCreateJSONFile.Checked; 
+  ebDescription.Enabled := cbCreateJSONFile.Checked;
+  btnApply.Enabled := true;
   CheckStartOk(Sender);
 end;
 
@@ -1130,6 +1155,11 @@ begin
   ResizeEvent(Sender);
 end;
 
+procedure TFrmMain.FormResize(Sender: TObject);
+begin
+  ResizeEvent(Sender);
+end;
+
 procedure TFrmMain.tbQualityChange(Sender: TObject);
 begin
   if not fLoadingPreview then begin
@@ -1142,6 +1172,11 @@ procedure TFrmMain.tbQualityKeyDown(Sender: TObject; var Key: Word; Shift: TShif
 begin
   if key = VK_RETURN then
     CheckCompressPreviewLoad(Sender);
+end;
+
+procedure TFrmMain.tmrResizeTimer(Sender: TObject);
+begin
+  ResizeEvent(Sender)
 end;
 
 function TFrmMain.ValidSelection: boolean;
@@ -1185,7 +1220,7 @@ begin
   cbCompressClick(Sender);
   cbApplyGraphicsClick(Sender);
   if fImageChanged then
-    btnApply.Enabled := false;
+    btnApply.Enabled := true;
 end;
 
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);
