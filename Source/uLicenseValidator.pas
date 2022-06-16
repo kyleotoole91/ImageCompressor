@@ -29,7 +29,6 @@ type
     fHTTP: THTTPClient;
     fParams: TStringList;
     procedure AddKeyToRegistry;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -43,7 +42,6 @@ implementation
 
 const
   cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
-  //cGumRoadDecrementURL = 'https://api.gumroad.com/v2/licenses/decrement_uses_count';
 
 { TLicenceValidator }
 
@@ -109,7 +107,7 @@ begin
             fMessage := 'Product activated! You can use this key on '+machinesLeft.ToString+' more machine(s).';
           AddKeyToRegistry;
         end else
-          fMessage := 'This key has been used on too many machines. '+sLineBreak+' Please purchase a new license key';
+          fMessage := 'This key has been used on too many machines. '+sLineBreak+'Please purchase a new license key or contact us from the purchase page';
       end;
     end;
   except

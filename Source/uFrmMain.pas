@@ -9,7 +9,8 @@ uses
   Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator;
 
 const
-  oversizeAllowance=75;
+  //only reduce the size this much before scaleing down. Higher values means more allowance for pixellation
+  oversizeAllowance=150;
   cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
   cGumRoadLink = 'https://kyleotoole.gumroad.com/l/ticw';
   cActivatedCaption = 'Turbo Image Compressor - Pro';
@@ -110,6 +111,17 @@ type
     miEnterLicense: TMenuItem;
     miFullscreen: TMenuItem;
     N2: TMenuItem;
+    N3: TMenuItem;
+    miRefresh: TMenuItem;
+    pmViews: TPopupMenu;
+    miSplit: TMenuItem;
+    miHideOriginalPm: TMenuItem;
+    miHideImageList: TMenuItem;
+    N4: TMenuItem;
+    Filter1: TMenuItem;
+    FileslargerthannKB1: TMenuItem;
+    N5: TMenuItem;
+    Hide1: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -164,12 +176,19 @@ type
     procedure Scan(Sender: TObject);
     procedure miFullscreenClick(Sender: TObject);
     procedure tmrResizeTimer(Sender: TObject);
+    procedure miRefreshClick(Sender: TObject);
+    procedure miHideOriginalPmClick(Sender: TObject);
+    procedure pmViewsPopup(Sender: TObject);
+    procedure miSplitClick(Sender: TObject);
+    procedure miHideImageListClick(Sender: TObject);
+    procedure FileslargerthannKB1Click(Sender: TObject);
   private
     { Private declarations }
     fEvaluationMode,
     fImageChanged: boolean;
     fFormClosing,
     fLoadingPreview: boolean;
+    fFilterSizeKB: uInt64;
     fJSON: ISuperObject;
     fWorkingDir: string;
     fFilename: string;
@@ -201,7 +220,7 @@ type
     procedure LoadSelectedFromFile(const ALoadForm: boolean=true);
     function FileIsSelected: boolean;
     function SelectedFileCount: integer;
-    function SizeOfFile(const AFilename: string): Int64;
+    function SizeOfFileKB(const AFilename: string): uInt64;
     procedure ScanDisk;
     procedure AddToJSONFile;
     procedure ProcessFile(const AFilename: string);
@@ -218,6 +237,9 @@ var
 
 implementation
 
+uses
+  uDlgFilter;
+
 {$R *.dfm}
 
 function TFrmMain.FileIsSelected: boolean;
@@ -232,6 +254,21 @@ begin
   end;
 end;
 
+procedure TFrmMain.FileslargerthannKB1Click(Sender: TObject);
+begin
+  DlgFilter := TDlgFilter.Create(Self);
+  try
+    DlgFilter.Size := fFilterSizeKB;
+    DlgFilter.ShowModal;
+    if DlgFilter.RecordModified then begin
+      fFilterSizeKB := DlgFilter.Size;
+      Scan(Sender);
+    end;
+  finally
+    DlgFilter.Free;
+  end;
+end;
+
 procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   fFormClosing := true;
@@ -241,6 +278,7 @@ end;
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  fFilterSizeKB := 0;
   fImageChanged := true;
   fFormCreating := true;
   fLoadingPreview := false;
@@ -263,8 +301,8 @@ begin
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+'Compressed\';
   ebOutputDir.Text := fOutputDir;
   pcMain.ActivePage := tsHome;
-  Width := 1445;
-  Height := 731;
+  ClientWidth := 1620;
+  ClientHeight := 950;
   spOriginal.Left := 784;
 end;
 
@@ -462,16 +500,13 @@ begin
     try
       fJPEGCompressor.JPEG.Scale := jsFullsize;
       fJPEGCompressor.JPEG.LoadFromFile(AFilename);
-      lbImgWidthVal.Caption := fJPEGCompressor.JPEG.Width.ToString;
-      lbImgHeightVal.Caption := fJPEGCompressor.JPEG.Height.ToString;
-      lbImgSizeKBVal.Caption := SizeOfFile(AFilename).ToString;
       LoadImage(fJPEGCompressor.JPEG, imgHome);
       if imgOriginal.Visible then begin
         fJPEGCompressor.JPEGOriginal.Scale := jsFullsize;
         fJPEGCompressor.JPEGOriginal.LoadFromFile(AFilename);
         lbImgOrigWidthVal.Caption := fJPEGCompressor.JPEGOriginal.Width.ToString;
         lbImgOrigHeightVal.Caption := fJPEGCompressor.JPEGOriginal.Height.ToString;
-        lbImgOrigSizeKBVal.Caption := SizeOfFile(AFilename).ToString;
+        lbImgOrigSizeKBVal.Caption := SizeOfFileKB(AFilename).ToString;
         LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
       end;
     finally
@@ -601,6 +636,7 @@ begin
   pnlFiles.Visible := not miFullscreen.Checked;
   pnlOriginal.Visible := not miFullscreen.Checked;
   pnlConfig.Visible := not miFullscreen.Checked;
+  ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.AddToJSONFile;
@@ -621,21 +657,24 @@ var
 begin
   ScanDisk;
   Screen.Cursor := crHourGlass;
-  okCount := 0;
   cblFiles.Items.BeginUpdate;
   try
     if (fWorkingDir <> ebStartPath.Text) or (Sender <> ebStartPath) then begin
+      okCount := 0;
       CheckStartOk(Sender);
       fWorkingDir := ebStartPath.Text;
       cblFiles.Items.Clear;
       ClearConfigList;
       for filename in fFilenames do begin
         if not filename.Contains('!') then begin
-          if cbDeepScan.Checked then
-            cblFiles.Items.Add(filename)
-          else
-            cblFiles.Items.Add(ExtractFileName(filename));
-          cblFiles.Checked[cblFiles.Count-1] := false;
+          if (fFilterSizeKB <= 0) or
+             (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
+            if cbDeepScan.Checked then
+              cblFiles.Items.Add(filename)
+            else
+              cblFiles.Items.Add(ExtractFileName(filename));
+            cblFiles.Checked[cblFiles.Count-1] := false;
+          end;
         end else
           fMessages.Add('Error: Unsupported filename '+filename+': contains ''!'' ');
       end;
@@ -657,13 +696,13 @@ begin
           end;
         end;
       end;
+      cbApplyToAll.Checked := true;
+      btnStart.Enabled := false;
+      SetControlState(okCount > 0);
     end;
   finally
     mmMessages.Lines.Add(fMessages.Text);
     fMessages.Clear;
-    cbApplyToAll.Checked := true;
-    btnStart.Enabled := false;
-    SetControlState(okCount > 0);
     cblFiles.Items.EndUpdate;
     Screen.Cursor := crDefault;
   end;
@@ -673,21 +712,34 @@ procedure TFrmMain.LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
 var
   scale: integer;
   jsScale: TJPEGScale;
+  function SizeOfJPEG(const AJPEG: TJPEGImage): uInt64;
+  var
+    ms: TMemoryStream;
+  begin
+    ms := TMemoryStream.Create;
+    try
+      AJPEG.SaveToStream(ms);
+      result := Round(ms.Size / 1024);
+    finally
+      ms.Free;
+    end;
+  end;
+  procedure SetLabels;
+  begin
+    AJPEG.Scale := jsFullSize;
+    lbImgWidthVal.Caption := AJPEG.Width.ToString;
+    lbImgHeightVal.Caption := AJPEG.Height.ToString;
+    lbImgSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;
+  end;
 begin
   if Assigned(AJPEG) and
      Assigned(AImage) and
      (not fFormCreating) then begin
-    jsScale := AJPEG.Scale;
     try
-      //involke change so compression quality preview shows accurately
-      if AJPEG.Scale <> jsFullSize then
-        AJPEG.Scale := jsFullSize
-      else
-        AJPEG.Scale := jsEighth;
-      //Set scale for improved image quality
-      if miApplyBestFit.Checked then begin
-        scale := integer(jsFullSize);
-        AJPEG.Scale := jsFullSize;
+      AJPEG.Scale := jsHalf; //involke change so compression quality preview shows
+      if miApplyBestFit.Checked then begin  //Set scale for improved image quality
+        SetLabels;
+        scale := integer(AJPEG.Scale);
         while (scale <= 3) and
               ((AJPEG.Width > (AImage.Width+oversizeAllowance)) or
                (AJPEG.Height > (AImage.Height+oversizeAllowance))) do begin
@@ -695,9 +747,9 @@ begin
           AJPEG.Scale := jsScale;
           Inc(scale);
         end;
-      end;
+      end else
+        SetLabels;
     finally
-      AJPEG.Scale := jsScale;
       AImage.Picture.Assign(AJPEG);
     end;
   end;
@@ -806,13 +858,13 @@ begin
       if Sender <> cbCompressPreview then
         fImageConfig.PreviewModified := true;
       if (Sender = cbCompressPreview) and (not cbCompressPreview.Checked) then
-        LoadSelectedFromFile(false)
+        LoadImage(fJPEGCompressor.JPEGOriginal, imgHome)
       else if cbCompressPreview.Checked then begin
         if cbCompress.Checked or cbApplyGraphics.Checked then
           LoadCompressedPreview(Sender)
         else if Assigned(Sender) and (Sender=cbCompressPreview) or
                 ((not cbCompress.Checked) and (not cbApplyGraphics.Checked)) then
-          LoadSelectedFromFile(false);
+          LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
       if (Sender <> cblFiles) and
@@ -885,12 +937,24 @@ begin
   OpenURL(cGumRoadLink);
 end;
 
+procedure TFrmMain.miRefreshClick(Sender: TObject);
+begin
+  Scan(Sender);
+end;
+
 procedure TFrmMain.OpenURL(const AURL: string);
 var
   url: string;
 begin
   url := StringReplace(AURL, '"', '%22', [rfReplaceAll]);
   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TFrmMain.pmViewsPopup(Sender: TObject);
+begin
+  miHideOriginalPm.Checked := not pnlOriginal.Visible;
+  miSplit.Enabled := pnlOriginal.Visible;
+  miHideImageList.Checked := not pnlFiles.Visible;
 end;
 
 procedure TFrmMain.ebDescriptionChange(Sender: TObject);
@@ -910,7 +974,8 @@ end;
 
 procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  Scan(Sender);
+  if Key = VK_RETURN then
+    Scan(Sender);
 end;
 
 procedure TFrmMain.ProcessFile(const AFilename: string);
@@ -1018,7 +1083,6 @@ end;
 procedure TFrmMain.SetControlState(const AEnabled: boolean);
 begin
   SetChildControlES(pnlImage, AEnabled);
-  //lbFiles.Enabled := AEnabled;
   cbCompressPreview.Enabled := AEnabled;
   cbStretch.Enabled := AEnabled;
   imgHome.Enabled := AEnabled;
@@ -1073,6 +1137,13 @@ procedure TFrmMain.miHideFilesClick(Sender: TObject);
 begin
   miHideFiles.Checked := not pnlFiles.Visible;
   pnlFiles.Visible := not pnlFiles.Visible;
+  miHideFiles.Checked := not pnlFiles.Visible;
+  ResizeEvent(Sender);
+end;
+
+procedure TFrmMain.miHideImageListClick(Sender: TObject);
+begin
+  miHideFilesClick(Sender);
 end;
 
 procedure TFrmMain.miHideOriginalClick(Sender: TObject);
@@ -1080,6 +1151,12 @@ begin
   miHideOriginal.Checked := not miHideOriginal.Checked;
   pnlOriginal.Visible := not miHideOriginal.Checked;
   spOriginal.Visible := not miHideOriginal.Checked;
+  ResizeEvent(Sender);
+end;
+
+procedure TFrmMain.miHideOriginalPmClick(Sender: TObject);
+begin
+  miHideOriginalClick(Sender);
 end;
 
 procedure TFrmMain.ShowFileSelect(Sender: TObject);
@@ -1138,7 +1215,7 @@ begin
   CheckStartOk(Sender);
 end;
 
-function TFrmMain.SizeOfFile(const AFilename: string): Int64;
+function TFrmMain.SizeOfFileKB(const AFilename: string): uInt64;
 var
   sr : TSearchRec;
 begin
@@ -1146,7 +1223,7 @@ begin
   if FindFirst(AFilename, faAnyFile, sr ) = 0 then
     result := Round(Int64(sr.FindData.nFileSizeHigh) shl Int64(32) + Int64(sr.FindData.nFileSizeLow) / 1024)
   else
-    result := -1;
+    result := 0;
   {$WARNINGS ON}
  FindClose(sr);
 end;
@@ -1272,6 +1349,12 @@ begin
   spOriginal.Visible := pnlOriginal.Visible;
 end;
 
+procedure TFrmMain.miSplitClick(Sender: TObject);
+begin
+  pnlOriginal.Width := Round((pnlImage.Width + pnlOriginal.Width) / 2);
+  ResizeEvent(Sender);
+end;
+
 procedure TFrmMain.cbApplyGraphicsClick(Sender: TObject);
 begin
   CheckCompressPreviewLoad(Sender);
@@ -1292,10 +1375,6 @@ begin
   Screen.Cursor := crHourGlass;
   try
     imgHome.Stretch := cbStretch.Checked;
-    if cbStretch.Checked then begin
-      fJPEGCompressor.JPEG.Scale := jsFullSize;
-      imgHome.Picture.Assign(fJPEGCompressor.JPEG);
-    end;
     LoadImage(fJPEGCompressor.JPEG, imgHome);
   finally
     Screen.Cursor := crDefault;
@@ -1306,15 +1385,11 @@ procedure TFrmMain.cbStretchOriginalClick(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    if cbStretchOriginal.Checked then begin
-      fJPEGCompressor.JPEGOriginal.Scale := jsFullSize;
-      imgOriginal.Picture.Assign(fJPEGCompressor.JPEGOriginal);
-    end else
-      LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
     imgOriginal.Stretch := cbStretchOriginal.Checked;
+    LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
   finally
     Screen.Cursor := crDefault;
-  end;
+  end
 end;
 
 procedure TFrmMain.seMaxHeightPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

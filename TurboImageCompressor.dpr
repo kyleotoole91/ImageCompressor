@@ -7,7 +7,8 @@ uses
   uJPEGCompressor in 'Source\uJPEGCompressor.pas',
   uFrmSplash in 'Source\uFrmSplash.pas' {frmSplash},
   uLicenseValidator in 'Source\uLicenseValidator.pas',
-  uSecrets in 'Source\uSecrets.pas';
+  uSecrets in 'Source\uSecrets.pas',
+  uDlgFilter in 'uDlgFilter.pas' {DlgFilter};
 
 {$R *.res}
 
@@ -27,6 +28,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFrmMain, FrmMain);
+  Application.CreateForm(TDlgFilter, DlgFilter);
   ValidateStartup;
   Application.Run;
 end.
