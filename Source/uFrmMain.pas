@@ -109,6 +109,7 @@ type
     miPurchaseLicense: TMenuItem;
     miEnterLicense: TMenuItem;
     miFullscreen: TMenuItem;
+    N2: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);

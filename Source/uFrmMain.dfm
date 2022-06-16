@@ -859,15 +859,18 @@ object FrmMain: TFrmMain
         Caption = 'Hide Original'
         OnClick = miHideOriginalClick
       end
+      object miFullscreen: TMenuItem
+        Caption = 'Fullscreen'
+        OnClick = miFullscreenClick
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
       object miApplyBestFit: TMenuItem
         Caption = 'Apply Best Fit'
         Checked = True
         Hint = 'Improves image preview quality for large images'
         OnClick = miApplyBestFitClick
-      end
-      object miFullscreen: TMenuItem
-        Caption = 'Fullscreen'
-        OnClick = miFullscreenClick
       end
     end
     object miUpgrade: TMenuItem
