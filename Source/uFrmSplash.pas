@@ -81,9 +81,6 @@ begin
     Screen.Cursor := crHourGlass;
     lbMessage.Caption := 'Checking license, please wait...';
     Application.ProcessMessages;
-    {$IFDEF DEBUG}
-    Sleep(1500); //Simulate slow startup, gives time to check splash screen layout
-    {$ENDIF}
     fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
     if not fHasValidLicense then begin
       Screen.Cursor := crDefault;
@@ -100,7 +97,7 @@ begin
   finally
     Application.ProcessMessages;
     if MilliSecondsBetween(Now, startTime) < 500 then
-      Sleep(500); //Give time to read which version is launching
+      Sleep(500); //give time to see info
     Screen.Cursor := crDefault;
     Close;
   end;

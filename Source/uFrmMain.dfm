@@ -39,7 +39,6 @@ object FrmMain: TFrmMain
     ActivePage = tsHome
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1614
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
@@ -51,7 +50,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1600
         object Splitter1: TSplitter
           Left = 247
           Top = 154
@@ -78,7 +76,6 @@ object FrmMain: TFrmMain
           Color = clBtnHighlight
           ParentBackground = False
           TabOrder = 0
-          ExplicitWidth = 1600
           DesignSize = (
             1624
             154)
@@ -335,7 +332,6 @@ object FrmMain: TFrmMain
             OnDblClick = ShowFolderSelect
             OnExit = ebStartPathExit
             OnKeyDown = ebStartPathKeyDown
-            ExplicitWidth = 1496
           end
           object ebOutputDir: TEdit
             Left = 103
@@ -350,7 +346,6 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 1
             OnDblClick = ShowFileSelect
-            ExplicitWidth = 1496
           end
           object cbApplyGraphics: TCheckBox
             Left = 262
@@ -369,7 +364,6 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight, akBottom]
             Caption = ' Global '
             TabOrder = 7
-            ExplicitLeft = 1447
             object lbFilename: TLabel
               Left = 18
               Top = 55
@@ -413,7 +407,6 @@ object FrmMain: TFrmMain
             Height = 75
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 8
-            ExplicitWidth = 835
             DesignSize = (
               859
               75)
@@ -444,7 +437,6 @@ object FrmMain: TFrmMain
               TabOrder = 0
               Text = 'images/'
               OnChange = ebPrefixChange
-              ExplicitWidth = 737
             end
             object ebDescription: TEdit
               Left = 90
@@ -455,7 +447,6 @@ object FrmMain: TFrmMain
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
-              ExplicitWidth = 737
             end
           end
           object cbCreateJSONFile: TCheckBox
@@ -512,7 +503,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
-          ExplicitWidth = 918
           DesignSize = (
             938
             717)
@@ -647,7 +637,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 3
-          ExplicitLeft = 1171
           DesignSize = (
             425
             717)
@@ -760,7 +749,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1600
         object mmMessages: TMemo
           Left = 0
           Top = 0
@@ -773,7 +761,6 @@ object FrmMain: TFrmMain
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitWidth = 1600
         end
       end
     end
@@ -786,7 +773,6 @@ object FrmMain: TFrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 1620
     DesignSize = (
       1644
       35)
@@ -803,7 +789,6 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 1
       OnClick = btnStartClick
-      ExplicitLeft = 1535
     end
     object btnScan: TButton
       Left = 1297
@@ -815,7 +800,6 @@ object FrmMain: TFrmMain
       TabOrder = 2
       Visible = False
       OnClick = btnScanClick
-      ExplicitLeft = 1273
     end
     object cbDeepScan: TCheckBox
       Left = 433
@@ -838,7 +822,6 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 0
       OnClick = btnApplyClick
-      ExplicitLeft = 1449
     end
   end
   object pmCheckBoxList: TPopupMenu
@@ -965,6 +948,10 @@ object FrmMain: TFrmMain
     object miHideImageList: TMenuItem
       Caption = 'Hide Selected Images'
       OnClick = miHideImageListClick
+    end
+    object miImgFullscreen: TMenuItem
+      Caption = 'Fullscreen'
+      OnClick = miFullscreenClick
     end
   end
 end

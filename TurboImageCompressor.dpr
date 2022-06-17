@@ -8,7 +8,8 @@ uses
   uFrmSplash in 'Source\uFrmSplash.pas' {frmSplash},
   uLicenseValidator in 'Source\uLicenseValidator.pas',
   uSecrets in 'Source\uSecrets.pas',
-  uDlgFilter in 'uDlgFilter.pas' {DlgFilter};
+  uDlgFilter in 'uDlgFilter.pas' {DlgFilter},
+  uDlgDefaults in 'uDlgDefaults.pas' {FrmDefaultConfig};
 
 {$R *.res}
 
@@ -29,6 +30,7 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFrmMain, FrmMain);
   Application.CreateForm(TDlgFilter, DlgFilter);
+  Application.CreateForm(TFrmDefaultConfig, FrmDefaultConfig);
   ValidateStartup;
   Application.Run;
 end.

@@ -122,6 +122,7 @@ type
     FileslargerthannKB1: TMenuItem;
     N5: TMenuItem;
     Hide1: TMenuItem;
+    miImgFullscreen: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -970,6 +971,7 @@ begin
   miHideOriginalPm.Checked := not pnlOriginal.Visible;
   miSplit.Enabled := pnlOriginal.Visible;
   miHideImageList.Checked := not pnlFiles.Visible;
+  miImgFullscreen.Checked := miFullscreen.Checked;
 end;
 
 procedure TFrmMain.ebDescriptionChange(Sender: TObject);
