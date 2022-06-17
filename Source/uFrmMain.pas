@@ -10,7 +10,7 @@ uses
 
 const
   //only reduce the size this much before scaleing down. Higher values means more allowance for pixellation
-  oversizeAllowance=150;
+  oversizeAllowance=75;
   cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
   cGumRoadLink = 'https://kyleotoole.gumroad.com/l/ticw';
   cActivatedCaption = 'Turbo Image Compressor - Pro';
@@ -301,7 +301,7 @@ begin
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+'Compressed\';
   ebOutputDir.Text := fOutputDir;
   pcMain.ActivePage := tsHome;
-  ClientWidth := 1620;
+  ClientWidth := 1820;
   ClientHeight := 950;
   spOriginal.Left := 784;
 end;
@@ -605,24 +605,38 @@ end;
 
 procedure TFrmMain.miEnterLicenseClick(Sender: TObject);
 var
-  licenseKey, currentKey: string;
-  isValid: boolean;
+  newKey, currentKey, msg: string;
+  isValid, userCleared: boolean;
 begin
-  currentKey := fLicenseValidator.GetLicenseKey;
-  licenseKey := InputBox('Enter License Key', 'Key:', currentKey);
-  if licenseKey <> currentKey then begin
+  msg := '';
+  Screen.Cursor := crHourGlass;
+  try
+    currentKey := fLicenseValidator.GetLicenseKey;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+  newKey := InputBox('Enter License Key', 'Key:', currentKey);
+  if newKey <> currentKey then begin
     Screen.Cursor := crHourGlass;
     try
-      fLicenseValidator.LicenseKey := licenseKey;
-      isValid := fLicenseValidator.LicenseIsValid;
-      if EvaluationMode then
-        EvaluationMode := not isValid;
-      if not fEvaluationMode then
-        MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtInformation, [mbOk], 0)
-      else
-        MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+      userCleared := (currentKey <> '') and (newKey = '');
+      if userCleared then begin
+        fLicenseValidator.DeleteLicense;
+        EvaluationMode := true;
+      end else begin
+        fLicenseValidator.LicenseKey := newKey;
+        if fLicenseValidator.LicenseKey <> '' then begin
+          isValid := fLicenseValidator.LicenseIsValid;
+          if EvaluationMode then
+            EvaluationMode := not isValid;
+        end;
+      end;
     finally
       Screen.Cursor := crDefault;
+      if (msg <> '') and fEvaluationMode then
+        MessageDlg(msg, TMsgDlgType.mtError, [mbOk], 0)
+      else if fLicenseValidator.Message <> '' then
+        MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtInformation, [mbOk], 0);
     end;
   end;
 end;
@@ -635,6 +649,7 @@ begin
   miHideOriginal.Checked := miFullscreen.Checked;
   pnlFiles.Visible := not miFullscreen.Checked;
   pnlOriginal.Visible := not miFullscreen.Checked;
+  spOriginal.Visible := not miFullscreen.Checked;
   pnlConfig.Visible := not miFullscreen.Checked;
   ResizeEvent(Sender);
 end;
@@ -1091,7 +1106,10 @@ end;
 procedure TFrmMain.SetEvaluationMode(const Value: boolean);
 begin
   fEvaluationMode := Value;
-  miPurchaseLicense.Enabled := fEvaluationMode;
+  if fEvaluationMode then
+    miPurchaseLicense.Caption := 'Purchase License Key'
+  else
+    miPurchaseLicense.Caption := 'Download latest version';
   if fEvaluationMode then
     Caption := cEvaluationCaption
   else

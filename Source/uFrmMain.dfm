@@ -4,7 +4,7 @@ object FrmMain: TFrmMain
   Anchors = [akLeft, akTop, akRight]
   Caption = 'Turbo Image Compressor - Pro'
   ClientHeight = 950
-  ClientWidth = 1620
+  ClientWidth = 1644
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -34,22 +34,24 @@ object FrmMain: TFrmMain
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1614
+    Width = 1638
     Height = 909
     ActivePage = tsHome
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 1614
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 1600
+        Width = 1624
         Height = 875
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 1600
         object Splitter1: TSplitter
           Left = 247
           Top = 154
@@ -58,7 +60,7 @@ object FrmMain: TFrmMain
           ExplicitHeight = 443
         end
         object spOriginal: TSplitter
-          Left = 1168
+          Left = 1192
           Top = 154
           Height = 721
           Align = alRight
@@ -69,15 +71,16 @@ object FrmMain: TFrmMain
         object pnlConfig: TPanel
           Left = 0
           Top = 0
-          Width = 1600
+          Width = 1624
           Height = 154
           Align = alTop
           BevelOuter = bvNone
           Color = clBtnHighlight
           ParentBackground = False
           TabOrder = 0
+          ExplicitWidth = 1600
           DesignSize = (
-            1600
+            1624
             154)
           object Label2: TLabel
             Left = 13
@@ -320,7 +323,7 @@ object FrmMain: TFrmMain
           object ebStartPath: TEdit
             Left = 103
             Top = 12
-            Width = 1496
+            Width = 1520
             Height = 21
             Hint = 
               'Double click to show select dialog. Press Enter or leave field t' +
@@ -332,11 +335,12 @@ object FrmMain: TFrmMain
             OnDblClick = ShowFolderSelect
             OnExit = ebStartPathExit
             OnKeyDown = ebStartPathKeyDown
+            ExplicitWidth = 1496
           end
           object ebOutputDir: TEdit
             Left = 103
             Top = 39
-            Width = 1496
+            Width = 1520
             Height = 21
             Hint = 
               'Double click to show select dialog. Press Enter or leave field t' +
@@ -346,6 +350,7 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 1
             OnDblClick = ShowFileSelect
+            ExplicitWidth = 1496
           end
           object cbApplyGraphics: TCheckBox
             Left = 262
@@ -357,13 +362,14 @@ object FrmMain: TFrmMain
             OnClick = cbApplyGraphicsClick
           end
           object GroupBox4: TGroupBox
-            Left = 1447
+            Left = 1471
             Top = 66
             Width = 152
             Height = 81
             Anchors = [akTop, akRight, akBottom]
             Caption = ' Global '
             TabOrder = 7
+            ExplicitLeft = 1447
             object lbFilename: TLabel
               Left = 18
               Top = 55
@@ -403,12 +409,13 @@ object FrmMain: TFrmMain
           object GroupBox2: TGroupBox
             Left = 606
             Top = 73
-            Width = 835
+            Width = 859
             Height = 75
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 8
+            ExplicitWidth = 835
             DesignSize = (
-              835
+              859
               75)
             object lbPrefix: TLabel
               AlignWithMargins = True
@@ -430,23 +437,25 @@ object FrmMain: TFrmMain
             object ebPrefix: TEdit
               Left = 90
               Top = 17
-              Width = 737
+              Width = 761
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
               TabOrder = 0
               Text = 'images/'
               OnChange = ebPrefixChange
+              ExplicitWidth = 737
             end
             object ebDescription: TEdit
               Left = 90
               Top = 45
-              Width = 737
+              Width = 761
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
+              ExplicitWidth = 737
             end
           end
           object cbCreateJSONFile: TCheckBox
@@ -497,20 +506,21 @@ object FrmMain: TFrmMain
         object pnlImage: TPanel
           Left = 250
           Top = 154
-          Width = 918
+          Width = 942
           Height = 721
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
+          ExplicitWidth = 918
           DesignSize = (
-            914
+            938
             717)
           object imgHome: TImage
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 908
+            Width = 932
             Height = 691
             Margins.Top = 26
             Margins.Bottom = 0
@@ -518,10 +528,9 @@ object FrmMain: TFrmMain
             AutoSize = True
             PopupMenu = pmViews
             Proportional = True
-            ExplicitLeft = 13
-            ExplicitTop = 49
-            ExplicitWidth = 450
-            ExplicitHeight = 300
+            ExplicitLeft = 5
+            ExplicitTop = 27
+            ExplicitWidth = 908
           end
           object lbImage: TLabel
             Left = 3
@@ -532,7 +541,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 633
+            Left = 657
             Top = 4
             Width = 46
             Height = 13
@@ -548,7 +557,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 341
           end
           object lbImgSizeKBVal: TLabel
-            Left = 667
+            Left = 691
             Top = 4
             Width = 46
             Height = 13
@@ -559,7 +568,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 374
           end
           object lbImgWidth: TLabel
-            Left = 725
+            Left = 749
             Top = 4
             Width = 55
             Height = 13
@@ -569,7 +578,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 433
           end
           object lbImgWidthVal: TLabel
-            Left = 759
+            Left = 783
             Top = 4
             Width = 54
             Height = 13
@@ -580,7 +589,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 466
           end
           object lbImgHeight: TLabel
-            Left = 818
+            Left = 842
             Top = 4
             Width = 58
             Height = 13
@@ -590,7 +599,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 526
           end
           object lbImgHeightVal: TLabel
-            Left = 855
+            Left = 879
             Top = 4
             Width = 54
             Height = 13
@@ -598,6 +607,7 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
+            ExplicitLeft = 855
           end
           object cbCompressPreview: TCheckBox
             Left = 117
@@ -619,14 +629,17 @@ object FrmMain: TFrmMain
             Top = 3
             Width = 60
             Height = 17
+            Hint = 'May reduce image preview quality'
             Caption = 'Stretch'
             Enabled = False
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 0
             OnClick = cbStretchClick
           end
         end
         object pnlOriginal: TPanel
-          Left = 1171
+          Left = 1195
           Top = 154
           Width = 429
           Height = 721
@@ -634,6 +647,7 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 3
+          ExplicitLeft = 1171
           DesignSize = (
             425
             717)
@@ -724,7 +738,10 @@ object FrmMain: TFrmMain
             Top = 3
             Width = 56
             Height = 17
+            Hint = 'May reduce image preview quality'
             Caption = 'Stretch'
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 0
             OnClick = cbStretchOriginalClick
           end
@@ -738,15 +755,16 @@ object FrmMain: TFrmMain
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 1600
+        Width = 1624
         Height = 875
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 1600
         object mmMessages: TMemo
           Left = 0
           Top = 0
-          Width = 1600
+          Width = 1624
           Height = 875
           Align = alClient
           Lines.Strings = (
@@ -755,6 +773,7 @@ object FrmMain: TFrmMain
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitWidth = 1600
         end
       end
     end
@@ -762,16 +781,17 @@ object FrmMain: TFrmMain
   object Panel3: TPanel
     Left = 0
     Top = 915
-    Width = 1620
+    Width = 1644
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 1620
     DesignSize = (
-      1620
+      1644
       35)
     object btnStart: TButton
-      Left = 1535
+      Left = 1559
       Top = 3
       Width = 80
       Height = 25
@@ -783,9 +803,10 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 1
       OnClick = btnStartClick
+      ExplicitLeft = 1535
     end
     object btnScan: TButton
-      Left = 1273
+      Left = 1297
       Top = 3
       Width = 80
       Height = 25
@@ -794,6 +815,7 @@ object FrmMain: TFrmMain
       TabOrder = 2
       Visible = False
       OnClick = btnScanClick
+      ExplicitLeft = 1273
     end
     object cbDeepScan: TCheckBox
       Left = 433
@@ -805,7 +827,7 @@ object FrmMain: TFrmMain
       Visible = False
     end
     object btnApply: TButton
-      Left = 1449
+      Left = 1473
       Top = 3
       Width = 80
       Height = 25
@@ -816,6 +838,7 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 0
       OnClick = btnApplyClick
+      ExplicitLeft = 1449
     end
   end
   object pmCheckBoxList: TPopupMenu
@@ -880,7 +903,7 @@ object FrmMain: TFrmMain
         OnClick = miHideConfigClick
       end
       object miHideFiles: TMenuItem
-        Caption = 'Hide Image List'
+        Caption = 'Hide Selected Images'
         OnClick = miHideFilesClick
       end
       object miHideOriginal: TMenuItem
@@ -912,7 +935,7 @@ object FrmMain: TFrmMain
       end
     end
     object miUpgrade: TMenuItem
-      Caption = 'License'
+      Caption = 'Product'
       ShortCut = 115
       object miPurchaseLicense: TMenuItem
         Caption = 'Purchase License Key'
@@ -940,7 +963,7 @@ object FrmMain: TFrmMain
       OnClick = miHideOriginalPmClick
     end
     object miHideImageList: TMenuItem
-      Caption = 'Hide Image List'
+      Caption = 'Hide Selected Images'
       OnClick = miHideImageListClick
     end
   end

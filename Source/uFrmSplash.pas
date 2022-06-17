@@ -39,7 +39,7 @@ var
 implementation
 
 uses
-  System.UITypes;
+  System.UITypes, DateUtils;
 
 {$R *.dfm}
 
@@ -72,7 +72,10 @@ begin
 end;
 
 procedure TfrmSplash.Timer1Timer(Sender: TObject);
+var
+  startTime: TDateTime;
 begin
+  startTime := Now;
   try
     Timer1.Enabled := false;
     Screen.Cursor := crHourGlass;
@@ -84,18 +87,20 @@ begin
     fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
     if not fHasValidLicense then begin
       Screen.Cursor := crDefault;
-      lbMessage.Caption := 'Your license key could not be validated.';
-      MessageDlg('Your license key could not be validated.'+sLineBreak+
-                 //'Please ensure you have an active internet connection. '+sLineBreak+
-                 'The free version of the application will now launch. '+sLineBreak+sLineBreak+
-                 'Error returned:'+sLineBreak+
-                  fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+      if fLicenseValidator.GetLicenseKey <> '' then begin
+        lbMessage.Caption := 'Your license key could not be validated.';
+        MessageDlg('Your license key could not be validated.'+sLineBreak+
+                   'The free version of the application will now launch. '+sLineBreak+sLineBreak+
+                   'Error returned:'+sLineBreak+
+                    fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+      end;
       lbMessage.Caption := 'Starting Free version..';
     end else
       lbMessage.Caption := 'Starting Pro version...';
   finally
     Application.ProcessMessages;
-    Sleep(500); //Give time to read which version is launching
+    if MilliSecondsBetween(Now, startTime) < 500 then
+      Sleep(500); //Give time to read which version is launching
     Screen.Cursor := crDefault;
     Close;
   end;
