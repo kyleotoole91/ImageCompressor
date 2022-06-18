@@ -1112,7 +1112,7 @@ begin
   if fEvaluationMode then
     miPurchaseLicense.Caption := 'Purchase License Key'
   else
-    miPurchaseLicense.Caption := 'Download latest version';
+    miPurchaseLicense.Caption := 'Download Latest Version';
   if fEvaluationMode then
     Caption := cEvaluationCaption
   else
