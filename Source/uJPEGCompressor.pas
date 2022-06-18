@@ -6,6 +6,7 @@ uses
   Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, DateUtils, Img32, Img32.Fmt.JPG;
 
 const
+  cScaleBelowQuality = 25;
   cMinQuality = 1;
   cMaxQuality = 100;
   cDefaultQuality = 50;
@@ -148,7 +149,7 @@ begin
         if fTargetKB > 0 then begin
           if (fCompressedFilesize = 0) or
              (fCompressedFilesize > fTargetKB) then begin
-            fMinQuality := 20; //Retry with reduced scale beyond this level
+            fMinQuality := cScaleBelowQuality; //Retry with reduced scale beyond this level
             try
               TryCompression(cMaxQuality-cTargetInterval);
               if fCompressedFilesize > fTargetKB then
