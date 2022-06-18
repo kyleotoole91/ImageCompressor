@@ -10,7 +10,7 @@ const
   cGumRoadPerma = 'ticw';
   cGumRoadPermaParam = 'product_permalink';
   cGumRoadKeyParam = 'license_key';
-  cRegKey = 'Software\KOTSoftwareSolutions\TurboImageCompressor';
+  cRegKey = 'Software\EireWare\TurboImageCompressor';
   cGumRoadTokenParam = 'access_token';
   cGumRoadIncUsesCount = 'increment_uses_count';
   cLicenseKeyReg = 'LicenseKey';
