@@ -867,11 +867,20 @@ object FrmMain: TFrmMain
       Caption = 'File'
       object mmiScan: TMenuItem
         Caption = 'Open Folder'
+        ShortCut = 113
         OnClick = ShowFolderSelect
       end
       object mmiOpen: TMenuItem
         Caption = 'Open JPG'
+        ShortCut = 114
         OnClick = ShowFileSelect
+      end
+      object N6: TMenuItem
+        Caption = '-'
+      end
+      object CloseApplication1: TMenuItem
+        Caption = 'Close Application'
+        OnClick = CloseApplication1Click
       end
     end
     object Filter1: TMenuItem
@@ -884,13 +893,14 @@ object FrmMain: TFrmMain
     end
     object View1: TMenuItem
       Caption = 'View'
+      object miHideFiles: TMenuItem
+        Caption = 'Hide Selected Images'
+        ShortCut = 112
+        OnClick = miHideFilesClick
+      end
       object miHideConfig: TMenuItem
         Caption = 'Hide Configuration'
         OnClick = miHideConfigClick
-      end
-      object miHideFiles: TMenuItem
-        Caption = 'Hide Selected Images'
-        OnClick = miHideFilesClick
       end
       object miHideOriginal: TMenuItem
         Caption = 'Hide Original Image'

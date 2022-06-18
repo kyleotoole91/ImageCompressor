@@ -123,6 +123,8 @@ type
     N5: TMenuItem;
     Hide1: TMenuItem;
     miImgFullscreen: TMenuItem;
+    CloseApplication1: TMenuItem;
+    N6: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -183,6 +185,7 @@ type
     procedure miSplitClick(Sender: TObject);
     procedure miHideImageListClick(Sender: TObject);
     procedure FileslargerthannKB1Click(Sender: TObject);
+    procedure CloseApplication1Click(Sender: TObject);
   private
     { Private declarations }
     fEvaluationMode,
@@ -932,6 +935,12 @@ begin
   for key in fImageConfigList.Keys do
     fImageConfigList.Items[key].Free;
   fImageConfigList.Clear;
+end;
+
+procedure TFrmMain.CloseApplication1Click(Sender: TObject);
+begin
+  if MessageDlg('Are you sure you want to close this application?', TMsgDlgType.mtConfirmation, mbOKCancel, 0) = mrOK then
+    Close;
 end;
 
 procedure TFrmMain.CreateJSONFile(const AJSON: ISuperObject);
