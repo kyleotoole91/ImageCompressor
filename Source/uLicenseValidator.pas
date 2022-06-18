@@ -86,10 +86,16 @@ begin
       fResp := fHTTP.Post(cGumRoadLicenseURL, fParams);
       fJSON := SO(fResp.ContentAsString);
       if fJSON.B['success'] and (fResp.StatusCode = 200) then begin
-        if fJSON.B['refunded'] then
+        if fJSON.B['refunded'] or fJSON.B['chargebacked'] then
           fMessage := 'This key is no longer valid, you have been refuded for this product'
         else if fJSON.B['disputed'] or fJSON.B['dispute_won'] then
           fMessage := 'This key is not currently valid due to a dispute'
+        else if (fJSON.S['subscription_id'] <> '') and
+                (fJSON.S['subscription_cancelled_at'] <> '') then
+          fMessage := 'You have cancelled your subscription, the free version will now start. '
+        else if (fJSON.S['subscription_id'] <> '') and
+                (fJSON.S['subscription_failed_at'] <> '') then
+          fMessage := 'Your subscription payment failed, please check your payment method. The free version will now start.'
         else
           result := true;
       end else if fJSON.S[cMessage] <> '' then

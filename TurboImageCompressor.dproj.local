@@ -33,10 +33,10 @@
     <Transaction>2022/06/01 16:42:45.000.814,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends.pas</Transaction>
     <Transaction>2022/06/01 16:42:45.000.941,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Bindings.pas</Transaction>
     <Transaction>2022/06/01 16:42:45.000.833,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_Generic.pas</Transaction>
-    <Transaction>2022/06/01 16:42:45.000.921,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_VCL.pas</Transaction>
+    <Transaction>2022/06/01 16:42:45.000.904,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_Win.pas</Transaction>
     <Transaction>2022/06/01 16:42:45.000.868,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_CustomDrawn.pas</Transaction>
     <Transaction>2022/06/01 16:42:45.000.885,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_Gtk.pas</Transaction>
-    <Transaction>2022/06/01 16:42:45.000.904,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_Win.pas</Transaction>
+    <Transaction>2022/06/01 16:42:45.000.921,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_VCL.pas</Transaction>
     <Transaction>2022/06/01 16:42:46.000.495,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_Bitmap.pas</Transaction>
     <Transaction>2022/06/01 16:42:46.000.019,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_BlendSSE2.pas</Transaction>
     <Transaction>2022/06/01 16:42:46.000.155,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_ColorPicker.pas</Transaction>
@@ -71,8 +71,8 @@
     <Transaction>2022/06/01 16:42:52.000.343,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_Misc.pas</Transaction>
     <Transaction>2022/06/01 16:42:52.000.321,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_ColorPicker.pas</Transaction>
     <Transaction>2022/06/01 16:42:52.000.949,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Text_VCL.pas</Transaction>
-    <Transaction>2022/06/01 16:42:52.000.433,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Geometry.pas</Transaction>
     <Transaction>2022/06/01 16:42:52.000.480,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Layers.pas</Transaction>
+    <Transaction>2022/06/01 16:42:52.000.433,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Geometry.pas</Transaction>
     <Transaction>2022/06/01 16:42:52.000.975,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Text_VCL_D2D.pas</Transaction>
     <Transaction>2022/06/01 16:42:53.000.056,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_VectorUtils.pas</Transaction>
     <Transaction>2022/06/01 16:42:53.000.110,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_VPR2.pas</Transaction>
@@ -80,9 +80,9 @@
     <Transaction>2022/06/01 16:42:53.000.082,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_VPR.pas</Transaction>
     <Transaction>2022/06/01 16:42:53.000.001,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Transforms.pas</Transaction>
     <Transaction>2022/06/01 16:42:53.000.027,=C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_VectorMaps.pas</Transaction>
-    <Transaction>2022/06/01 16:43:21.000.156,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_Win.pas=</Transaction>
-    <Transaction>2022/06/01 16:43:21.000.408,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_Bitmap.pas=</Transaction>
     <Transaction>2022/06/01 16:43:21.000.172,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_VCL.pas=</Transaction>
+    <Transaction>2022/06/01 16:43:21.000.408,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_Bitmap.pas=</Transaction>
+    <Transaction>2022/06/01 16:43:21.000.156,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_Win.pas=</Transaction>
     <Transaction>2022/06/01 16:43:21.000.440,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Dsgn_Color.pas=</Transaction>
     <Transaction>2022/06/01 16:43:21.000.106,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Backends_LCL_CustomDrawn.pas=</Transaction>
     <Transaction>2022/06/01 16:43:21.000.236,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_BlendMMX.pas=</Transaction>
@@ -116,8 +116,8 @@
     <Transaction>2022/06/01 16:43:24.000.654,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Text_VCL_D2D.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.480,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Polygons.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.754,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_XPThemes.pas=</Transaction>
-    <Transaction>2022/06/01 16:43:24.000.302,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Geometry.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.338,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Layers.pas=</Transaction>
+    <Transaction>2022/06/01 16:43:24.000.302,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Geometry.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.251,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_ExtImage.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.708,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_VectorUtils.pas=</Transaction>
     <Transaction>2022/06/01 16:43:24.000.317,C:\Users\kyle.otoole\OneDrive - Ocuco\Documents\Embarcadero\Studio\Projects\JPGFileCompress\graphics32\Source\GR32_Image.pas=</Transaction>

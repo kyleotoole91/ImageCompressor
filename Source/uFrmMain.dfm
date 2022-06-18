@@ -506,6 +506,8 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
+          ExplicitLeft = 226
+          ExplicitTop = 146
           DesignSize = (
             938
             717)
@@ -534,7 +536,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 657
+            Left = 648
             Top = 4
             Width = 46
             Height = 13
@@ -547,60 +549,54 @@ object FrmMain: TFrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
-            ExplicitLeft = 341
           end
           object lbImgSizeKBVal: TLabel
-            Left = 691
+            Left = 695
             Top = 4
-            Width = 46
+            Width = 38
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
             Enabled = False
-            ExplicitLeft = 374
           end
           object lbImgWidth: TLabel
-            Left = 749
+            Left = 739
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
             Enabled = False
-            ExplicitLeft = 433
           end
           object lbImgWidthVal: TLabel
-            Left = 783
+            Left = 800
             Top = 4
-            Width = 54
+            Width = 34
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
-            ExplicitLeft = 466
           end
           object lbImgHeight: TLabel
-            Left = 842
+            Left = 840
             Top = 4
             Width = 58
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
             Enabled = False
-            ExplicitLeft = 526
           end
           object lbImgHeightVal: TLabel
-            Left = 879
+            Left = 896
             Top = 4
-            Width = 54
+            Width = 38
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
-            ExplicitLeft = 855
           end
           object cbCompressPreview: TCheckBox
             Left = 117

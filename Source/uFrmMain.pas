@@ -747,9 +747,15 @@ var
   procedure SetLabels;
   begin
     AJPEG.Scale := jsFullSize;
-    lbImgWidthVal.Caption := AJPEG.Width.ToString;
-    lbImgHeightVal.Caption := AJPEG.Height.ToString;
-    lbImgSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;
+    if AJPEG = fJPEGCompressor.JPEGOriginal then begin
+      lbImgOrigWidthVal.Caption := AJPEG.Width.ToString;
+      lbImgOrigHeightVal.Caption := AJPEG.Height.ToString;
+      lbImgOrigSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;
+    end else begin
+      lbImgWidthVal.Caption := AJPEG.Width.ToString;
+      lbImgHeightVal.Caption := AJPEG.Height.ToString;
+      lbImgSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;
+    end;
   end;
 begin
   if Assigned(AJPEG) and
@@ -1331,12 +1337,12 @@ begin
   cbApplyGraphicsClick(Sender);
   if fImageChanged then
     btnApply.Enabled := true;
+  cblFilesClickCheck(Sender);
 end;
 
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);
 begin
-  btnStart.Enabled := FileIsSelected and
-                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
+  btnStart.Enabled := FileIsSelected;
 end;
 
 procedure TFrmMain.cbResampleModeChange(Sender: TObject);
