@@ -324,7 +324,7 @@ object FrmMain: TFrmMain
             Height = 21
             Hint = 
               'Double click to show select dialog. Press Enter or leave field t' +
-              'o Apply'
+              'o apply'
             Anchors = [akLeft, akTop, akRight]
             ParentShowHint = False
             ShowHint = True
@@ -340,7 +340,7 @@ object FrmMain: TFrmMain
             Height = 21
             Hint = 
               'Double click to show select dialog. Press Enter or leave field t' +
-              'o Apply'
+              'o apply'
             Anchors = [akLeft, akTop, akRight]
             ParentShowHint = False
             ShowHint = True
@@ -352,7 +352,10 @@ object FrmMain: TFrmMain
             Top = 66
             Width = 61
             Height = 17
+            Hint = 'Reduce size, rotate and resample for improved image quality'
             Caption = 'Graphics'
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 4
             OnClick = cbApplyGraphicsClick
           end

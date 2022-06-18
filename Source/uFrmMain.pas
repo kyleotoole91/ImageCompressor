@@ -645,6 +645,7 @@ end;
 procedure TFrmMain.miFullscreenClick(Sender: TObject);
 begin
   miFullscreen.Checked := not miFullscreen.Checked;
+  miImgFullscreen.Checked := miFullscreen.Checked;
   miHideConfig.Checked := miFullscreen.Checked;
   miHideFiles.Checked := miFullscreen.Checked;
   miHideOriginal.Checked := miFullscreen.Checked;
@@ -919,7 +920,7 @@ end;
 
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
-  btnStart.Enabled := FileIsSelected and fImageChanged and
+  btnStart.Enabled := (FileIsSelected or fImageChanged) and
                       (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
 end;
@@ -1164,6 +1165,7 @@ end;
 procedure TFrmMain.miHideImageListClick(Sender: TObject);
 begin
   miHideFilesClick(Sender);
+  ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.miHideOriginalClick(Sender: TObject);
@@ -1177,6 +1179,7 @@ end;
 procedure TFrmMain.miHideOriginalPmClick(Sender: TObject);
 begin
   miHideOriginalClick(Sender);
+  ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.ShowFileSelect(Sender: TObject);
