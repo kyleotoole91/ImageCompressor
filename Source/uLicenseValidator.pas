@@ -3,24 +3,7 @@ unit uLicenseValidator;
 interface
 
 uses
-  idHTTP, System.Net.HttpClient, System.Classes, Winapi.Windows, System.SysUtils, System.Win.Registry, SuperObject;
-
-const
-  cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
-  cGumRoadPerma = 'ticw';
-  cGumRoadPermaParam = 'product_permalink';
-  cGumRoadKeyParam = 'license_key';
-  cRegKey = 'Software\EireWare\TurboImageCompressor';
-  cGumRoadTokenParam = 'access_token';
-  cGumRoadIncUsesCount = 'increment_uses_count';
-  cLicenseKeyReg = 'LicenseKey';
-  cUses = 'uses';
-  cMessage = 'message';
-  {$IFDEF DEBUG}
-  cMaxUses = 100;
-  {$ELSE}
-  cMaxUses = 3;
-  {$ENDIF}
+  System.Net.HttpClient, System.Classes, SuperObject;
 
 type
   TLicenseValidator = class(TObject)
@@ -43,6 +26,9 @@ type
   end;
 
 implementation
+
+uses
+  uConstants, System.Win.Registry, Winapi.Windows, System.SysUtils;
 
 { TLicenceValidator }
 
@@ -91,12 +77,13 @@ begin
         else if fJSON.B['disputed'] or fJSON.B['dispute_won'] then
           fMessage := 'This key is not currently valid due to a dispute'
         else if (fJSON.S['subscription_id'] <> '') and
-                (fJSON.S['subscription_cancelled_at'] <> '') then
-          fMessage := 'You have cancelled your subscription, the free version will now start. '
-        else if (fJSON.S['subscription_id'] <> '') and
-                (fJSON.S['subscription_failed_at'] <> '') then
-          fMessage := 'Your subscription payment failed, please check your payment method. The free version will now start.'
-        else
+                ((fJSON.S['subscription_failed_at'] <> '') and (fJSON.D['subscription_failed_at'] <= Now)) then
+          fMessage := 'Your subscription payment has failed, please check your payment method. The free version will now start. '
+        else if ((fJSON.S['subscription_id'] <> '') and (fJSON.D['subscription_cancelled_at'] <= Now)) and
+                ((fJSON.S['subscription_ended_at'] <> '') and (fJSON.D['subscription_ended_at'] <= Now)) then begin
+          fMessage := 'Your subscription has ended, the free version will now start. ';
+          DeleteLicense;
+        end else
           result := true;
       end else if fJSON.S[cMessage] <> '' then
         fMessage := fJSON.S[cMessage];

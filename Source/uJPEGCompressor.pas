@@ -3,17 +3,7 @@ unit uJPEGCompressor;
 interface
 
 uses
-  Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, DateUtils, Img32, Img32.Fmt.JPG;
-
-const
-  cScaleBelowQuality = 25;
-  cMinQuality = 1;
-  cMaxQuality = 100;
-  cDefaultQuality = 50;
-  cTargetInterval = 5;
-  cBytesToKB = 1024;
-  cDefaultMaxWidth = 2560;
-  cDefaultMaxHeight = 1920;
+  Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, DateUtils, Img32, Img32.Fmt.JPG, uConstants;
 
 type
   TResampleMode = (rmNone=0, rmFastest=1, rmRecommended=2, rmBest=3);

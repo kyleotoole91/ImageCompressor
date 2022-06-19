@@ -6,15 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
   Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator;
-
-const
-  //only reduce the size this much before scaleing down. Higher values means more allowance for pixellation
-  oversizeAllowance=75;
-  cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
-  cGumRoadLink = 'https://kyleotoole.gumroad.com/l/ticw';
-  cActivatedCaption = 'Turbo Image Compressor - Pro';
-  cEvaluationCaption = 'Turbo Image Compressor - Free';
+  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants;
 
 type
   TFrmMain = class(TForm)
@@ -125,6 +117,9 @@ type
     miImgFullscreen: TMenuItem;
     CloseApplication1: TMenuItem;
     N6: TMenuItem;
+    Help1: TMenuItem;
+    miDownload: TMenuItem;
+    miContact: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -186,6 +181,8 @@ type
     procedure miHideImageListClick(Sender: TObject);
     procedure FileslargerthannKB1Click(Sender: TObject);
     procedure CloseApplication1Click(Sender: TObject);
+    procedure miDownloadClick(Sender: TObject);
+    procedure miContactClick(Sender: TObject);
   private
     { Private declarations }
     fEvaluationMode,
@@ -605,6 +602,16 @@ begin
   finally
     mmMessages.Lines.EndUpdate;
   end;
+end;
+
+procedure TFrmMain.miContactClick(Sender: TObject);
+begin
+  OpenURL(cContactVersionURL);
+end;
+
+procedure TFrmMain.miDownloadClick(Sender: TObject);
+begin
+  OpenURL(cLatestVersionURL);
 end;
 
 procedure TFrmMain.miEnterLicenseClick(Sender: TObject);
@@ -1124,10 +1131,7 @@ end;
 procedure TFrmMain.SetEvaluationMode(const Value: boolean);
 begin
   fEvaluationMode := Value;
-  if fEvaluationMode then
-    miPurchaseLicense.Caption := 'Purchase License Key'
-  else
-    miPurchaseLicense.Caption := 'Download Latest Version';
+  miPurchaseLicense.Caption := 'Purchase License Key';
   if fEvaluationMode then
     Caption := cEvaluationCaption
   else

@@ -3,7 +3,7 @@ unit uImageConfig;
 interface
 
 uses
-  uJPEGCompressor;
+  uJPEGCompressor, uConstants;
 
 type
   TImageConfig = class(TObject)

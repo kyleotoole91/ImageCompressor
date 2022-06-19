@@ -506,8 +506,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
-          ExplicitLeft = 226
-          ExplicitTop = 146
           DesignSize = (
             938
             717)
@@ -551,9 +549,9 @@ object FrmMain: TFrmMain
             ParentFont = False
           end
           object lbImgSizeKBVal: TLabel
-            Left = 695
+            Left = 687
             Top = 4
-            Width = 38
+            Width = 46
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
@@ -570,9 +568,9 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgWidthVal: TLabel
-            Left = 800
+            Left = 780
             Top = 4
-            Width = 34
+            Width = 54
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
@@ -589,9 +587,9 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgHeightVal: TLabel
-            Left = 896
+            Left = 880
             Top = 4
-            Width = 38
+            Width = 54
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
@@ -936,6 +934,17 @@ object FrmMain: TFrmMain
       object miEnterLicense: TMenuItem
         Caption = 'Enter License Key'
         OnClick = miEnterLicenseClick
+      end
+    end
+    object Help1: TMenuItem
+      Caption = 'Help'
+      object miDownload: TMenuItem
+        Caption = 'Download Latest Version'
+        OnClick = miDownloadClick
+      end
+      object miContact: TMenuItem
+        Caption = 'Contact Support'
+        OnClick = miContactClick
       end
     end
   end
