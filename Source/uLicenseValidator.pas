@@ -28,7 +28,7 @@ type
 implementation
 
 uses
-  uConstants, System.Win.Registry, Winapi.Windows, System.SysUtils;
+  uConstants, System.Win.Registry, Winapi.Windows, System.SysUtils, DateUtils;
 
 { TLicenceValidator }
 
@@ -76,13 +76,15 @@ begin
           fMessage := 'This key is no longer valid, you have been refuded for this product'
         else if fJSON.B['disputed'] or fJSON.B['dispute_won'] then
           fMessage := 'This key is not currently valid due to a dispute'
-        else if (fJSON.S['subscription_id'] <> '') and
-                ((fJSON.S['subscription_failed_at'] <> '') and (fJSON.D['subscription_failed_at'] <= Now)) then
+        else if (fJSON.O['purchase'].S['subscription_id'] <> '') and
+                ((fJSON.O['purchase'].S['subscription_failed_at'] <> '') and
+                 (ISO8601ToDate(fJSON.O['purchase'].S['subscription_failed_at']) <= Now)) then
           fMessage := 'Your subscription payment has failed, please check your payment method. The free version will now start. '
-        else if ((fJSON.S['subscription_id'] <> '') and (fJSON.D['subscription_cancelled_at'] <= Now)) and
-                ((fJSON.S['subscription_ended_at'] <> '') and (fJSON.D['subscription_ended_at'] <= Now)) then begin
-          fMessage := 'Your subscription has ended, the free version will now start. ';
+        else if (fJSON.O['purchase'].S['subscription_id'] <> '') and
+                (((fJSON.O['purchase'].S['subscription_ended_at'] <> '') and (ISO8601ToDate(fJSON.O['purchase'].S['subscription_ended_at']) <= Now)) or
+                 ((fJSON.O['purchase'].S['subscription_cancelled_at'] <> '') and (ISO8601ToDate(fJSON.O['purchase'].S['subscription_cancelled_at']) <= Now))) then begin
           DeleteLicense;
+          fMessage := 'Your subscription has ended. ';
         end else
           result := true;
       end else if fJSON.S[cMessage] <> '' then

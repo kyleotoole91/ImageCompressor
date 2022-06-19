@@ -106,17 +106,19 @@ end;
 procedure TfrmSplash.Timer1Timer(Sender: TObject);
 var
   startTime: TDateTime;
+  licenseKey: string;
 begin
   startTime := Now;
   try
     Timer1.Enabled := false;
     Screen.Cursor := crHourGlass;
+    licenseKey := fLicenseValidator.GetLicenseKey;
     lbMessage.Caption := 'Checking license, please wait...';
     Application.ProcessMessages;
     fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
     if not fHasValidLicense then begin
       Screen.Cursor := crDefault;
-      if fLicenseValidator.GetLicenseKey <> '' then begin
+      if licenseKey <> '' then begin
         lbMessage.Caption := 'Your license key could not be validated.';
         MessageDlg('Your license key could not be validated.'+sLineBreak+
                    'The free version of the application will now launch. '+sLineBreak+sLineBreak+
