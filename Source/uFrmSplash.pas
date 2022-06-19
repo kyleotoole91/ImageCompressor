@@ -57,14 +57,10 @@ end;
 procedure TfrmSplash.FormCreate(Sender: TObject);
 begin
   inherited;
-  fStartApp := true;
-  fHasValidLicense := false;
   fLicenseValidator := TLicenseValidator.Create;
-  fVersion := GetBuildInfoAsString;
-  lbVersion.Caption := 'V'+fVersion;
   Timer1.Interval := 1;
   lbYear.Caption := lbYear.Caption+FormatDateTime('YYYY', Now);
-  pnlMain.Color := 5209163;
+  pnlMain.Color := cSplashBGColor;
 end;
 
 procedure TfrmSplash.FormDestroy(Sender: TObject);
@@ -76,6 +72,10 @@ end;
 procedure TfrmSplash.FormShow(Sender: TObject);
 begin
   inherited;
+  fVersion := GetBuildInfoAsString;
+  lbVersion.Caption := 'V'+fVersion;
+  fStartApp := true;
+  fHasValidLicense := false;
   Timer1.Enabled := true;
 end;
 

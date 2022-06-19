@@ -758,7 +758,9 @@ var
       lbImgOrigWidthVal.Caption := AJPEG.Width.ToString;
       lbImgOrigHeightVal.Caption := AJPEG.Height.ToString;
       lbImgOrigSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;
-    end else begin
+    end;
+    if (not cbCompressPreview.Checked) or
+       (AJPEG <> fJPEGCompressor.JPEGOriginal) then begin
       lbImgWidthVal.Caption := AJPEG.Width.ToString;
       lbImgHeightVal.Caption := AJPEG.Height.ToString;
       lbImgSizeKBVal.Caption := SizeOfJPEG(AJPEG).ToString;

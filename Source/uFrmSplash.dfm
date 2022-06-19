@@ -37,7 +37,7 @@ object frmSplash: TfrmSplash
       AlignWithMargins = True
       Left = 3
       Top = 393
-      Width = 29
+      Width = 552
       Height = 11
       Align = alBottom
       Alignment = taCenter
@@ -48,11 +48,12 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 29
     end
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 445
+      Width = 558
       Height = 42
       Align = alTop
       Alignment = taCenter
@@ -65,11 +66,12 @@ object frmSplash: TfrmSplash
       Font.Style = [fsBold, fsItalic]
       ParentColor = False
       ParentFont = False
+      ExplicitWidth = 445
     end
     object lbVersion: TLabel
       Left = 0
       Top = 42
-      Width = 43
+      Width = 558
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -80,6 +82,7 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 43
     end
     object Image1: TImage
       Left = 0
@@ -144,7 +147,7 @@ object frmSplash: TfrmSplash
       AlignWithMargins = True
       Left = 3
       Top = 369
-      Width = 208
+      Width = 552
       Height = 18
       Align = alBottom
       Alignment = taCenter
@@ -155,6 +158,7 @@ object frmSplash: TfrmSplash
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 208
     end
   end
   object Timer1: TTimer

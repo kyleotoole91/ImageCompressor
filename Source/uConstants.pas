@@ -3,6 +3,8 @@ unit uConstants;
 interface
 
 const
+  cSplashBGColor = 5209163;
+
   cScaleBelowQuality = 25;
   cMinQuality = 1;
   cMaxQuality = 100;
@@ -24,7 +26,7 @@ const
   cUses = 'uses';
   cMessage = 'message';
   {$IFDEF DEBUG}
-  cMaxUses = 100;
+  cMaxUses = 10;
   {$ELSE}
   cMaxUses = 3;
   {$ENDIF}
