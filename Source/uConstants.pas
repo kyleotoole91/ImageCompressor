@@ -14,6 +14,8 @@ const
   cDefaultMaxWidth = 2560;
   cDefaultMaxHeight = 1920;
 
+  cUTCZone = '?timeZone=UTC';
+  cTimeAPIURL = 'https://timeapi.io/api/Time/current/zone';
   cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
   cGumRoadPerma = 'TICWS';
   cGumRoadPermaParam = 'product_permalink';

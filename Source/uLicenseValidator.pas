@@ -14,7 +14,9 @@ type
     fLicenseKey: string;
     fHTTP: THTTPClient;
     fParams: TStringList;
+    fNowDate: TDateTime;
     procedure AddKeyToRegistry;
+    function GetNowDate: TDateTime;
   public
     constructor Create;
     destructor Destroy; override;
@@ -56,6 +58,7 @@ var
 begin
   result := false;
   try
+    fNowDate := 0;
     if fLicenseKey = '' then
       fLicenseKey := GetLicenseKey;
     if fLicenseKey = '' then
@@ -84,8 +87,8 @@ begin
                    (ISO8601ToDate(S['subscription_failed_at']) <= Now)) then
             fMessage := 'Your subscription payment has failed, please check your payment method. The free version will now start. '
           else if (S['subscription_id'] <> '') and
-                  (((S['subscription_ended_at'] <> '') and (ISO8601ToDate(S['subscription_ended_at']) <= Now)) or
-                   ((S['subscription_cancelled_at'] <> '') and (ISO8601ToDate(S['subscription_cancelled_at']) <= Now))) then begin
+                  (((S['subscription_ended_at'] <> '') and (ISO8601ToDate(S['subscription_ended_at']) <= GetNowDate)) or
+                   ((S['subscription_cancelled_at'] <> '') and (ISO8601ToDate(S['subscription_cancelled_at']) <= GetNowDate))) then begin
             DeleteLicense;
             fMessage := 'Your subscription has ended. ';
           end else
@@ -164,6 +167,28 @@ begin
     finally
       Free;
     end;
+  end;
+end;
+
+function TLicenseValidator.GetNowDate: TDateTime;
+var
+  json: ISuperObject;
+begin
+  try
+    if fNowDate = 0 then begin
+      try
+        json := SO(fHTTP.Get(cTimeAPIURL+cUTCZone).ContentAsString);
+        if (Assigned(json)) and
+           (json.S['dateTime'] <> '') then
+          fNowDate := ISO8601ToDate(json.S['dateTime'])
+      except
+      end;
+    end;
+  finally
+    if fNowDate = 0 then
+      fNowDate := Now; //default to system date (if this API ever goes down)
+    result := fNowDate;
+    json := nil;
   end;
 end;
 
