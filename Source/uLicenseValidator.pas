@@ -71,22 +71,26 @@ begin
       fParams.Add(cGumRoadKeyParam+'='+fLicenseKey);
       fResp := fHTTP.Post(cGumRoadLicenseURL, fParams);
       fJSON := SO(fResp.ContentAsString);
-      if fJSON.B['success'] and (fResp.StatusCode = 200) then begin
-        if fJSON.B['refunded'] or fJSON.B['chargebacked'] then
-          fMessage := 'This key is no longer valid, you have been refuded for this product'
-        else if fJSON.B['disputed'] or fJSON.B['dispute_won'] then
-          fMessage := 'This key is not currently valid due to a dispute'
-        else if (fJSON.O['purchase'].S['subscription_id'] <> '') and
-                ((fJSON.O['purchase'].S['subscription_failed_at'] <> '') and
-                 (ISO8601ToDate(fJSON.O['purchase'].S['subscription_failed_at']) <= Now)) then
-          fMessage := 'Your subscription payment has failed, please check your payment method. The free version will now start. '
-        else if (fJSON.O['purchase'].S['subscription_id'] <> '') and
-                (((fJSON.O['purchase'].S['subscription_ended_at'] <> '') and (ISO8601ToDate(fJSON.O['purchase'].S['subscription_ended_at']) <= Now)) or
-                 ((fJSON.O['purchase'].S['subscription_cancelled_at'] <> '') and (ISO8601ToDate(fJSON.O['purchase'].S['subscription_cancelled_at']) <= Now))) then begin
-          DeleteLicense;
-          fMessage := 'Your subscription has ended. ';
-        end else
-          result := true;
+      if (fJSON.B['success']) and
+         (fResp.StatusCode = 200) and
+         (Assigned(fJSON.O['purchase'])) then begin
+        with fJSON.O['purchase'] do begin
+          if B['refunded'] or B['chargebacked'] then
+            fMessage := 'This key is no longer valid, you have been refuded for this product'
+          else if B['disputed'] or B['dispute_won'] then
+            fMessage := 'This key is not currently valid due to a dispute'
+          else if (S['subscription_id'] <> '') and
+                  ((S['subscription_failed_at'] <> '') and
+                   (ISO8601ToDate(S['subscription_failed_at']) <= Now)) then
+            fMessage := 'Your subscription payment has failed, please check your payment method. The free version will now start. '
+          else if (S['subscription_id'] <> '') and
+                  (((S['subscription_ended_at'] <> '') and (ISO8601ToDate(S['subscription_ended_at']) <= Now)) or
+                   ((S['subscription_cancelled_at'] <> '') and (ISO8601ToDate(S['subscription_cancelled_at']) <= Now))) then begin
+            DeleteLicense;
+            fMessage := 'Your subscription has ended. ';
+          end else
+            result := true;
+        end;
       end else if fJSON.S[cMessage] <> '' then
         fMessage := fJSON.S[cMessage];
       if not result and (fMessage = '') then

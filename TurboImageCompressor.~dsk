@@ -1,31 +1,31 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uDlgDefaults.pas',0,1,1,1,1,0,0,,
-File_1=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uDlgDefaults.pas',0,1,103,33,97,0,0,,
-File_2=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uDlgFilter.pas',0,1,1,5,57,0,0,,
-File_3=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uConstants.pas',0,1,1,20,37,0,0,,
-File_4=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.CheckLst.pas',0,1,756,1,776,0,0,,
-File_5=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,6359,1,6379,0,0,,
-File_6=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uPersistence.pas',0,1,1,36,25,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.IOUtils.pas',0,1,605,1,625,0,0,,
-File_8=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Imaging.jpeg.pas',0,1,856,1,876,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.Classes.pas',0,1,7945,1,7965,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,1,6,22,0,0,,
-File_11=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.Win.Registry.pas',0,1,216,36,234,0,0,,
-File_12=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenceValidator.pas',0,1,1,32,2,0,0,,
-File_13=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\TurboCompressor\uFrmJPGFileCompress.pas',0,1,360,44,385,0,0,,{1
-File_14=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\TurboCompressor\uJPEGCompressor.pas',0,1,120,104,118,0,0,,
+File_0=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.pas',0,1,17915,1,17935,0,0,,
+File_1=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\net\System.Net.HttpClient.Win.pas',0,1,1366,1,1386,0,0,,
+File_2=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uDlgDefaults.pas',0,1,1,1,1,0,0,,
+File_3=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uDlgDefaults.pas',0,1,103,33,97,0,0,,
+File_4=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uDlgFilter.pas',0,1,1,5,57,0,0,,
+File_5=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\uConstants.pas',0,1,1,20,37,0,0,,
+File_6=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.CheckLst.pas',0,1,756,1,776,0,0,,
+File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,6359,1,6379,0,0,,
+File_8=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uPersistence.pas',0,1,1,36,25,0,0,,
+File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.IOUtils.pas',0,1,605,1,625,0,0,,
+File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Imaging.jpeg.pas',0,1,856,1,876,0,0,,
+File_11=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.Classes.pas',0,1,7945,1,7965,0,0,,
+File_12=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,1,6,22,0,0,,
+File_13=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.Win.Registry.pas',0,1,216,36,234,0,0,,
+File_14=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenceValidator.pas',0,1,1,32,2,0,0,,
 
 [Modules]
 Module0=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj
-Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
-Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
-Module3=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
-Module4=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas
+Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
+Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas
+Module3=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
+Module4=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
 Module5=c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas
-Module6=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas
-Module7=c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.ShellAPI.pas
-Module8=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
-Module9=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas
+Module6=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas
+Module7=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
+Module8=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas
+Module9=c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.ShellAPI.pas
 Module10=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Dependancies\superobject\superobject.pas
 Module11=c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Graphics.pas
 Module12=default.htm
@@ -35,31 +35,31 @@ EditWindowCount=1
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj]
 ModuleType=TBaseProject
 
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas]
+ModuleType=TSourceModule
+
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas]
+ModuleType=TSourceModule
+
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas]
 ModuleType=TSourceModule
 
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas]
-ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas]
-ModuleType=TSourceModule
-
 [c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas]
+ModuleType=TSourceModule
+
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas]
+ModuleType=TSourceModule
+
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uJPEGCompressor.pas]
 ModuleType=TSourceModule
 
 [c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.ShellAPI.pas]
-ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas]
-ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Dependancies\superobject\superobject.pas]
@@ -103,12 +103,12 @@ ClientHeight=9000
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1031
+LeftPanelSize=1307
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000620F00000000000001070400000000000001000000005C0E000009000000446F636B53697465330100000000581B00001100000050726F7065727479496E73706563746F72FFFFFFFF
-RightPanelSize=2000
+LeftPanelData=00000800010100000000620F000000000000011B0500000000000001000000005C0E000009000000446F636B53697465330100000000581B00001100000050726F7065727479496E73706563746F72FFFFFFFF
+RightPanelSize=1245
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000620F00000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000581B000009000000446F636B5369746534FFFFFFFF
+RightPanelData=00000800010100000000620F00000000000001DD0400000000000001000000004412000009000000446F636B53697465320100000000581B000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=1593
 BottomPanelClients=DockSite1,MessageView
 BottomPanelData=0000080001020100000009000000446F636B5369746531DE440000000000000239060000000000000100000000DE4400000F0000004D65737361676556696577466F726DFFFFFFFF
@@ -134,30 +134,30 @@ EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompresso
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
-CursorX=46
-CursorY=33
-TopLine=4
+CursorX=103
+CursorY=10
+TopLine=3
 LeftCol=1
 Elisions=
-Bookmarks={1,135,9}
+Bookmarks={1,138,9}
 EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
 
 [View3]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
-CursorX=11
-CursorY=6
-TopLine=37
+CursorX=71
+CursorY=22
+TopLine=70
 LeftCol=1
 Elisions=
-Bookmarks={1,118,5}
+Bookmarks={1,121,5}
 EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
 
 [View4]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas
-CursorX=85
-CursorY=11
+CursorX=98
+CursorY=9
 TopLine=1
 LeftCol=1
 Elisions=
@@ -189,12 +189,12 @@ EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompresso
 [View7]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
-CursorX=10
-CursorY=989
-TopLine=959
+CursorX=38
+CursorY=755
+TopLine=743
 LeftCol=1
 Elisions=
-Bookmarks={1,614,30}{2,1134,55}
+Bookmarks={1,614,30}{2,1136,55}
 EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
 
 [View8]
@@ -222,8 +222,8 @@ EditViewName=c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\Syste
 [View10]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas
-CursorX=1
-CursorY=1
+CursorX=27
+CursorY=4
 TopLine=1
 LeftCol=1
 Elisions=
@@ -233,8 +233,8 @@ EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompresso
 [View11]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dpr
-CursorX=83
-CursorY=21
+CursorX=28
+CursorY=1
 TopLine=1
 LeftCol=1
 Elisions=
@@ -283,7 +283,7 @@ StayOnTop=0
 Count=3
 Breakpoint0='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',578,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint1='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',587,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',882,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint2='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',764,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -312,8 +312,8 @@ Create=1
 Visible=1
 Docked=0
 State=2
-Left=948
-Top=606
+Left=146
+Top=269
 Width=8932
 Height=8519
 MaxLeft=-5
@@ -334,11 +334,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2000
+Width=1245
 Height=4240
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=4240
 TBDockHeight=5904
 LRDockWidth=2349
@@ -372,11 +372,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2000
+Width=1245
 Height=2144
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=2144
 TBDockHeight=7154
 LRDockWidth=2000
@@ -391,17 +391,17 @@ Docked=1
 State=0
 Left=0
 Top=425
-Width=1031
+Width=1307
 Height=3183
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1031
+ClientWidth=1307
 ClientHeight=3183
-TBDockHeight=9010
-LRDockWidth=1031
+TBDockHeight=5192
+LRDockWidth=1307
 Dockable=1
 StayOnTop=0
-SplitPos=74
+SplitPos=77
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -411,11 +411,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2000
+Width=1245
 Height=6394
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=6394
 TBDockHeight=5962
 LRDockWidth=2510
@@ -428,7 +428,7 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1528
+Left=-1673
 Top=245
 Width=276
 Height=365
@@ -597,11 +597,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2000
+Width=1245
 Height=6394
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=6394
 TBDockHeight=4885
 LRDockWidth=7151
@@ -718,11 +718,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1031
+Width=1307
 Height=3471
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1031
+ClientWidth=1307
 ClientHeight=3471
 TBDockHeight=3683
 LRDockWidth=1896
@@ -737,11 +737,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=2000
+Width=1245
 Height=6394
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=6394
 TBDockHeight=4885
 LRDockWidth=5307
@@ -828,14 +828,14 @@ Docked=1
 State=0
 Left=0
 Top=28
-Width=2000
+Width=1245
 Height=4510
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=4510
-TBDockHeight=9010
-LRDockWidth=2000
+TBDockHeight=4596
+LRDockWidth=1245
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -852,14 +852,14 @@ Docked=1
 State=0
 Left=0
 Top=28
-Width=1031
+Width=1307
 Height=3471
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1031
+ClientWidth=1307
 ClientHeight=3471
-TBDockHeight=9010
-LRDockWidth=1031
+TBDockHeight=3548
+LRDockWidth=1307
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -876,14 +876,14 @@ Docked=1
 State=0
 Left=0
 Top=533
-Width=2000
+Width=1245
 Height=2144
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2000
+ClientWidth=1245
 ClientHeight=2144
-TBDockHeight=9010
-LRDockWidth=2000
+TBDockHeight=4144
+LRDockWidth=1245
 Dockable=1
 StayOnTop=0
 TabPosition=1
