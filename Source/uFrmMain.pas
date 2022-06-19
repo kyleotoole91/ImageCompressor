@@ -913,23 +913,23 @@ end;
 
 procedure TFrmMain.CheckHideLabels;
 const
-  previewMaxWidth=525;
-  origMaxWidth=425;
+  previewMinWidth=530;
+  origMinWidth=400;
 begin
   cbStretchOriginal.Visible := false;
   try
-    lbImgSizeKB.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgSizeKBVal.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgWidth.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgWidthVal.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgHeight.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgHeightVal.Visible := pnlImage.Width >= previewMaxWidth;
-    lbImgOrigSize.Visible := pnlOriginal.Width >= origMaxWidth;
-    lbImgOrigSizeKBVal.Visible := pnlOriginal.Width > origMaxWidth;
-    lbImgOrigWidth.Visible := pnlOriginal.Width > origMaxWidth;
-    lbImgOrigWidthVal.Visible := pnlOriginal.Width > origMaxWidth;
-    lbImgOrigHeight.Visible := pnlOriginal.Width > origMaxWidth;
-    lbImgOrigHeightVal.Visible := pnlOriginal.Width > origMaxWidth;
+    lbImgSizeKB.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgSizeKBVal.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgWidth.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgWidthVal.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgHeight.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgHeightVal.Visible := pnlImage.Width >= previewMinWidth;
+    lbImgOrigSize.Visible := pnlOriginal.Width >= origMinWidth;
+    lbImgOrigSizeKBVal.Visible := pnlOriginal.Width > origMinWidth;
+    lbImgOrigWidth.Visible := pnlOriginal.Width > origMinWidth;
+    lbImgOrigWidthVal.Visible := pnlOriginal.Width > origMinWidth;
+    lbImgOrigHeight.Visible := pnlOriginal.Width > origMinWidth;
+    lbImgOrigHeightVal.Visible := pnlOriginal.Width > origMinWidth;
   finally
     if not cbStretchOriginal.Visible then
       cbStretchOriginal.Visible := true; //workaround painting issues

@@ -534,7 +534,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 648
+            Left = 654
             Top = 4
             Width = 46
             Height = 13
@@ -549,7 +549,7 @@ object FrmMain: TFrmMain
             ParentFont = False
           end
           object lbImgSizeKBVal: TLabel
-            Left = 687
+            Left = 690
             Top = 4
             Width = 46
             Height = 13
@@ -559,7 +559,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgWidth: TLabel
-            Left = 739
+            Left = 742
             Top = 4
             Width = 55
             Height = 13
@@ -638,51 +638,46 @@ object FrmMain: TFrmMain
             425
             717)
           object lbImgOrigSize: TLabel
-            Left = 140
+            Left = 144
             Top = 4
             Width = 46
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
-            ExplicitLeft = 333
           end
           object lbImgOrigSizeKBVal: TLabel
-            Left = 190
+            Left = 194
             Top = 4
             Width = 31
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'SizeKB'
-            ExplicitLeft = 383
           end
           object lbImgOrigWidth: TLabel
-            Left = 233
+            Left = 231
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
-            ExplicitLeft = 426
           end
           object lbImgOrigWidthVal: TLabel
-            Left = 268
+            Left = 266
             Top = 4
             Width = 54
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
-            ExplicitLeft = 461
           end
           object lbImgOrigHeight: TLabel
-            Left = 327
+            Left = 325
             Top = 4
             Width = 58
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
-            ExplicitLeft = 523
           end
           object lbImgOrigHeightVal: TLabel
             Left = 364
