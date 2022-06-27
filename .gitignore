@@ -3,6 +3,9 @@ Win32/
 __history/
 *.dcu
 *.local
+*.~dsk
+*.dsk
+*.identcache
 Dependancies/image32_4.1/Examples/
 Dependancies/image32_4.1/Installation.txt
 Dependancies/image32_4.1/ReadMe.txt
