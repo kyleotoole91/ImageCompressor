@@ -30,7 +30,9 @@ This currently only supports .JPG image files.
 
 The installer can be downloaded from this link https://eireware.com
 
-Please ignore the warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
+This application has been published on Softpedia https://www.softpedia.com/get/Multimedia/Graphic/Digital-Photo-Tools/Turbo-Image-Compressor.shtml
+
+Please ignore the smart screen warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
 
 # License
 
