@@ -16,12 +16,12 @@ File_13=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl
 File_14=TSourceModule,'C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenceValidator.pas',0,1,1,32,2,0,0,,
 
 [Modules]
-Module0=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
-Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
-Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
-Module3=c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.DateUtils.pas
-Module4=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas
-Module5=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj
+Module0=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
+Module1=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj
+Module2=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
+Module3=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas
+Module4=c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.DateUtils.pas
+Module5=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas
 Module6=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas
 Module7=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Dependancies\superobject\superobject.pas
 Module8=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas
@@ -33,13 +33,16 @@ Module13=default.htm
 Count=14
 EditWindowCount=1
 
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas]
+ModuleType=TSourceModule
+
+[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj]
+ModuleType=TBaseProject
+
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas]
 ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uImageConfig.pas]
-ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas]
 ModuleType=TSourceModule
 
 [c:\program files (x86)\embarcadero\studio\21.0\source\rtl\common\System.DateUtils.pas]
@@ -47,9 +50,6 @@ ModuleType=TSourceModule
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uConstants.pas]
 ModuleType=TSourceModule
-
-[C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\TurboImageCompressor.dproj]
-ModuleType=TBaseProject
 
 [C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uSecrets.pas]
 ModuleType=TSourceModule
@@ -77,7 +77,7 @@ ModuleType=TURLModule
 
 [EditWindow0]
 ViewCount=14
-CurrentEditView=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
+CurrentEditView=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
 View0=0
 View1=1
 View2=2
@@ -99,21 +99,21 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=8766
-Height=7067
+Width=9917
+Height=9000
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=8766
-ClientHeight=7067
+ClientWidth=9917
+ClientHeight=9000
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1344
+LeftPanelSize=1896
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000F40E00000000000001400500000000000001000000005C0E000009000000446F636B53697465330100000000961A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=000008000101000000000B1300000000000001680700000000000001000000005C0E000009000000446F636B53697465330100000000DB2100001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=2000
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000F40E00000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000961A000009000000446F636B5369746534FFFFFFFF
+RightPanelData=000008000101000000000B1300000000000001D00700000000000001000000004412000009000000446F636B53697465320100000000DB21000009000000446F636B5369746534FFFFFFFF
 BottomPanelSize=0
 BottomPanelClients=DockSite1,MessageView
 BottomPanelData=0000080001020200000009000000446F636B53697465310F0000004D65737361676556696577466F726D1534000000000000022606000000000000FFFFFFFF
@@ -139,20 +139,20 @@ EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompresso
 [View2]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
-CursorX=54
-CursorY=174
-TopLine=171
+CursorX=11
+CursorY=175
+TopLine=172
 LeftCol=1
 Elisions=
-Bookmarks={1,140,9}
-EditViewName=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas
+Bookmarks={1,141,9}
+EditViewName=Borland.FormDesignerView
 
 [View3]
 CustomEditViewType=TEditView
 Module=C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uLicenseValidator.pas
-CursorX=2
-CursorY=172
-TopLine=155
+CursorX=140
+CursorY=81
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks={1,90,75}
@@ -300,8 +300,8 @@ StayOnTop=0
 Count=4
 Breakpoint0='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',578,'',0,1,'',1,0,0,'',1,'','','',0,''
 Breakpoint1='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmMain.pas',587,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint2='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas',131,'',0,1,'',1,0,0,'',1,'','','',0,''
-Breakpoint3='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas',89,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint2='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas',132,'',0,1,'',1,0,0,'',1,'','','',0,''
+Breakpoint3='C:\Users\kyle-\Documents\Embarcadero\Studio\Projects\ImageCompressor\Source\uFrmSplash.pas',90,'',0,1,'',1,0,0,'',1,'','','',0,''
 
 [EmbarcaderoWin32Debugger_AddressBreakpoints]
 Count=0
@@ -329,16 +329,18 @@ PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
-State=1
+State=2
 Left=146
 Top=269
 Width=8932
 Height=8519
 MaxLeft=-5
 MaxTop=-10
-ClientWidth=8849
-ClientHeight=8144
-BottomPanelSize=6806
+MaxWidth=8932
+MaxHeight=8519
+ClientWidth=10000
+ClientHeight=10077
+BottomPanelSize=8667
 BottomPanelClients=EditWindow0
 BottomPanelData=0000080000000000000000000000000000000000000000000000000100000000000000000C0000004564697457696E646F775F30FFFFFFFF
 
@@ -389,11 +391,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=1942
+Height=3875
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=1942
+ClientHeight=3875
 TBDockHeight=7154
 LRDockWidth=2000
 Dockable=1
@@ -407,17 +409,22 @@ Docked=1
 State=0
 Left=0
 Top=425
-Width=1344
-Height=2981
+Width=1896
+Height=4913
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1344
-ClientHeight=2981
+ClientWidth=1896
+ClientHeight=4913
 TBDockHeight=5192
-LRDockWidth=1344
+LRDockWidth=1896
 Dockable=1
 StayOnTop=0
-SplitPos=79
+SplitPos=111
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Action,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -428,11 +435,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=6394
+Height=2885
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=6394
+ClientHeight=2885
 TBDockHeight=5962
 LRDockWidth=2510
 Dockable=1
@@ -444,8 +451,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-1528
-Top=245
+Left=0
+Top=0
 Width=276
 Height=365
 MaxLeft=-1
@@ -501,7 +508,6 @@ Column0Width=145
 Column1Width=100
 Column2Width=115
 Column3Width=374
-Column4Width=10
 
 [LocalVarsWindow]
 PercentageSizes=1
@@ -550,11 +556,11 @@ State=0
 Left=0
 Top=0
 Width=2339
-Height=971
+Height=1212
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2339
-ClientHeight=971
+ClientHeight=1212
 TBDockHeight=2317
 LRDockWidth=2823
 Dockable=1
@@ -615,11 +621,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=6394
+Height=0
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=6394
+ClientHeight=0
 TBDockHeight=4885
 LRDockWidth=7151
 Dockable=1
@@ -631,8 +637,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=380
-Top=817
+Left=0
+Top=0
 Width=2854
 Height=3212
 MaxLeft=-1
@@ -650,8 +656,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-8
-Top=-124
+Left=-276
+Top=-321
 Width=1849
 Height=3144
 MaxLeft=-1
@@ -735,11 +741,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1344
+Width=1896
 Height=3471
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1344
+ClientWidth=1896
 ClientHeight=3471
 TBDockHeight=3683
 LRDockWidth=1896
@@ -755,11 +761,11 @@ State=0
 Left=0
 Top=0
 Width=2000
-Height=6394
+Height=0
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=6394
+ClientHeight=0
 TBDockHeight=4885
 LRDockWidth=5307
 Dockable=1
@@ -819,8 +825,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=28
+Left=8
+Top=8
 Width=3823
 Height=1423
 MaxLeft=-1
@@ -869,14 +875,14 @@ Docked=1
 State=0
 Left=0
 Top=28
-Width=1344
+Width=1896
 Height=3471
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1344
+ClientWidth=1896
 ClientHeight=3471
 TBDockHeight=3548
-LRDockWidth=1344
+LRDockWidth=1896
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -894,11 +900,11 @@ State=0
 Left=0
 Top=533
 Width=2000
-Height=1942
+Height=3875
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2000
-ClientHeight=1942
+ClientHeight=3875
 TBDockHeight=4144
 LRDockWidth=2000
 Dockable=1

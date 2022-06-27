@@ -70,7 +70,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <Icon_MainIcon>JPGFileCompress_Icon.ico</Icon_MainIcon>
+        <Icon_MainIcon>Assets\compressG150.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>Assets\compressG44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <DCC_UnitSearchPath>.\Dependancies\image32_4.1\source;.\Dependancies\superobject;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -92,7 +92,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
-        <Icon_MainIcon>JPGFileCompress_Icon.ico</Icon_MainIcon>
+        <Icon_MainIcon>Assets\compressG150.ico</Icon_MainIcon>
         <VerInfo_Build>3</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.3;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -106,7 +106,7 @@
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <DCC_UnitSearchPath>.\Dependencies\image32_4.1\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <Icon_MainIcon>JPGFileCompress_Icon1.ico</Icon_MainIcon>
+        <Icon_MainIcon>Assets\compressG150.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>Assets\compressG44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>

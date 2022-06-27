@@ -16,6 +16,7 @@ type
     lbVersion: TLabel;
     Image1: TImage;
     lbMessage: TLabel;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
