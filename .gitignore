@@ -2,7 +2,9 @@ Assets/
 Win32/
 __history/
 *.dcu
+*.local
 Dependancies/image32_4.1/Examples/
 Dependancies/image32_4.1/Installation.txt
 Dependancies/image32_4.1/ReadMe.txt
 Source/uSecrets.pas
+
