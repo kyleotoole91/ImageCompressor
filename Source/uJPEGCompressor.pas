@@ -34,6 +34,7 @@ type
     fImageWidth,
     fImageHeight,
     fMinQuality: integer;
+    fReplaceOriginal: boolean;
     procedure CompressJPG(const AJPEG: TJPEGImage; const ACompressionQuality: integer);
     function SizeOfJPEG(const AJPEG: TJPEGImage): Int64;
     procedure TryCompression(const AQuality: integer=cMinQuality);
@@ -66,6 +67,7 @@ type
     property RotateAmount: TRotateAmount read fRotateAmount write fRotateAmount;
     property ResampleMode: TResampleMode read fResampleMode write fResampleMode;
     property JPEGOriginal: TJPEGImage read fJPEGOriginal write fJPEGOriginal;
+    property ReplaceOriginal: boolean read fReplaceOriginal write fReplaceOriginal;
   end;
 
 implementation
@@ -75,6 +77,7 @@ implementation
 constructor TJPEGCompressor.Create;
 begin
   inherited;
+  fReplaceOriginal := false;
   fCompress := true;
   fCompressionQuality := cMaxQuality;
   fTargetKB := 0;
@@ -296,12 +299,16 @@ var
   outputFilename: string;
 begin
   try
-    outputFilename := ExtractFileName(fSourceFilename);
-    if FileExists(fOutputDir+outputFilename) then
-      DeleteFile(fOutputDir+outputFilename)
-    else
-      ForceDirectories(fOutputDir);
-    fJPEG.SaveToFile(fOutputDir+outputFilename);
+    if fReplaceOriginal then
+      fJPEG.SaveToFile(fSourceFilename)
+    else begin
+      outputFilename := ExtractFileName(fSourceFilename);
+      if FileExists(fOutputDir+outputFilename) then
+        DeleteFile(fOutputDir+outputFilename)
+      else
+        ForceDirectories(fOutputDir);
+      fJPEG.SaveToFile(fOutputDir+outputFilename);
+    end;
     result := FileExists(fOutputDir+outputFilename);
   except
     on e: exception do begin

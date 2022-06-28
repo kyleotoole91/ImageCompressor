@@ -9,7 +9,8 @@ uses
   uLicenseValidator in 'Source\uLicenseValidator.pas',
   uSecrets in 'Source\uSecrets.pas',
   uConstants in 'Source\uConstants.pas',
-  uDlgFilter in 'Source\uDlgFilter.pas' {DlgFilter};
+  uDlgFilter in 'Source\uDlgFilter.pas' {DlgFilter},
+  uDlgProgress in 'Source\uDlgProgress.pas' {DlgProgress};
 
 {$R *.res}
 

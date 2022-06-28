@@ -361,15 +361,15 @@ object FrmMain: TFrmMain
           end
           object GroupBox4: TGroupBox
             Left = 1471
-            Top = 66
+            Top = 67
             Width = 152
             Height = 81
             Anchors = [akTop, akRight, akBottom]
             Caption = ' Global '
             TabOrder = 7
             object lbFilename: TLabel
-              Left = 18
-              Top = 55
+              Left = 9
+              Top = 56
               Width = 46
               Height = 13
               Hint = '.json'
@@ -378,9 +378,9 @@ object FrmMain: TFrmMain
               ShowHint = True
             end
             object cbApplyToAll: TCheckBox
-              Left = 18
-              Top = 28
-              Width = 108
+              Left = 9
+              Top = 25
+              Width = 120
               Height = 17
               Hint = 'Apply the current settings displayed when you click Start'
               Caption = 'Apply to all images'
@@ -392,9 +392,9 @@ object FrmMain: TFrmMain
               OnClick = cbCreateJSONFileClick
             end
             object ebFilename: TEdit
-              Left = 70
-              Top = 51
-              Width = 75
+              Left = 61
+              Top = 52
+              Width = 84
               Height = 21
               Hint = 'Leaving blank will not create a JSON file.'
               ParentShowHint = False
@@ -793,15 +793,6 @@ object FrmMain: TFrmMain
       Visible = False
       OnClick = btnScanClick
     end
-    object cbDeepScan: TCheckBox
-      Left = 433
-      Top = 3
-      Width = 70
-      Height = 17
-      Caption = 'Deep Scan'
-      TabOrder = 3
-      Visible = False
-    end
     object btnApply: TButton
       Left = 1473
       Top = 3
@@ -872,14 +863,6 @@ object FrmMain: TFrmMain
         OnClick = CloseApplication1Click
       end
     end
-    object Filter1: TMenuItem
-      Caption = 'Filter'
-      object FileslargerthannKB1: TMenuItem
-        Caption = 'Files larger than (KB)'
-        ShortCut = 115
-        OnClick = FileslargerthannKB1Click
-      end
-    end
     object View1: TMenuItem
       Caption = 'View'
       object miHideFiles: TMenuItem
@@ -917,6 +900,27 @@ object FrmMain: TFrmMain
         Caption = 'Refresh'
         ShortCut = 116
         OnClick = miRefreshClick
+      end
+    end
+    object Filter1: TMenuItem
+      Caption = 'Filter'
+      object miFilesSizeFilter: TMenuItem
+        Caption = 'Files larger than (KB)'
+        ShortCut = 115
+        OnClick = miFilesSizeFilterClick
+      end
+    end
+    object Settings1: TMenuItem
+      Caption = 'Settings'
+      OnClick = Settings1Click
+      object miDeepScan: TMenuItem
+        Caption = 'Deep Scan '
+        OnClick = miDeepScanClick
+      end
+      object miReplaceOriginals: TMenuItem
+        Caption = 'Replace Originals (save disk space)'
+        Hint = 'Save disk space'
+        OnClick = miReplaceOriginalsClick
       end
     end
     object miUpgrade: TMenuItem

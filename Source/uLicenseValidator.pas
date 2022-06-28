@@ -56,8 +56,13 @@ function TLicenseValidator.LicenseIsValid(const AIncrementUsesCount: boolean=tru
 var
   machinesLeft: integer;
 begin
-  result := false;
   try
+    {$IFDEF DEBUG}
+    result := true;
+    Exit;
+    {$ELSE}
+    result := false;
+    {$ENDIF}
     fNowDate := 0;
     if fLicenseKey = '' then
       fLicenseKey := GetLicenseKey;
