@@ -26,13 +26,13 @@ You have an option to include a json file in the output directory, you may impor
 
 In View options, Apply Best Fit will increase image preview quality by apply a scale to the JPEG to prevent the TImage from squashing it down to fit which results in pixellation. If DevExpress is installed, a TdxSmartImage graphic may be applied to the TImage, this results in better image preview quality at all sizes, removing the need for Apply Best Fit.
 
-This currently only supports .JPG image files.
+Currently only supports .JPG image files.
 
-The installer can be downloaded from this link https://eireware.com
+Product info and support page: https://eireware.com
 
-This application has been published on Softpedia https://www.softpedia.com/get/Multimedia/Graphic/Digital-Photo-Tools/Turbo-Image-Compressor.shtml
+Published on Softpedia: https://www.softpedia.com/get/Multimedia/Graphic/Digital-Photo-Tools/Turbo-Image-Compressor.shtml
 
-Please ignore the smart screen warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
+Please ignore the Windows Smart Screen warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
 
 # License
 
