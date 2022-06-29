@@ -8,8 +8,9 @@ uses
 type
   TResampleMode = (rmNone=0, rmFastest=1, rmRecommended=2, rmBest=3);
   TRotateAmount = (raNone=0, ra90=1, ra180=2, ra270=3);
+
   TJPEGCompressor = class(TObject)
-  private
+  strict private
     fResampleMode: TResampleMode;
     fRotateAmount: TRotateAmount;
     fOriginalFilesize,
@@ -40,13 +41,13 @@ type
     procedure TryCompression(const AQuality: integer=cMinQuality);
     procedure SetOutputDir(const Value: string);
     procedure RetryWithReducedScale;
+    procedure ShrinkAndRotate;
+    function SaveToDisk: boolean;
+    function SaveToStream: boolean;
   public
     constructor Create;
     destructor Destroy; override;
     function Process(const AFilename: string=''; const ASaveToDisk: boolean=true): boolean;
-    procedure ShrinkAndRotate;
-    function SaveToDisk: boolean;
-    function SaveToStream: boolean;
     property SourceFilename: string read fSourceFilename;
     property OutputDir: string read fOutputDir write SetOutputDir;
     property ApplyGraphics: boolean read fApplyGraphics write fApplyGraphics;
