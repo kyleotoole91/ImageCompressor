@@ -3,8 +3,13 @@ unit uConstants;
 interface
 
 const
+  //frmMain
+  previewMinWidth=530;
+  origMinWidth=400;
+  oversizeAllowance=75;
+  //frmSplash
   cSplashBGColor = 5209163;
-
+  //uJPEGCompressor
   cScaleBelowQuality = 25;
   cMinQuality = 1;
   cMaxQuality = 100;
@@ -13,10 +18,8 @@ const
   cBytesToKB = 1024;
   cDefaultMaxWidth = 2560;
   cDefaultMaxHeight = 1920;
-
+  //uLicenseValidator
   cUTCZone = '?timeZone=UTC';
-  cTimeAPIURL = 'https://timeapi.io/api/Time/current/zone';
-  cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
   cGumRoadPerma = 'TICWS';
   cGumRoadPermaParam = 'product_permalink';
   cGumRoadKeyParam = 'license_key';
@@ -32,8 +35,9 @@ const
   {$ELSE}
   cMaxUses = 3;
   {$ENDIF}
-
-  oversizeAllowance=75;
+  //third parties
+  cTimeAPIURL = 'https://timeapi.io/api/Time/current/zone';
+  cGumRoadLicenseURL = 'https://api.gumroad.com/v2/licenses/verify';
   cPayPalDonateLink = 'https://www.paypal.me/TurboImageCompressor';
   cGumRoadLink = 'https://eireware.gumroad.com/l/TICWS';
   cActivatedCaption = 'Turbo Image Compressor - Pro';

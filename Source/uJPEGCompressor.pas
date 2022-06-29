@@ -143,6 +143,8 @@ begin
         if fTargetKB > 0 then begin
           if (fCompressedFilesize = 0) or
              (fCompressedFilesize > fTargetKB) then begin
+            if ((SizeOfJPEG(fJPEG) / 2) / cBytesToKB) >= fTargetKB then //preemptively reduce size for performance
+              fJPEG.Scale := jsHalf;
             fMinQuality := cScaleBelowQuality; //Retry with reduced scale beyond this level
             try
               TryCompression(cMaxQuality-cTargetInterval);
@@ -184,7 +186,7 @@ procedure TJPEGCompressor.RetryWithReducedScale;
 var
   scale: TJPEGScale;
 begin
-  scale := jsFullSize;
+  scale := fJPEG.Scale;
   while (fCompressedFilesize > fTargetKB) and
         (scale <= TJPEGScale.jsQuarter) do begin
     fMemoryStreamOrig.Position := 0;

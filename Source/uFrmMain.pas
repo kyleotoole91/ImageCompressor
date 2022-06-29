@@ -206,31 +206,31 @@ type
     fStartTime,
     fEndTime: TDateTime;
     fTotalSavedKB: Int64;
-    fFilenames: TStringDynArray;
-    fJPEGCompressor: TJPEGCompressor;
-    fSelectedFilename: string;
-    fImageConfig: TImageConfig;
-    fImageConfigList: TDictionary<string, TImageConfig>;
     fLoading: boolean;
     fLicenseValidator: TLicenseValidator;
     fFormCreating: boolean;
-    procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
-    procedure OpenURL(const AURL: string);
+    fFilenames: TStringDynArray;
+    fSelectedFilename: string;
+    fJPEGCompressor: TJPEGCompressor;
+    fImageConfig: TImageConfig;
+    fImageConfigList: TDictionary<string, TImageConfig>;
     function ValidSelection: boolean;
-    procedure CheckHideLabels;
-    procedure LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
-    procedure LoadImageConfig(const AFilename: string);
-    function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
-    procedure ObjToForm;
-    procedure SetControlState(const AEnabled: boolean);
-    procedure SetChildControlES(const AParentControl: TControl; const AEnabled: Boolean);
-    procedure LoadImagePreview(const AFilename: string); overload;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
     function GetSelectedFileName: string;
     function FileIsSelected: boolean;
     function SelectedFileCount: integer;
     function SizeOfFileKB(const AFilename: string): uInt64;
+    function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
+    procedure ObjToForm;
     procedure ScanDisk;
+    procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
+    procedure OpenURL(const AURL: string);
+    procedure CheckHideLabels;
+    procedure LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
+    procedure LoadImageConfig(const AFilename: string);
+    procedure SetControlState(const AEnabled: boolean);
+    procedure SetChildControlES(const AParentControl: TControl; const AEnabled: Boolean);
+    procedure LoadImagePreview(const AFilename: string); overload;
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
     procedure ProcessFile(const AFilename: string);
     procedure CreateJSONFile(const AJSON: ISuperObject);
@@ -426,7 +426,7 @@ begin
   fLoading := true;
   try
     if Assigned(fImageConfig) and
-      (fSelectedFilename <> '') then begin
+       (fSelectedFilename <> '') then begin
       with fImageConfig do begin
         cbCompress.Checked := Compress;
         seQuality.Value := Quality;
@@ -526,7 +526,7 @@ begin
   end;
 end;
 
-{ If DevExpress is installed, force the use of TdxSmartImage Graphic. This result in better image quality
+{ If DevExpress is installed, force the use of TdxSmartImage Graphic. This results in better image quality at all scales
   of large images that get squashed into the TImage control. Using this, removes the need for the LoadImage() method.
 procedure TFrmMain.LoadImagePreview(const AMS: TMemoryStream);
 var
@@ -737,7 +737,7 @@ var
     ms := TMemoryStream.Create;
     try
       AJPEG.SaveToStream(ms);
-      result := Round(ms.Size / 1024);
+      result := Round(ms.Size / cBytesToKB);
     finally
       ms.Free;
     end;
@@ -762,8 +762,8 @@ begin
      Assigned(AImage) and
      (not fFormCreating) then begin
     try
-      AJPEG.Scale := jsHalf; //involke change so compression quality preview shows
-      if miApplyBestFit.Checked then begin  //Set scale for improved image quality
+      AJPEG.Scale := jsHalf; //switching scale forces update which shows the compressed version
+      if miApplyBestFit.Checked then begin  //Set scale (reduces shrink artifacting at a low cost)
         SetLabels;
         scale := integer(AJPEG.Scale);
         while (scale <= 3) and
@@ -914,9 +914,6 @@ begin
 end;
 
 procedure TFrmMain.CheckHideLabels;
-const
-  previewMinWidth=530;
-  origMinWidth=400;
 begin
   cbStretchOriginal.Visible := false;
   try
@@ -934,7 +931,7 @@ begin
     lbImgOrigHeightVal.Visible := pnlOriginal.Width > origMinWidth;
   finally
     if not cbStretchOriginal.Visible then
-      cbStretchOriginal.Visible := true; //workaround painting issues
+      cbStretchOriginal.Visible := true; //force update
   end;
 end;
 
