@@ -13,7 +13,7 @@ const
   cScaleBelowQuality = 25;
   cMinQuality = 1;
   cMaxQuality = 100;
-  cDefaultQuality = 50;
+  cDefaultQuality = 80;
   cTargetInterval = 5;
   cBytesToKB = 1024;
   cDefaultMaxWidth = 2560;

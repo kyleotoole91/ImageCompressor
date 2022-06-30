@@ -138,7 +138,6 @@ type
     procedure mniSelectAllClick(Sender: TObject);
     procedure cblFilesClick(Sender: TObject);
     procedure ebStartPathExit(Sender: TObject);
-    procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CheckCompressPreviewLoad(Sender: TObject);
     procedure seMaxWidthPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure seMaxHeightPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -214,7 +213,7 @@ type
     fJPEGCompressor: TJPEGCompressor;
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
-    function ValidSelection: boolean;
+    function ValidSelection(Sender: TObject): boolean;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
     function GetSelectedFileName: string;
     function FileIsSelected: boolean;
@@ -683,7 +682,7 @@ begin
     O[Count-1].jInteger['fileSize'] := ACompressedFileSize;
     O[Count-1].jInteger['originalFilesize'] := AOriginalFileSize;
   end;
-  fMessages.Add('Added '+ExtractFileName(fImageConfig.Filename)+' to JSON file')
+  fMessages.Add('Added '+fImageConfig.Filename+' to JSON file')
 end;
 
 procedure TFrmMain.Scan(Sender: TObject);
@@ -823,15 +822,18 @@ end;
 procedure TFrmMain.btnStartClick(Sender: TObject);
 var
   filename: string;
+  startTime: TDateTime;
 begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
+  startTime := Now;
   try
     if ((fReplaceOriginals) or
         (ExtractFileName(ebStartPath.Text) = '') or
         (ExtractFilePath(ebStartPath.Text) <> ExtractFilePath(ebOutputDir.Text)) or
         (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                            'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and ValidSelection then begin
+                            'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
+        ValidSelection(Sender) then begin
       Screen.Cursor := crHourGlass;
       DlgProgress := TDlgProgress.Create(Self);
       try
@@ -870,11 +872,14 @@ begin
           fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
           fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
           MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
-                     'Total saved (KB): '+fTotalSavedKB.ToString, mtInformation, [mbOK], 0);
+                     'Total saved (KB): '+fTotalSavedKB.ToString+sLineBreak+
+                     'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
         end else begin
           fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
-          MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. ', mtInformation, [mbOK], 0);
+          MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
+                     'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
         end;
+        fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
         fMessages.Add('--------------------- End -------------------------');
         mmMessages.Lines.Add(fMessages.Text);
         Screen.Cursor := crDefault;
@@ -986,11 +991,14 @@ procedure TFrmMain.miReplaceOriginalsClick(Sender: TObject);
 begin
   miReplaceOriginals.Checked := not miReplaceOriginals.Checked;
   fReplaceOriginals := miReplaceOriginals.Checked;
-  ebOutputDir.Enabled := not fReplaceOriginals;
-  ebFilename.Enabled := not fReplaceOriginals;
-  cbCreateJSONFile.Enabled := not fReplaceOriginals;
-  if cbCreateJSONFile.Checked then
-    cbCreateJSONFile.Checked := false;
+  if ValidSelection(Sender) then begin
+    ebOutputDir.Enabled := not fReplaceOriginals;
+    ebFilename.Enabled := not fReplaceOriginals;
+    cbCreateJSONFile.Enabled := not fReplaceOriginals;
+    if cbCreateJSONFile.Checked then
+      cbCreateJSONFile.Checked := false;
+  end else
+    miReplaceOriginals.Checked := false;
 end;
 
 procedure TFrmMain.OpenURL(const AURL: string);
@@ -1022,12 +1030,6 @@ end;
 procedure TFrmMain.ebStartPathExit(Sender: TObject);
 begin
   Scan(Sender);
-end;
-
-procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-    Scan(Sender);
 end;
 
 procedure TFrmMain.ProcessFile(const AFilename: string);
@@ -1096,14 +1098,26 @@ end;
 
 procedure TFrmMain.ScanDisk;
 begin
+  if fDeepScan then
+    DlgProgress := TDlgProgress.Create(Self);
   try
+    if fDeepScan then begin
+      DlgProgress.Text := 'Scanning disk, please wait...';
+      DlgProgress.Show;
+      Application.ProcessMessages;
+    end;
+    try
+      if fDeepScan then
+        fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soAllDirectories)
+      else
+        fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soTopDirectoryOnly);
+    except
+      on e: exception do
+        MessageDlg(e.Message, mtError, mbOKCancel, 0)
+    end;
+  finally
     if fDeepScan then
-      fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soAllDirectories)
-    else
-      fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soTopDirectoryOnly);
-  except
-    on e: exception do
-      MessageDlg(e.Message, mtError, mbOKCancel, 0)
+      DlgProgress.Free;
   end;
 end;
 
@@ -1345,15 +1359,16 @@ begin
   ResizeEvent(Sender)
 end;
 
-function TFrmMain.ValidSelection: boolean;
+function TFrmMain.ValidSelection(Sender: TObject): boolean;
 var
   sl: TStringList;
   hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals: boolean;
 begin
   sl := TStringList.Create;
   try
-    if not FileIsSelected then
-      MessageDlg('• Please select at least one image to process', mtError, mbOKCancel, 0)
+    if (Sender <> miReplaceOriginals) and
+       (not FileIsSelected) then
+      MessageDlg('Please select at least one image to process', mtError, mbOKCancel, 0)
     else if fEvaluationMode then begin
       HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
       if hasReplaceOriginals then
@@ -1364,6 +1379,8 @@ begin
         sl.Add('• Target file size is only available in the Pro version.');
       if hasResampling then
         sl.Add('• The selected resampling mode is not available in the free version.');
+      if sl.Count = 1 then
+        sl.CommaText := sl.CommaText.Replace('• ', '');
       if sl.Count > 0 then begin
         sl.Add(' ');
         sl.Add('Would you like to be directed to our web page to purchase the Pro version now?');

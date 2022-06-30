@@ -44,6 +44,7 @@ type
     procedure ShrinkAndRotate;
     function SaveToDisk: boolean;
     function SaveToStream: boolean;
+    procedure CompressToTarget;
   public
     constructor Create;
     destructor Destroy; override;
@@ -140,21 +141,9 @@ begin
       end;
       ShrinkAndRotate;
       if fCompress then begin
-        if fTargetKB > 0 then begin
-          if (fCompressedFilesize = 0) or
-             (fCompressedFilesize > fTargetKB) then begin
-            if ((SizeOfJPEG(fJPEG) / 2) / cBytesToKB) >= fTargetKB then //preemptively reduce size for performance
-              fJPEG.Scale := jsHalf;
-            fMinQuality := cScaleBelowQuality; //Retry with reduced scale beyond this level
-            try
-              TryCompression(cMaxQuality-cTargetInterval);
-              if fCompressedFilesize > fTargetKB then
-                RetryWithReducedScale;
-            finally
-              fMinQuality := cMinQuality;
-            end;
-          end;
-        end else
+        if fTargetKB > 0 then
+          CompressToTarget
+        else
           TryCompression(fCompressionQuality);
       end else if fAlreadyCompressed then begin
         CompressJPG(fJPEG, cMaxQuality);
@@ -164,13 +153,13 @@ begin
       fImageHeight := fJPEG.Height;
       fCompressedFilesize := Round(SizeOfJPEG(fJPEG) / cBytesToKB);
       fEndTime := Now;
-      fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+MilliSecondsBetween(fStartTime, fEndTime).ToString+'ms');
-      fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
-      fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
-      fMessages.Add('JPEG Saved to: '+fOutputDir+ExtractFileName(fSourceFilename));
-      if ASaveToDisk then
-        SaveToDisk
-      else
+      if ASaveToDisk then begin
+        SaveToDisk;
+        fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+MilliSecondsBetween(fStartTime, fEndTime).ToString+'ms');
+        fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
+        fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
+        fMessages.Add('JPEG Saved to: '+fOutputDir+ExtractFileName(fSourceFilename));
+      end else
         SaveToStream;
     end else
       fMessages.Add(fSourceFilename+' not found');
@@ -210,6 +199,24 @@ begin
       fJPEG.Compress;
     finally
       fCompressedFilesize := Round(SizeOfJPEG(fJPEG) / cBytesToKB);
+    end;
+  end;
+end;
+
+procedure TJPEGCompressor.CompressToTarget;
+begin
+  if (fCompressedFilesize = 0) or
+     (fCompressedFilesize > fTargetKB) then begin
+    fJPEG.Scale := jsFullsize;
+    if ((SizeOfJPEG(fJPEG) / 3) / cBytesToKB) >= fTargetKB then //~1/3 for @50 quality, preemptively downscale for performance
+      fJPEG.Scale := jsHalf;
+    fMinQuality := cScaleBelowQuality; //retry with reduced scale below this quality level
+    try
+      TryCompression(cMaxQuality-cTargetInterval);
+      if fCompressedFilesize > fTargetKB then
+        RetryWithReducedScale;
+    finally
+      fMinQuality := cMinQuality;
     end;
   end;
 end;
@@ -254,7 +261,10 @@ begin
       if ((not shrinked) and (fShrinkByMaxPx > 0)) or
          ((fRotateAmount <> raNone)) then begin
         img32.LoadFromStream(fMemoryStream);
-        if fApplyGraphics and (not shrinked) and ((fShrinkByMaxPx > 0) and (fShrinkByMaxPx < size)) then
+        if (fApplyGraphics) and
+           (not shrinked) and
+           ((fShrinkByMaxPx > 0) and
+            (fShrinkByMaxPx < size)) then
           img32.Resize(Round(fJPEG.Width * reducePC), Round(fJPEG.Height * reducePC));
         case fRotateAmount of
           ra90: img32.Rotate(angle90);

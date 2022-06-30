@@ -18,7 +18,7 @@ object DlgProgress: TDlgProgress
   TextHeight = 13
   object Label1: TLabel
     Left = 122
-    Top = 50
+    Top = 52
     Width = 170
     Height = 13
     Alignment = taCenter

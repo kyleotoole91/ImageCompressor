@@ -169,10 +169,10 @@ object FrmMain: TFrmMain
           object cbCompress: TCheckBox
             Left = 11
             Top = 66
-            Width = 64
+            Width = 80
             Height = 17
             Hint = 'Maintaines aspect ratio'
-            Caption = 'Compress'
+            Caption = 'Compression'
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
@@ -322,25 +322,20 @@ object FrmMain: TFrmMain
             Top = 12
             Width = 1520
             Height = 21
-            Hint = 
-              'Double click to show select dialog. Press Enter or leave field t' +
-              'o apply'
+            Hint = 'Double click to show select dialog. Leave field to apply'
             Anchors = [akLeft, akTop, akRight]
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
             OnDblClick = ShowFolderSelect
             OnExit = ebStartPathExit
-            OnKeyDown = ebStartPathKeyDown
           end
           object ebOutputDir: TEdit
             Left = 103
             Top = 39
             Width = 1520
             Height = 21
-            Hint = 
-              'Double click to show select dialog. Press Enter or leave field t' +
-              'o apply'
+            Hint = 'Double click to show select dialog'
             Anchors = [akLeft, akTop, akRight]
             ParentShowHint = False
             ShowHint = True
@@ -365,7 +360,7 @@ object FrmMain: TFrmMain
             Width = 152
             Height = 81
             Anchors = [akTop, akRight, akBottom]
-            Caption = ' Global '
+            Caption = ' Globals '
             TabOrder = 7
             object lbFilename: TLabel
               Left = 9
