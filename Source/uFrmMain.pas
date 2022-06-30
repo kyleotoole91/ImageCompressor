@@ -123,6 +123,7 @@ type
     miDeepScan: TMenuItem;
     miReplaceOriginals: TMenuItem;
     miClearFiles: TMenuItem;
+    miSaveSettings: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -189,6 +190,7 @@ type
     procedure Settings1Click(Sender: TObject);
     procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miClearFilesClick(Sender: TObject);
+    procedure miSaveSettingsClick(Sender: TObject);
   private
     { Private declarations }
     fDirectoryScanned,
@@ -224,7 +226,7 @@ type
     function SelectedFileCount: integer;
     function SizeOfFileKB(const AFilename: string): uInt64;
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
-    procedure ObjToForm;
+    procedure ObjToForm(AImageConfig: TImageConfig=nil);
     procedure ScanDisk;
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure OpenURL(const AURL: string);
@@ -240,6 +242,8 @@ type
     procedure ClearConfigList;
     procedure SetEvaluationMode(const Value: boolean);
     procedure AcceptFiles(var AMsg: TMessage); message WM_DROPFILES;
+    procedure SaveFormSettings;
+    procedure LoadFormSettings;
   public
     { Public declarations }
     property EvaluationMode: boolean read fEvaluationMode write SetEvaluationMode;
@@ -251,7 +255,7 @@ var
 implementation
 
 uses
-  uDlgFilter, uDlgProgress;
+  uDlgFilter, uDlgProgress, REST.JSON;
 
 {$R *.dfm}
 
@@ -353,6 +357,7 @@ begin
     Screen.Cursor := crDefault;
     Scan(Sender);
     fFormClosing := false;
+    LoadFormSettings;
     inherited;
   end;
 end;
@@ -431,13 +436,18 @@ begin
     fImageConfig.ResampleMode := rmFastest;
 end;
 
-procedure TFrmMain.ObjToForm;
+procedure TFrmMain.ObjToForm(AImageConfig: TImageConfig=nil);
+var
+  imageConfig: TImageConfig;
 begin
   fLoading := true;
   try
-    if Assigned(fImageConfig) and
-       (fSelectedFilename <> '') then begin
-      with fImageConfig do begin
+    if Assigned(AImageConfig) then
+      imageConfig := AImageConfig
+    else
+      imageConfig := fImageConfig;
+    if Assigned(imageConfig) then begin
+      with imageConfig do begin
         cbCompress.Checked := Compress;
         seQuality.Value := Quality;
         tbQuality.Position := Quality;
@@ -457,7 +467,8 @@ begin
           seMaxWidthPx.Value := ShrinkByValue
         else
           seMaxHeightPx.Value := ShrinkByValue;
-        Filename := fSelectedFilename;
+        if fSelectedFilename <> '' then
+          Filename := fSelectedFilename;
       end;
     end;
   finally
@@ -773,6 +784,47 @@ begin
     O[Count-1].jInteger['originalFilesize'] := AOriginalFileSize;
   end;
   fMessages.Add('Added '+fImageConfig.Filename+' to JSON file')
+end;
+
+procedure TFrmMain.SaveFormSettings;
+var
+  imgConfig: TImageConfig;
+  jsonStr: string;
+  json: ISuperObject;
+begin
+  imgConfig := TImageConfig.Create;
+  try
+    imgConfig := FormToObj(imgConfig);
+    jsonStr := TJson.ObjectToJsonString(imgConfig);
+    json := SO(jsonStr);
+    json.SaveTo(cSettingsFilename);
+  finally
+    imgConfig.Free;
+    json := nil;
+  end;
+end;
+
+procedure TFrmMain.LoadFormSettings;
+var
+  imgConfig: TImageConfig;
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  try
+    if FileExists(cSettingsFilename) then begin
+      sl.LoadFromFile(cSettingsFilename);
+      imgConfig := TJson.JsonToObject<TImageConfig>(sl.Text);
+      try
+        if Assigned(imgConfig) then
+          ObjToForm(imgConfig);
+      finally
+        if Assigned(imgConfig) then
+          imgConfig.Free
+      end;
+    end;
+  finally
+    sl.Free;
+  end;
 end;
 
 procedure TFrmMain.Scan(Sender: TObject);
@@ -1232,12 +1284,14 @@ begin
       Application.ProcessMessages;
     end;
     try
-      if fDeepScan then
-        filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soAllDirectories)
-      else
-        filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soTopDirectoryOnly);
-      for filename in filenames do
-        fFilenameList.Add(filename);  
+      if ebStartPath.Text <> '' then begin
+        if fDeepScan then
+          filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soAllDirectories)
+        else
+          filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soTopDirectoryOnly);
+        for filename in filenames do
+          fFilenameList.Add(filename);
+      end;
       fDirectoryScanned := true;
     except
       on e: exception do
@@ -1579,6 +1633,12 @@ begin
       cbRotateAmount.ItemIndex := 0;
       CheckCompressPreviewLoad(Sender);
   end;
+end;
+
+procedure TFrmMain.miSaveSettingsClick(Sender: TObject);
+begin
+  SaveFormSettings;
+  ShowMessage('The current compression settings have been saved and will be restored on the next startup.')
 end;
 
 procedure TFrmMain.miShowOriginalClick(Sender: TObject);

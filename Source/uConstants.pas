@@ -4,6 +4,7 @@ interface
 
 const
   //frmMain
+  cSettingsFilename='settings.json';
   previewMinWidth=530;
   origMinWidth=400;
   oversizeAllowance=75;

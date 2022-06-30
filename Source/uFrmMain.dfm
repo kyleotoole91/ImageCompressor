@@ -924,6 +924,10 @@ object FrmMain: TFrmMain
         Hint = 'Save disk space'
         OnClick = miReplaceOriginalsClick
       end
+      object miSaveSettings: TMenuItem
+        Caption = 'Save Current Settings'
+        OnClick = miSaveSettingsClick
+      end
     end
     object miUpgrade: TMenuItem
       Caption = 'Product'
