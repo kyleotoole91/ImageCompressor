@@ -137,7 +137,6 @@ type
     procedure mniUnSelectAllClick(Sender: TObject);
     procedure mniSelectAllClick(Sender: TObject);
     procedure cblFilesClick(Sender: TObject);
-    procedure ebStartPathExit(Sender: TObject);
     procedure CheckCompressPreviewLoad(Sender: TObject);
     procedure seMaxWidthPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure seMaxHeightPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -187,6 +186,7 @@ type
     procedure miDeepScanClick(Sender: TObject);
     procedure miReplaceOriginalsClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
+    procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     fReplaceOriginals,
@@ -718,6 +718,10 @@ begin
       SetControlState(imageLoaded);
     end;
   finally
+    if cblFiles.Items.Count = 0 then begin
+      imgHome.Picture.Assign(nil);
+      imgOriginal.Picture.Assign(nil);
+    end;
     mmMessages.Lines.Add(fMessages.Text);
     fMessages.Clear;
     cblFiles.Items.EndUpdate;
@@ -1027,9 +1031,10 @@ begin
   btnApply.Enabled := true;
 end;
 
-procedure TFrmMain.ebStartPathExit(Sender: TObject);
+procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  Scan(Sender);
+  if Key = VK_RETURN then
+    Scan(Sender);
 end;
 
 procedure TFrmMain.ProcessFile(const AFilename: string);

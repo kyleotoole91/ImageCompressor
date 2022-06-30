@@ -322,13 +322,13 @@ object FrmMain: TFrmMain
             Top = 12
             Width = 1520
             Height = 21
-            Hint = 'Double click to show select dialog. Leave field to apply'
+            Hint = 'Double click to show select dialog. Press Enter to apply'
             Anchors = [akLeft, akTop, akRight]
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
             OnDblClick = ShowFolderSelect
-            OnExit = ebStartPathExit
+            OnKeyDown = ebStartPathKeyDown
           end
           object ebOutputDir: TEdit
             Left = 103
