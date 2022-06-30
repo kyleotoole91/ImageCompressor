@@ -827,6 +827,7 @@ procedure TFrmMain.btnStartClick(Sender: TObject);
 var
   filename: string;
   startTime: TDateTime;
+  dlgProgrss: TDlgProgress;
 begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
@@ -839,9 +840,9 @@ begin
                             'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
         ValidSelection(Sender) then begin
       Screen.Cursor := crHourGlass;
-      DlgProgress := TDlgProgress.Create(Self);
+      dlgProgrss := TDlgProgress.Create(Self);
       try
-        DlgProgress.Show;
+        dlgProgrss.Show;
         Application.ProcessMessages;
         fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
         fTotalSavedKB := 0;
@@ -869,7 +870,7 @@ begin
         if cbCreateJSONFile.Checked then
           CreateJSONFile(fJSON);
       finally
-        DlgProgress.Free;
+        dlgProgrss.Free;
         if fNumProcessed = 0 then
           MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
         else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
@@ -886,6 +887,8 @@ begin
         fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
         fMessages.Add('--------------------- End -------------------------');
         mmMessages.Lines.Add(fMessages.Text);
+        if fReplaceOriginals then
+          LoadImagePreview(fSelectedFilename);
         Screen.Cursor := crDefault;
       end;
     end;
@@ -1102,13 +1105,14 @@ begin
 end;
 
 procedure TFrmMain.ScanDisk;
+var
+  dlgProgress: TDlgProgress;
 begin
-  if fDeepScan then
-    DlgProgress := TDlgProgress.Create(Self);
+  dlgProgress := TDlgProgress.Create(Self);
   try
     if fDeepScan then begin
-      DlgProgress.Text := 'Scanning disk, please wait...';
-      DlgProgress.Show;
+      dlgProgress.Text := 'Scanning disk, please wait...';
+      dlgProgress.Show;
       Application.ProcessMessages;
     end;
     try
@@ -1121,8 +1125,7 @@ begin
         MessageDlg(e.Message, mtError, mbOKCancel, 0)
     end;
   finally
-    if fDeepScan then
-      DlgProgress.Free;
+    dlgProgress.Free;
   end;
 end;
 

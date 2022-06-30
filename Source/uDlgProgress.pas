@@ -18,9 +18,6 @@ type
     property Text: string write SetText;
   end;
 
-var
-  DlgProgress: TDlgProgress;
-
 implementation
 
 {$R *.dfm}
