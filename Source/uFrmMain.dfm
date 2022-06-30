@@ -479,6 +479,7 @@ object FrmMain: TFrmMain
             Top = 26
             Width = 243
             Height = 691
+            Hint = 'Drap and drop images'
             Margins.Left = 0
             Margins.Top = 26
             Margins.Right = 0
@@ -487,7 +488,9 @@ object FrmMain: TFrmMain
             Align = alClient
             BorderStyle = bsNone
             ItemHeight = 13
+            ParentShowHint = False
             PopupMenu = pmCheckBoxList
+            ShowHint = True
             TabOrder = 0
             OnClick = cblFilesClick
           end
@@ -826,6 +829,10 @@ object FrmMain: TFrmMain
     object Hide1: TMenuItem
       Caption = 'Hide'
       OnClick = miHideImageListClick
+    end
+    object miClearFiles: TMenuItem
+      Caption = 'Clear'
+      OnClick = miClearFilesClick
     end
   end
   object pmResults: TPopupMenu

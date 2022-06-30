@@ -122,6 +122,7 @@ type
     Settings1: TMenuItem;
     miDeepScan: TMenuItem;
     miReplaceOriginals: TMenuItem;
+    miClearFiles: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -187,8 +188,11 @@ type
     procedure miReplaceOriginalsClick(Sender: TObject);
     procedure Settings1Click(Sender: TObject);
     procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure miClearFilesClick(Sender: TObject);
   private
     { Private declarations }
+    fDirectoryScanned,
+    fDrapAndDropping,
     fReplaceOriginals,
     fDeepScan,
     fEvaluationMode,
@@ -208,11 +212,11 @@ type
     fLoading: boolean;
     fLicenseValidator: TLicenseValidator;
     fFormCreating: boolean;
-    fFilenames: TStringDynArray;
     fSelectedFilename: string;
     fJPEGCompressor: TJPEGCompressor;
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
+    fFilenameList: TStringList;
     function ValidSelection(Sender: TObject): boolean;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
     function GetSelectedFileName: string;
@@ -235,6 +239,7 @@ type
     procedure CreateJSONFile(const AJSON: ISuperObject);
     procedure ClearConfigList;
     procedure SetEvaluationMode(const Value: boolean);
+    procedure AcceptFiles(var AMsg: TMessage); message WM_DROPFILES;
   public
     { Public declarations }
     property EvaluationMode: boolean read fEvaluationMode write SetEvaluationMode;
@@ -280,12 +285,17 @@ end;
 procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   fFormClosing := true;
+  DragAcceptFiles(Self.Handle, false);
   inherited;
 end;
 
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  DragAcceptFiles(Self.Handle, true);
+  fFilenameList := TStringList.Create;
+  fDirectoryScanned := true;
+  fDrapAndDropping := false;
   fDeepScan := false;
   fFilterSizeKB := 0;
   fImageChanged := true;
@@ -319,6 +329,7 @@ procedure TFrmMain.FormDestroy(Sender: TObject);
 begin
   try
     ClearConfigList;
+    fFilenameList.Free;
     fImageConfigList.Free;
     fMessages.Free;
     fJPEGCompressor.Free;
@@ -508,6 +519,7 @@ begin
   if (AFilename <> '') and Assigned(fJPEGCompressor) then begin
     Screen.Cursor := crHourGlass;
     try
+      fSelectedFilename := AFilename;
       fJPEGCompressor.JPEG.Scale := jsFullsize;
       fJPEGCompressor.JPEG.LoadFromFile(AFilename);
       LoadImage(fJPEGCompressor.JPEG, imgHome);
@@ -673,6 +685,84 @@ begin
   ResizeEvent(Sender);
 end;
 
+procedure TFrmMain.AcceptFiles(var AMsg: TMessage);
+const
+  cnMaxCharArrayLen = 255;
+var
+  a,
+  errCount: integer;
+  fileCount: integer;
+  filename: string;
+  selectedIndex: integer;
+  filenames: TStringDynArray;
+  caFilename: array [0..cnMaxCharArrayLen] of char;
+  function Validate(const AFilename: string): string;
+  var
+    lowerStr: string;
+  const
+    eos=''#0'';
+  begin
+    if AFilename.Contains(eos) then
+      result := Copy(AFilename, 0, Pos(eos, AFilename)-Length(eos))
+    else
+      result := AFilename;
+    lowerStr := LowerCase(result);
+    if lowerStr.Contains('.jpg') then
+      result := Copy(AFilename, 0, Pos('.jpg', lowerStr)+Length('.jpg')-1)
+    else if lowerStr.Contains('.jpeg') then
+      result := Copy(AFilename, 0, Pos('.jpeg', lowerStr)+Length('.jpeg')-1)
+    else if ExtractFileExt(result) <> '' then
+      result := '';
+  end;
+  procedure AddFile(const AFilename: string);
+  begin
+    if AFilename <> '' then begin
+      if fFilenameList.IndexOf(AFilename) = -1 then
+        fFilenameList.Add(AFilename)
+      else
+        selectedIndex := a;
+    end;
+  end;
+begin
+  errCount := 0;
+  selectedIndex := -1;
+  fDrapAndDropping := true;
+  try
+    fileCount := DragQueryFile(AMsg.WParam, $FFFFFFFF, caFilename, cnMaxCharArrayLen);
+    if fDirectoryScanned then begin
+      fFilenameList.Clear;
+      ebStartPath.Text := '';
+      fDirectoryScanned := false;
+    end;
+    for a := 0 to fileCount-1 do begin
+      DragQueryFile(AMsg.WParam, a, caFilename, cnMaxCharArrayLen);
+      SetString(filename, PChar(@caFilename[0]), Length(caFilename));
+      filename := Validate(filename);
+      if filename <> '' then begin
+        if ExtractFileExt(filename) <> '' then
+          AddFile(filename)
+        else begin
+          filenames := TDirectory.GetFiles(filename, '*.jp*', TSearchOption.soAllDirectories);
+          for filename in filenames do
+            AddFile(Validate(filename));
+        end;
+      end else
+        Inc(errCount);
+    end;
+    if errCount > 0 then
+      MessageDlg(IntToStr(errCount)+ ' unsupported files were not added' , TMsgDlgType.mtError, [mbOk], 0);
+    Scan(nil);
+    if selectedIndex > -1 then begin
+      cblFiles.Selected[selectedIndex] := true;
+      fSelectedFilename := cblFiles.Items[selectedIndex];
+    end;
+    LoadSelectedFromFile;
+  finally
+    fDrapAndDropping := false;
+    DragFinish(AMsg.WParam);
+  end;
+end;
+
 procedure TFrmMain.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
 begin
   with fJSON.AsArray do begin
@@ -687,40 +777,54 @@ end;
 
 procedure TFrmMain.Scan(Sender: TObject);
 var
+  a: integer;
   filename: string;
   imageLoaded: boolean;
+  badFilenames: TStringList;
 begin
-  ScanDisk;
+  if (not fDrapAndDropping) and
+     (Sender <> miClearFiles) then
+    ScanDisk;
   Screen.Cursor := crHourGlass;
   cblFiles.Items.BeginUpdate;
+  badFilenames := TStringList.Create;
   try
     if (fWorkingDir <> ebStartPath.Text) or (Sender <> ebStartPath) then begin
       CheckStartOk(Sender);
       fWorkingDir := ebStartPath.Text;
       cblFiles.Items.Clear;
       ClearConfigList;
-      for filename in fFilenames do begin
-        if not filename.Contains('!') then begin
+      for filename in fFilenameList do begin
+        if (not filename.Contains('!')) and
+           (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
           if (fFilterSizeKB <= 0) or
              (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
-            if fDeepScan then
+            if fDeepScan or fDrapAndDropping then
               cblFiles.Items.Add(filename)
             else
               cblFiles.Items.Add(ExtractFileName(filename));
             cblFiles.Checked[cblFiles.Count-1] := false;
           end;
         end else
-          fMessages.Add('Error: Unsupported filename '+filename+': contains ''!'' ');
+          badFilenames.Add(filename);
       end;
+      for a:=0 to badFilenames.Count-1 do
+        fFilenameList.Delete(fFilenameList.IndexOf(badFilenames.Strings[a]));
       imageLoaded := LoadSelectedFromFile;
       cbApplyToAll.Checked := true;
       btnStart.Enabled := false;
       SetControlState(imageLoaded);
     end;
   finally
+    badFilenames.Free;
     if cblFiles.Items.Count = 0 then begin
       imgHome.Picture.Assign(nil);
       imgOriginal.Picture.Assign(nil);
+    end else begin
+      if fDirectoryScanned then
+        cblFiles.Selected[0] := true
+      else
+        cblFiles.Selected[cblFiles.Count-1] := true;
     end;
     mmMessages.Lines.Add(fMessages.Text);
     fMessages.Clear;
@@ -800,9 +904,13 @@ procedure TFrmMain.btnApplyClick(Sender: TObject);
   procedure SelectCurrentImage;
   var
     a: integer;
+    filename: string;
   begin
     for a := 0 to cblFiles.Items.Count-1 do begin
-      if cblFiles.Items[a] = ExtractFileName(fSelectedFilename) then begin
+      filename := cblFiles.Items[a];
+      if ExtractFilePath(filename) = '' then
+        filename := IncludeTrailingPathDelimiter(ebStartPath.Text)+filename;
+      if filename = fSelectedFilename then begin
         cblFiles.Selected[a] := true;
         cblFiles.Checked[a] := true;
         Break;
@@ -853,10 +961,8 @@ begin
         if LowerCase(ExtractFileExt(filename)) = '.jpg' then
           ProcessFile(filename)
         else begin
-          filename := ExtractFilePath(filename);
-          ScanDisk;
-          for filename in fFilenames do begin
-            if fDeepScan then begin
+          for filename in fFilenameList do begin
+            if fDeepScan or (not fDirectoryScanned) then begin
               if (cblFiles.Items.IndexOf(filename) >= 0) and
                  (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
                 ProcessFile(filename);
@@ -952,6 +1058,13 @@ begin
   btnStart.Enabled := (FileIsSelected or fImageChanged) and
                       (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
+end;
+
+procedure TFrmMain.miClearFilesClick(Sender: TObject);
+begin
+  ebStartPath.Text := '';
+  fFilenameList.Clear;
+  Scan(Sender);
 end;
 
 procedure TFrmMain.ClearConfigList;
@@ -1106,10 +1219,13 @@ end;
 
 procedure TFrmMain.ScanDisk;
 var
+  filenames: TStringDynArray;
   dlgProgress: TDlgProgress;
+  filename: string;
 begin
   dlgProgress := TDlgProgress.Create(Self);
   try
+    fFilenameList.Clear;
     if fDeepScan then begin
       dlgProgress.Text := 'Scanning disk, please wait...';
       dlgProgress.Show;
@@ -1117,9 +1233,12 @@ begin
     end;
     try
       if fDeepScan then
-        fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soAllDirectories)
+        filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soAllDirectories)
       else
-        fFilenames := TDirectory.GetFiles(ebStartPath.Text, '*.jpg', TSearchOption.soTopDirectoryOnly);
+        filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soTopDirectoryOnly);
+      for filename in filenames do
+        fFilenameList.Add(filename);  
+      fDirectoryScanned := true;
     except
       on e: exception do
         MessageDlg(e.Message, mtError, mbOKCancel, 0)
