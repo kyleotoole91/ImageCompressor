@@ -356,8 +356,8 @@ begin
   finally
     Screen.Cursor := crDefault;
     Scan(Sender);
-    fFormClosing := false;
     LoadFormSettings;
+    fFormClosing := false;
     inherited;
   end;
 end;
@@ -731,7 +731,7 @@ var
       if fFilenameList.IndexOf(AFilename) = -1 then
         fFilenameList.Add(AFilename)
       else
-        selectedIndex := a;
+        selectedIndex := fFilenameList.IndexOf(AFilename);
     end;
   end;
 begin
@@ -778,10 +778,10 @@ procedure TFrmMain.AddToJSONFile(const AOriginalFileSize: Int64; const ACompress
 begin
   with fJSON.AsArray do begin
     Add(NewJSONObject);
-    O[Count-1].jString['original'] := fImageConfig.SourcePrefix+ExtractFileName(fImageConfig.Filename);
-    O[Count-1].jString['description'] := fImageConfig.Description;
-    O[Count-1].jInteger['fileSize'] := ACompressedFileSize;
-    O[Count-1].jInteger['originalFilesize'] := AOriginalFileSize;
+    O[Count-1].S['original'] := fImageConfig.SourcePrefix+ExtractFileName(fImageConfig.Filename);
+    O[Count-1].S['description'] := fImageConfig.Description;
+    O[Count-1].I['fileSize'] := ACompressedFileSize;
+    O[Count-1].I['originalFilesize'] := AOriginalFileSize;
   end;
   fMessages.Add('Added '+fImageConfig.Filename+' to JSON file')
 end;
@@ -797,6 +797,14 @@ begin
     imgConfig := FormToObj(imgConfig);
     jsonStr := TJson.ObjectToJsonString(imgConfig);
     json := SO(jsonStr);
+    json.S['sourceDir'] := ebStartPath.Text;
+    json.S['outputDir'] := ebOutputDir.Text;
+    json.I['filterSizeKB'] := fFilterSizeKB;
+    json.B['replaceOriginals'] := fReplaceOriginals;
+    json.B['deepScan'] := fDeepScan;
+    json.I['pnlFilesWidth'] := pnlFiles.Width;
+    json.B['applyToAll'] := cbApplyToAll.Checked;
+    json.S['jsonFilename'] := ebFilename.Text;
     json.SaveTo(cSettingsFilename);
   finally
     imgConfig.Free;
@@ -808,6 +816,7 @@ procedure TFrmMain.LoadFormSettings;
 var
   imgConfig: TImageConfig;
   sl: TStringList;
+  json: ISuperObject;
 begin
   sl := TStringList.Create;
   try
@@ -815,8 +824,29 @@ begin
       sl.LoadFromFile(cSettingsFilename);
       imgConfig := TJson.JsonToObject<TImageConfig>(sl.Text);
       try
-        if Assigned(imgConfig) then
+        if Assigned(imgConfig) then begin
           ObjToForm(imgConfig);
+          json := SO(sl.Text);
+          if json.S['sourceDir'] <> '' then
+            ebStartPath.Text := json.S['sourceDir'];
+          if ebOutputDir.Text <> '' then
+            ebOutputDir.Text := json.S['outputDir'];
+          fFilterSizeKB := json.I['filterSizeKB'];
+          fReplaceOriginals := json.B['replaceOriginals'];
+          fDeepScan := json.B['deepScan'];
+          cbApplyToAll.Checked := json.B['applyToAll'];
+          ebFilename.Text := json.S['jsonFilename'];
+          if pnlFiles.Width <> 0 then
+            pnlFiles.Width := json.I['pnlFilesWidth'];
+          miDeepScan.Checked := fDeepScan;
+          miReplaceOriginals.Checked := fReplaceOriginals;
+          if (fDeepScan) and
+             (fFilenameList.Count > 0) then begin
+            fSelectedFilename := fFilenameList.Strings[0];
+            Scan(nil);
+            LoadImagePreview(fSelectedFilename);
+          end;
+        end;
       finally
         if Assigned(imgConfig) then
           imgConfig.Free
@@ -824,6 +854,7 @@ begin
     end;
   finally
     sl.Free;
+    json := nil;
   end;
 end;
 
@@ -1638,7 +1669,8 @@ end;
 procedure TFrmMain.miSaveSettingsClick(Sender: TObject);
 begin
   SaveFormSettings;
-  ShowMessage('The current compression settings have been saved and will be restored on the next startup.')
+  MessageDlg('The current settings have been saved.'+sLineBreak+sLineBreak+
+             'They will be restored on the next startup.', mtInformation, [mbOK], 0);
 end;
 
 procedure TFrmMain.miShowOriginalClick(Sender: TObject);

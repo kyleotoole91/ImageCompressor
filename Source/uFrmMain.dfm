@@ -925,7 +925,7 @@ object FrmMain: TFrmMain
         OnClick = miReplaceOriginalsClick
       end
       object miSaveSettings: TMenuItem
-        Caption = 'Save Current Settings'
+        Caption = 'Save Settings'
         OnClick = miSaveSettingsClick
       end
     end
