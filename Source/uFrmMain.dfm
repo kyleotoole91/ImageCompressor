@@ -479,7 +479,7 @@ object FrmMain: TFrmMain
             Top = 26
             Width = 243
             Height = 691
-            Hint = 'Drap and drop images'
+            Hint = 'Drag and drop images and directories'
             Margins.Left = 0
             Margins.Top = 26
             Margins.Right = 0
