@@ -196,6 +196,7 @@ type
     procedure miSaveSettingsClick(Sender: TObject);
     procedure DeploymentScript1Click(Sender: TObject);
     procedure miSelectOutputDirClick(Sender: TObject);
+    procedure ebStartPathEnter(Sender: TObject);
   private
     { Private declarations }
     fDosCommand: TDosCommand;
@@ -267,40 +268,6 @@ uses
 
 {$R *.dfm}
 
-function TFrmMain.FileIsSelected: boolean;
-var
-  a: integer;
-begin
-  result := false;
-  for a:=0 to cblFiles.Count-1 do begin
-    result := cblFiles.Checked[a];
-    if result then
-      Break;
-  end;
-end;
-
-procedure TFrmMain.miFilesSizeFilterClick(Sender: TObject);
-begin
-  DlgFilter := TDlgFilter.Create(Self);
-  try
-    DlgFilter.Size := fFilterSizeKB;
-    DlgFilter.ShowModal;
-    if DlgFilter.RecordModified then begin
-      fFilterSizeKB := DlgFilter.Size;
-      Scan(Sender);
-    end;
-  finally
-    DlgFilter.Free;
-  end;
-end;
-
-procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  fFormClosing := true;
-  DragAcceptFiles(Self.Handle, false);
-  inherited;
-end;
-
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
@@ -337,9 +304,6 @@ begin
   ClientWidth := 1820;
   ClientHeight := 950;
   spOriginal.Left := 784;
-  {$IFNDEF DEBUG}
-  miAdvanced.Visible := false;
-  {$ENDIF}
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -356,6 +320,40 @@ begin
   finally
     inherited;
   end;
+end;
+
+function TFrmMain.FileIsSelected: boolean;
+var
+  a: integer;
+begin
+  result := false;
+  for a:=0 to cblFiles.Count-1 do begin
+    result := cblFiles.Checked[a];
+    if result then
+      Break;
+  end;
+end;
+
+procedure TFrmMain.miFilesSizeFilterClick(Sender: TObject);
+begin
+  DlgFilter := TDlgFilter.Create(Self);
+  try
+    DlgFilter.Size := fFilterSizeKB;
+    DlgFilter.ShowModal;
+    if DlgFilter.RecordModified then begin
+      fFilterSizeKB := DlgFilter.Size;
+      Scan(Sender);
+    end;
+  finally
+    DlgFilter.Free;
+  end;
+end;
+
+procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  fFormClosing := true;
+  DragAcceptFiles(Self.Handle, false);
+  inherited;
 end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
@@ -892,7 +890,8 @@ begin
   cblFiles.Items.BeginUpdate;
   badFilenames := TStringList.Create;
   try
-    if (fWorkingDir <> ebStartPath.Text) or (Sender <> ebStartPath) then begin
+    if (fWorkingDir <> ebStartPath.Text) or
+       (Sender <> ebStartPath) then begin
       CheckStartOk(Sender);
       fWorkingDir := ebStartPath.Text;
       cblFiles.Items.Clear;
@@ -1266,6 +1265,12 @@ begin
   btnApply.Enabled := true;
 end;
 
+procedure TFrmMain.ebStartPathEnter(Sender: TObject);
+begin
+  if ebStartPath.Text = '' then
+    ShowFolderSelect(Sender);
+end;
+
 procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
@@ -1494,20 +1499,21 @@ end;
 {$WARNINGS OFF} //Specific for Windows
 procedure TFrmMain.ShowFolderSelect(Sender: TObject);
 begin
+  inherited;
   with TFileOpenDialog.Create(nil) do begin
     try
       DefaultFolder := fWorkingDir;
       Options := [fdoPickFolders];
       if Execute then begin
         if Sender = ebStartPath then begin
-          fWorkingDir := FileName;
-          ebStartPath.Text := fWorkingDir;
+          ebStartPath.Text := FileName;
           Scan(Sender);
         end else
           ebOutputDir.Text := FileName;
       end;
     finally
       Free;
+      Application.ProcessMessages;
     end;
   end;
 end;
@@ -1647,22 +1653,22 @@ begin
   try
     if (Sender <> miReplaceOriginals) and
        (not FileIsSelected) then
-      MessageDlg('Please select at least one image to process', mtError, mbOKCancel, 0)
+      MessageDlg(cBatchProcessEvaluation, mtError, mbOKCancel, 0)
     else if fEvaluationMode then begin
       HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
       if hasReplaceOriginals then
-        sl.Add('• Replacing original files is only available in the Pro version');
+        sl.Add(cReplaceOrigEval);
       if hasMultipleImages then
-        sl.Add('• Batch processing is only available in the Pro version');
+        sl.Add(cBatchProcessingEval);
       if hasTargetKB then
-        sl.Add('• Target file size is only available in the Pro version');
+        sl.Add(cTargetEval);
       if hasResampling then
-        sl.Add('• Best resampling is only available in the Pro version');
+        sl.Add(cResamplingEval);
       if sl.Count = 1 then
         sl.CommaText := sl.CommaText.Replace('• ', '');
       if sl.Count > 0 then begin
         sl.Add(' ');
-        sl.Add('Would you like to be directed to our web page to purchase the Pro version now?');
+        sl.Add(cLinkToBuyMessage);
       end;
     end;
     result := sl.Count = 0;

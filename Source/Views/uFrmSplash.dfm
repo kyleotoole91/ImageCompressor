@@ -85,10 +85,11 @@ object frmSplash: TfrmSplash
       ExplicitWidth = 47
     end
     object Image1: TImage
-      Left = 0
-      Top = 77
-      Width = 558
-      Height = 289
+      AlignWithMargins = True
+      Left = 3
+      Top = 80
+      Width = 552
+      Height = 283
       Align = alClient
       Center = True
       Picture.Data = {
@@ -140,6 +141,8 @@ object frmSplash: TfrmSplash
       Proportional = True
       ExplicitLeft = -3
       ExplicitTop = 74
+      ExplicitWidth = 558
+      ExplicitHeight = 289
     end
     object lbMessage: TLabel
       AlignWithMargins = True

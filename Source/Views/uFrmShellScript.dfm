@@ -2,8 +2,8 @@ object FrmShellScript: TFrmShellScript
   Left = 0
   Top = 0
   Caption = 'Deployment Script (.bat)'
-  ClientHeight = 343
-  ClientWidth = 734
+  ClientHeight = 479
+  ClientWidth = 1015
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,21 +18,23 @@ object FrmShellScript: TFrmShellScript
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 302
-    Width = 734
+    Top = 438
+    Width = 1015
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 302
     ExplicitWidth = 660
     object Panel2: TPanel
-      Left = 304
+      Left = 585
       Top = 0
       Width = 430
       Height = 41
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 304
       object btnOK: TButton
         Left = 271
         Top = 7
@@ -77,25 +79,27 @@ object FrmShellScript: TFrmShellScript
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 728
-    Height = 296
+    Width = 1009
+    Height = 432
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
     ExplicitWidth = 654
+    ExplicitHeight = 296
     object Splitter1: TSplitter
-      Left = 373
+      Left = 557
       Top = 0
-      Height = 296
+      Height = 432
       Align = alRight
       ExplicitLeft = 424
       ExplicitTop = -3
+      ExplicitHeight = 296
     end
     object mmInput: TMemo
       Left = 0
       Top = 0
-      Width = 373
-      Height = 296
+      Width = 557
+      Height = 432
       Hint = 'Eg: Connect via SSH and move images to server'
       Align = alClient
       Color = clDefault
@@ -111,12 +115,13 @@ object FrmShellScript: TFrmShellScript
       ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 0
+      ExplicitWidth = 593
     end
     object mmOutput: TMemo
-      Left = 376
+      Left = 560
       Top = 0
-      Width = 352
-      Height = 296
+      Width = 449
+      Height = 432
       Hint = 'Output'
       Align = alRight
       Color = clDefault
