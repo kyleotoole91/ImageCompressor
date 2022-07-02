@@ -108,6 +108,7 @@ object FrmShellScript: TFrmShellScript
         'Memo1')
       ParentFont = False
       ParentShowHint = False
+      ReadOnly = True
       ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 0
@@ -129,6 +130,7 @@ object FrmShellScript: TFrmShellScript
         'Memo1')
       ParentFont = False
       ParentShowHint = False
+      ReadOnly = True
       ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 1
