@@ -134,8 +134,8 @@ object FrmMain: TFrmMain
               Width = 65
               Height = 22
               Hint = 
-                ' Will reduce scale if needed to reach the target. Set to 0 to di' +
-                'sable'
+                'Best quality for small file sizes (~300KB is ideal for websites)' +
+                '. Set to 0 to disable'
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -340,7 +340,7 @@ object FrmMain: TFrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 1
-            OnDblClick = ShowFileSelect
+            OnDblClick = ShowFolderSelect
           end
           object cbApplyGraphics: TCheckBox
             Left = 262
@@ -435,7 +435,6 @@ object FrmMain: TFrmMain
               TabOrder = 0
               Text = 'images/'
               OnChange = ebPrefixChange
-              ExplicitWidth = 761
             end
             object ebDescription: TEdit
               Left = 90
@@ -446,7 +445,6 @@ object FrmMain: TFrmMain
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
-              ExplicitWidth = 761
             end
           end
           object cbCreateJSONFile: TCheckBox
@@ -872,11 +870,15 @@ object FrmMain: TFrmMain
         ShortCut = 114
         OnClick = ShowFileSelect
       end
+      object miSelectOutputDir: TMenuItem
+        Caption = 'Select output folder'
+        OnClick = miSelectOutputDirClick
+      end
       object N6: TMenuItem
         Caption = '-'
       end
       object CloseApplication1: TMenuItem
-        Caption = 'Close Application'
+        Caption = 'Close '
         OnClick = CloseApplication1Click
       end
     end
@@ -888,12 +890,12 @@ object FrmMain: TFrmMain
         OnClick = miHideFilesClick
       end
       object miHideConfig: TMenuItem
-        Caption = 'Hide Configuration'
+        Caption = 'Hide configuration'
         ShortCut = 120
         OnClick = miHideConfigClick
       end
       object miHideOriginal: TMenuItem
-        Caption = 'Hide Original Image'
+        Caption = 'Hide original image'
         ShortCut = 121
         OnClick = miHideOriginalClick
       end
@@ -947,9 +949,8 @@ object FrmMain: TFrmMain
         OnClick = miSaveSettingsClick
       end
     end
-    object Deployment1: TMenuItem
+    object miAdvanced: TMenuItem
       Caption = 'Advanced'
-      Visible = False
       object DeploymentScript1: TMenuItem
         Caption = 'Deployment Script'
         OnClick = DeploymentScript1Click
@@ -966,13 +967,13 @@ object FrmMain: TFrmMain
         Caption = 'Enter license key'
         OnClick = miEnterLicenseClick
       end
-    end
-    object Help1: TMenuItem
-      Caption = 'Help'
       object miDownload: TMenuItem
         Caption = 'Download latest version'
         OnClick = miDownloadClick
       end
+    end
+    object Help1: TMenuItem
+      Caption = 'Help'
       object miContact: TMenuItem
         Caption = 'Contact support'
         OnClick = miContactClick

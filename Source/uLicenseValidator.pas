@@ -58,7 +58,8 @@ var
 begin
   try
     {$IFDEF DEBUG}
-    result := false;
+    result := true;
+    fMessage := 'Starting in debug mode';
     Exit;
     {$ELSE}
     result := false;

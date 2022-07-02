@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
-  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi,
+  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand,
   Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants;
 
 type
@@ -124,8 +124,9 @@ type
     miReplaceOriginals: TMenuItem;
     miClearFiles: TMenuItem;
     miSaveSettings: TMenuItem;
-    Deployment1: TMenuItem;
+    miAdvanced: TMenuItem;
     DeploymentScript1: TMenuItem;
+    miSelectOutputDir: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -194,8 +195,11 @@ type
     procedure miClearFilesClick(Sender: TObject);
     procedure miSaveSettingsClick(Sender: TObject);
     procedure DeploymentScript1Click(Sender: TObject);
+    procedure miSelectOutputDirClick(Sender: TObject);
   private
     { Private declarations }
+    fDosCommand: TDosCommand;
+    fRunScript,
     fDirectoryScanned,
     fDrapAndDropping,
     fReplaceOriginals,
@@ -222,6 +226,7 @@ type
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fFilenameList: TStringList;
+    procedure RunDeploymentScript;
     function ValidSelection(Sender: TObject): boolean;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
     function GetSelectedFileName: string;
@@ -299,6 +304,8 @@ end;
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  fDosCommand := TDosCommand.Create(nil);
+  fRunScript := false;
   DragAcceptFiles(Self.Handle, true);
   fFilenameList := TStringList.Create;
   fDirectoryScanned := true;
@@ -330,6 +337,9 @@ begin
   ClientWidth := 1820;
   ClientHeight := 950;
   spOriginal.Left := 784;
+  {$IFNDEF DEBUG}
+  miAdvanced.Visible := false;
+  {$ENDIF}
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -342,6 +352,7 @@ begin
     fJPEGCompressor.Free;
     fLicenseValidator.Free;
     fJSON := nil;
+    fDosCommand.Free;
   finally
     inherited;
   end;
@@ -414,7 +425,8 @@ begin
     AHasResampling := false;
     for key in fImageConfigList.Keys do begin
       if fImageConfigList.TryGetValue(key, imgConfig) then begin
-        AHasTargetKB := AHasTargetKB or (imgConfig.Compress and (imgConfig.TagetKB > 0));
+        //allow target file size in evaluation
+        //AHasTargetKB := AHasTargetKB or (imgConfig.Compress and (imgConfig.TagetKB > 0));
         AHasResampling := AHasResampling or (imgConfig.ApplyGraphics and (imgConfig.ResampleMode <> rmNone));
         if AHasTargetKB and AHasResampling then
           Break;
@@ -810,6 +822,7 @@ begin
     json.I['pnlOriginalWidth'] := pnlOriginal.Width;
     json.B['applyToAll'] := cbApplyToAll.Checked;
     json.S['jsonFilename'] := ebFilename.Text;
+    json.B['runScript'] := fRunScript;
     json.SaveTo(cSettingsFilename);
   finally
     imgConfig.Free;
@@ -842,6 +855,7 @@ begin
           cbApplyToAll.Checked := json.B['applyToAll'];
           ebFilename.Text := json.S['jsonFilename'];
           pnlOriginal.Width := json.I['pnlOriginalWidth'];
+          fRunScript := json.B['runScript'];
           if pnlFiles.Width <> 0 then
             pnlFiles.Width := json.I['pnlFilesWidth'];
           miDeepScan.Checked := fDeepScan;
@@ -1044,7 +1058,7 @@ begin
         fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
         fTotalSavedKB := 0;
         fNumProcessed := 0;
-        mmMessages.Lines.BeginUpdate;
+        //mmMessages.Lines.BeginUpdate;
         fMessages.Add('--------------------- Start ---------------------------');
         filename := ebStartPath.Text;
         if LowerCase(ExtractFileExt(filename)) = '.jpg' then
@@ -1064,6 +1078,8 @@ begin
         end;
         if cbCreateJSONFile.Checked then
           CreateJSONFile(fJSON);
+        if fRunScript then
+          RunDeploymentScript;
       finally
         dlgProgrss.Free;
         if fNumProcessed = 0 then
@@ -1089,7 +1105,7 @@ begin
     end;
   finally
     fJSON := nil;
-    mmMessages.Lines.EndUpdate;
+    //mmMessages.Lines.EndUpdate;
     btnStart.Enabled := true;
   end;
 end;
@@ -1190,7 +1206,10 @@ procedure TFrmMain.DeploymentScript1Click(Sender: TObject);
 begin
   with TFrmShellScript.Create(Self) do begin
     try
+      RunOnCompletion := fRunScript;
       ShowModal;
+      if RecordModified then
+        fRunScript := RunOnCompletion;
     finally
       Free;
     end;
@@ -1317,6 +1336,16 @@ begin
   end;
 end;
 
+procedure TFrmMain.RunDeploymentScript;
+begin
+  if FileExists(cShellScript) then begin
+    mmMessages.Lines.Add('Running deployment script: ');
+    fDosCommand.CommandLine := 'cmd /c "'+cShellScript+'"';
+    fDosCommand.OutputLines := mmMessages.Lines;
+    fDosCommand.Execute;           
+  end;
+end;
+
 procedure TFrmMain.ScanDisk;
 var
   filenames: TStringDynArray;
@@ -1358,6 +1387,24 @@ begin
   for a:=0 to cblFiles.Count-1 do begin
     if cblFiles.Checked[a] then
       Inc(result);
+  end;
+end;
+
+procedure TFrmMain.miSelectOutputDirClick(Sender: TObject);
+begin
+  with TFileOpenDialog.Create(nil) do begin
+    try
+      DefaultFolder := ebOutputDir.Text;
+      Options := [fdoPickFolders];
+      if Execute then begin
+        imgHome.Align := alNone;
+        fSelectedFilename := Filename;
+        ebOutputDir.Text := FileName;
+      end;
+    finally
+      Free;
+      imgHome.Align := alClient;
+    end;
   end;
 end;
 
@@ -1452,9 +1499,12 @@ begin
       DefaultFolder := fWorkingDir;
       Options := [fdoPickFolders];
       if Execute then begin
-        fWorkingDir := FileName;
-        ebStartPath.Text := fWorkingDir;
-        Scan(Sender);
+        if Sender = ebStartPath then begin
+          fWorkingDir := FileName;
+          ebStartPath.Text := fWorkingDir;
+          Scan(Sender);
+        end else
+          ebOutputDir.Text := FileName;
       end;
     finally
       Free;
@@ -1601,14 +1651,13 @@ begin
     else if fEvaluationMode then begin
       HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
       if hasReplaceOriginals then
-        sl.Add('• Replacing original files is only available in the Pro version.');
+        sl.Add('• Replacing original files is only available in the Pro version');
       if hasMultipleImages then
-        sl.Add('• Batch processing is only available in the Pro version. '+sLineBreak+sLineBreak+
-               'Please process one image at time.');
+        sl.Add('• Batch processing is only available in the Pro version');
       if hasTargetKB then
-        sl.Add('• Target file size is only available in the Pro version.');
+        sl.Add('• Target file size is only available in the Pro version');
       if hasResampling then
-        sl.Add('• The selected resampling mode is not available in the free version.');
+        sl.Add('• Best resampling is only available in the Pro version');
       if sl.Count = 1 then
         sl.CommaText := sl.CommaText.Replace('• ', '');
       if sl.Count > 0 then begin

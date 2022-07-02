@@ -11,13 +11,14 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     btnOK: TButton;
-    Button2: TButton;
+    btnCancel: TButton;
     Panel3: TPanel;
     mmInput: TMemo;
     mmOutput: TMemo;
-    cbRunOnCompletion: TCheckBox;
+    Splitter1: TSplitter;
     btnRun: TButton;
-    procedure Button2Click(Sender: TObject);
+    cbRunOnCompletion: TCheckBox;
+    procedure btnCancelClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnRunClick(Sender: TObject);
@@ -28,9 +29,10 @@ type
     fDosCommand: TDosCommand;
     fRecordModified: boolean;
     fRunOnCompletion: boolean;
+    procedure SetRunOnCompletion(const Value: boolean);
   public
     property RecordModified: boolean read fRecordModified;
-    property RunOnCompletion: boolean read fRunOnCompletion write fRunOnCompletion;
+    property RunOnCompletion: boolean read fRunOnCompletion write SetRunOnCompletion;
   end;
 
 implementation
@@ -42,19 +44,26 @@ begin
   inherited;
   fFile := TStringList.Create;
   fDosCommand := TDosCommand.Create(Self);
-  mmInput.Lines.Clear;
-  mmOutput.Lines.Clear;
+  fDosCommand.OutputLines := mmOutput.Lines;
 end;
 
 procedure TFrmShellScript.FormShow(Sender: TObject);
 begin
   inherited;
+  mmInput.Clear;
+  mmoutput.Clear;
   if FileExists(cShellScript) then begin
     fFile.LoadFromFile(cShellScript);
     mmInput.Text := fFile.Text;
   end else
     MessageDlg(cMsgShellScriptWelcome, mtInformation, [mbOK], 0);
   mmInput.SetFocus;
+end;
+
+procedure TFrmShellScript.SetRunOnCompletion(const Value: boolean);
+begin
+  fRunOnCompletion := Value;
+  cbRunOnCompletion.Checked := fRunOnCompletion;
 end;
 
 procedure TFrmShellScript.btnOKClick(Sender: TObject);
@@ -68,7 +77,7 @@ begin
   Close;
 end;
 
-procedure TFrmShellScript.Button2Click(Sender: TObject);
+procedure TFrmShellScript.btnCancelClick(Sender: TObject);
 begin
   inherited;
   fRecordModified := false;
@@ -78,11 +87,11 @@ end;
 procedure TFrmShellScript.btnRunClick(Sender: TObject);
 begin
   inherited;
+  mmOutput.Lines.Clear;
   fFile.Text := mmInput.Text;
-  fFile.SaveToFile(cShellScript);
-  fDosCommand.CommandLine := fFile.Text;
+  fFile.SaveToFile(cShellTestScript);
+  fDosCommand.CommandLine := 'cmd /c "'+cShellTestScript+'"';
   fDosCommand.Execute;
-  mmOutput.Lines := fDosCommand.Lines;
 end;
 
 procedure TFrmShellScript.FormDestroy(Sender: TObject);

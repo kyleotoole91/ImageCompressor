@@ -4,6 +4,7 @@ interface
 
 const
   cShellScript='deployment.bat';
+  cShellTestScript='test.bat';
   //frmMain
   cDefaultOutDir='Compressed\';
   cJPAllExt='*.jp*';

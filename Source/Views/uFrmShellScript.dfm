@@ -3,7 +3,7 @@ object FrmShellScript: TFrmShellScript
   Top = 0
   Caption = 'Deployment Script (.bat)'
   ClientHeight = 343
-  ClientWidth = 660
+  ClientWidth = 734
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,73 +19,82 @@ object FrmShellScript: TFrmShellScript
   object Panel1: TPanel
     Left = 0
     Top = 302
-    Width = 660
+    Width = 734
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 660
     object Panel2: TPanel
-      Left = 407
+      Left = 304
       Top = 0
-      Width = 253
+      Width = 430
       Height = 41
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
       object btnOK: TButton
-        Left = 91
-        Top = 8
+        Left = 271
+        Top = 7
         Width = 75
         Height = 25
         Caption = 'Save'
-        TabOrder = 0
+        TabOrder = 1
         OnClick = btnOKClick
       end
-      object Button2: TButton
-        Left = 172
-        Top = 8
+      object btnCancel: TButton
+        Left = 352
+        Top = 7
         Width = 75
         Height = 25
         Caption = 'Cancel'
-        TabOrder = 1
-        OnClick = Button2Click
+        TabOrder = 2
+        OnClick = btnCancelClick
       end
-    end
-    object cbRunOnCompletion: TCheckBox
-      Left = 355
-      Top = 12
-      Width = 137
-      Height = 17
-      Caption = 'Run script on completion'
-      TabOrder = 1
-    end
-    object btnRun: TButton
-      Left = 3
-      Top = 9
-      Width = 75
-      Height = 25
-      Hint = 'Result shown in right side panel'
-      Caption = 'Run'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 2
-      Visible = False
-      OnClick = btnRunClick
+      object btnRun: TButton
+        Left = 190
+        Top = 7
+        Width = 75
+        Height = 25
+        Hint = 'Result shown in right side panel'
+        Caption = 'Run'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = btnRunClick
+      end
+      object cbRunOnCompletion: TCheckBox
+        Left = 26
+        Top = 11
+        Width = 158
+        Height = 17
+        Caption = 'Run script after compressing'
+        TabOrder = 3
+      end
     end
   end
   object Panel3: TPanel
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 654
+    Width = 728
     Height = 296
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 654
+    object Splitter1: TSplitter
+      Left = 373
+      Top = 0
+      Height = 296
+      Align = alRight
+      ExplicitLeft = 424
+      ExplicitTop = -3
+    end
     object mmInput: TMemo
       Left = 0
       Top = 0
-      Width = 510
+      Width = 373
       Height = 296
       Hint = 'Eg: Connect via SSH and move images to server'
       Align = alClient
@@ -99,15 +108,16 @@ object FrmShellScript: TFrmShellScript
         'Memo1')
       ParentFont = False
       ParentShowHint = False
+      ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 0
     end
     object mmOutput: TMemo
-      Left = 510
+      Left = 376
       Top = 0
-      Width = 144
+      Width = 352
       Height = 296
-      Hint = 'Script Output'
+      Hint = 'Output'
       Align = alRight
       Color = clDefault
       Font.Charset = DEFAULT_CHARSET
@@ -119,9 +129,9 @@ object FrmShellScript: TFrmShellScript
         'Memo1')
       ParentFont = False
       ParentShowHint = False
+      ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 1
-      Visible = False
     end
   end
 end
