@@ -58,7 +58,7 @@ object FrmMain: TFrmMain
           ExplicitHeight = 443
         end
         object spOriginal: TSplitter
-          Left = 1192
+          Left = 1182
           Top = 154
           Height = 721
           Align = alRight
@@ -181,7 +181,7 @@ object FrmMain: TFrmMain
           object GroupBox3: TGroupBox
             Left = 251
             Top = 73
-            Width = 349
+            Width = 361
             Height = 75
             TabOrder = 5
             object lbMaxHeightPx: TLabel
@@ -279,7 +279,7 @@ object FrmMain: TFrmMain
             object cbResampleMode: TComboBox
               Left = 247
               Top = 19
-              Width = 92
+              Width = 106
               Height = 21
               Hint = 
                 'Higher values result in improved quality when resizing and/or ro' +
@@ -301,7 +301,7 @@ object FrmMain: TFrmMain
             object cbRotateAmount: TComboBox
               Left = 247
               Top = 46
-              Width = 92
+              Width = 106
               Height = 21
               Enabled = False
               ItemIndex = 0
@@ -399,14 +399,14 @@ object FrmMain: TFrmMain
             end
           end
           object GroupBox2: TGroupBox
-            Left = 606
+            Left = 618
             Top = 73
-            Width = 859
+            Width = 847
             Height = 75
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 8
             DesignSize = (
-              859
+              847
               75)
             object lbPrefix: TLabel
               AlignWithMargins = True
@@ -428,27 +428,29 @@ object FrmMain: TFrmMain
             object ebPrefix: TEdit
               Left = 90
               Top = 17
-              Width = 761
+              Width = 749
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
               TabOrder = 0
               Text = 'images/'
               OnChange = ebPrefixChange
+              ExplicitWidth = 761
             end
             object ebDescription: TEdit
               Left = 90
               Top = 45
-              Width = 761
+              Width = 749
               Height = 21
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
+              ExplicitWidth = 761
             end
           end
           object cbCreateJSONFile: TCheckBox
-            Left = 618
+            Left = 628
             Top = 66
             Width = 110
             Height = 17
@@ -498,27 +500,30 @@ object FrmMain: TFrmMain
         object pnlImage: TPanel
           Left = 250
           Top = 154
-          Width = 942
+          Width = 932
           Height = 721
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 2
           DesignSize = (
-            938
+            928
             717)
           object imgHome: TImage
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 932
+            Width = 922
             Height = 691
+            Hint = 'Drag and drop images and directories'
             Margins.Top = 26
             Margins.Bottom = 0
             Align = alClient
             AutoSize = True
+            ParentShowHint = False
             PopupMenu = pmViews
             Proportional = True
+            ShowHint = False
             ExplicitLeft = 5
             ExplicitTop = 27
             ExplicitWidth = 908
@@ -532,7 +537,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 654
+            Left = 644
             Top = 4
             Width = 46
             Height = 13
@@ -545,9 +550,10 @@ object FrmMain: TFrmMain
             Font.Name = 'Tahoma'
             Font.Style = []
             ParentFont = False
+            ExplicitLeft = 654
           end
           object lbImgSizeKBVal: TLabel
-            Left = 690
+            Left = 680
             Top = 4
             Width = 46
             Height = 13
@@ -555,18 +561,20 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
             Enabled = False
+            ExplicitLeft = 690
           end
           object lbImgWidth: TLabel
-            Left = 742
+            Left = 732
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
             Enabled = False
+            ExplicitLeft = 742
           end
           object lbImgWidthVal: TLabel
-            Left = 780
+            Left = 770
             Top = 4
             Width = 54
             Height = 13
@@ -574,18 +582,20 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
+            ExplicitLeft = 780
           end
           object lbImgHeight: TLabel
-            Left = 840
+            Left = 830
             Top = 4
             Width = 58
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
             Enabled = False
+            ExplicitLeft = 840
           end
           object lbImgHeightVal: TLabel
-            Left = 880
+            Left = 870
             Top = 4
             Width = 54
             Height = 13
@@ -593,6 +603,7 @@ object FrmMain: TFrmMain
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
             Enabled = False
+            ExplicitLeft = 880
           end
           object cbCompressPreview: TCheckBox
             Left = 117
@@ -624,61 +635,66 @@ object FrmMain: TFrmMain
           end
         end
         object pnlOriginal: TPanel
-          Left = 1195
+          Left = 1185
           Top = 154
-          Width = 429
+          Width = 439
           Height = 721
           Align = alRight
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 3
           DesignSize = (
-            425
+            435
             717)
           object lbImgOrigSize: TLabel
-            Left = 144
+            Left = 154
             Top = 4
             Width = 46
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
+            ExplicitLeft = 144
           end
           object lbImgOrigSizeKBVal: TLabel
-            Left = 194
+            Left = 204
             Top = 4
             Width = 31
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'SizeKB'
+            ExplicitLeft = 194
           end
           object lbImgOrigWidth: TLabel
-            Left = 231
+            Left = 241
             Top = 4
             Width = 55
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
+            ExplicitLeft = 231
           end
           object lbImgOrigWidthVal: TLabel
-            Left = 266
+            Left = 276
             Top = 4
             Width = 54
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = 'lbImgWidth'
+            ExplicitLeft = 266
           end
           object lbImgOrigHeight: TLabel
-            Left = 325
+            Left = 335
             Top = 4
             Width = 58
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
+            ExplicitLeft = 325
           end
           object lbImgOrigHeightVal: TLabel
-            Left = 364
+            Left = 374
             Top = 4
             Width = 54
             Height = 13
@@ -691,7 +707,7 @@ object FrmMain: TFrmMain
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 419
+            Width = 429
             Height = 691
             Margins.Top = 26
             Margins.Bottom = 0
@@ -701,8 +717,7 @@ object FrmMain: TFrmMain
             Proportional = True
             ExplicitLeft = 1
             ExplicitTop = 27
-            ExplicitWidth = 345
-            ExplicitHeight = 388
+            ExplicitWidth = 419
           end
           object Label4: TLabel
             Left = 3
@@ -848,7 +863,7 @@ object FrmMain: TFrmMain
     object File1: TMenuItem
       Caption = 'File'
       object mmiScan: TMenuItem
-        Caption = 'Open Folder'
+        Caption = 'Open folder'
         ShortCut = 113
         OnClick = ShowFolderSelect
       end
@@ -868,16 +883,18 @@ object FrmMain: TFrmMain
     object View1: TMenuItem
       Caption = 'View'
       object miHideFiles: TMenuItem
-        Caption = 'Hide Selected Images'
+        Caption = 'Hide selected images'
         ShortCut = 112
         OnClick = miHideFilesClick
       end
       object miHideConfig: TMenuItem
         Caption = 'Hide Configuration'
+        ShortCut = 120
         OnClick = miHideConfigClick
       end
       object miHideOriginal: TMenuItem
         Caption = 'Hide Original Image'
+        ShortCut = 121
         OnClick = miHideOriginalClick
       end
       object miFullscreen: TMenuItem
@@ -917,38 +934,47 @@ object FrmMain: TFrmMain
       OnClick = Settings1Click
       object miDeepScan: TMenuItem
         Caption = 'Deep Scan '
+        ShortCut = 117
         OnClick = miDeepScanClick
       end
       object miReplaceOriginals: TMenuItem
-        Caption = 'Replace Originals (save disk space)'
+        Caption = 'Replace originals (save disk space)'
         Hint = 'Save disk space'
         OnClick = miReplaceOriginalsClick
       end
       object miSaveSettings: TMenuItem
-        Caption = 'Save Settings'
+        Caption = 'Save current settings'
         OnClick = miSaveSettingsClick
+      end
+    end
+    object Deployment1: TMenuItem
+      Caption = 'Advanced'
+      Visible = False
+      object DeploymentScript1: TMenuItem
+        Caption = 'Deployment Script'
+        OnClick = DeploymentScript1Click
       end
     end
     object miUpgrade: TMenuItem
       Caption = 'Product'
       ShortCut = 115
       object miPurchaseLicense: TMenuItem
-        Caption = 'Purchase License Key'
+        Caption = 'Purchase license key'
         OnClick = miPurchaseLicenseClick
       end
       object miEnterLicense: TMenuItem
-        Caption = 'Enter License Key'
+        Caption = 'Enter license key'
         OnClick = miEnterLicenseClick
       end
     end
     object Help1: TMenuItem
       Caption = 'Help'
       object miDownload: TMenuItem
-        Caption = 'Download Latest Version'
+        Caption = 'Download latest version'
         OnClick = miDownloadClick
       end
       object miContact: TMenuItem
-        Caption = 'Contact Support'
+        Caption = 'Contact support'
         OnClick = miContactClick
       end
     end

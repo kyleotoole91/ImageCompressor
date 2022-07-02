@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>TurboImageCompressor.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -118,25 +118,32 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Source\uFrmMain.pas">
-            <Form>FrmMain</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="Source\uImageConfig.pas"/>
         <DCCReference Include="Source\uJPEGCompressor.pas"/>
-        <DCCReference Include="Source\uFrmSplash.pas">
-            <Form>frmSplash</Form>
+        <DCCReference Include="Source\uLicenseValidator.pas"/>
+        <DCCReference Include="Source\uConstants.pas"/>
+        <DCCReference Include="Source\Views\uDlgDefaults.pas">
+            <Form>FrmDefaultConfig</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Source\uLicenseValidator.pas"/>
-        <DCCReference Include="Source\uSecrets.pas"/>
-        <DCCReference Include="Source\uConstants.pas"/>
-        <DCCReference Include="Source\uDlgFilter.pas">
+        <DCCReference Include="Source\Views\uDlgFilter.pas">
             <Form>DlgFilter</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Source\uDlgProgress.pas">
+        <DCCReference Include="Source\Views\uDlgProgress.pas">
             <Form>DlgProgress</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\Views\uFrmMain.pas">
+            <Form>FrmMain</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\Views\uFrmShellScript.pas">
+            <Form>FrmShellScript</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\Views\uFrmSplash.pas">
+            <Form>frmSplash</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

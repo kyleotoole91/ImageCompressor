@@ -58,7 +58,7 @@ var
 begin
   try
     {$IFDEF DEBUG}
-    result := true;
+    result := false;
     Exit;
     {$ELSE}
     result := false;

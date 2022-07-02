@@ -208,7 +208,7 @@ begin
   if (fCompressedFilesize = 0) or
      (fCompressedFilesize > fTargetKB) then begin
     fJPEG.Scale := jsFullsize;
-    if ((SizeOfJPEG(fJPEG) / 3) / cBytesToKB) >= fTargetKB then //~1/3 for @50 quality, preemptively downscale for performance
+    if ((SizeOfJPEG(fJPEG) / 3) / cBytesToKB) >= fTargetKB then //~1/3 reduction for ~50 quality, preemptively downscale for performance
       fJPEG.Scale := jsHalf;
     fMinQuality := cScaleBelowQuality; //retry with reduced scale below this quality level
     try

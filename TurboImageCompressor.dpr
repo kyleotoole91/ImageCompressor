@@ -2,15 +2,16 @@ program TurboImageCompressor;
 
 uses
   Vcl.Forms,
-  uFrmMain in 'Source\uFrmMain.pas' {FrmMain},
   uImageConfig in 'Source\uImageConfig.pas',
   uJPEGCompressor in 'Source\uJPEGCompressor.pas',
-  uFrmSplash in 'Source\uFrmSplash.pas' {frmSplash},
   uLicenseValidator in 'Source\uLicenseValidator.pas',
-  uSecrets in 'Source\uSecrets.pas',
   uConstants in 'Source\uConstants.pas',
-  uDlgFilter in 'Source\uDlgFilter.pas' {DlgFilter},
-  uDlgProgress in 'Source\uDlgProgress.pas' {DlgProgress};
+  uDlgDefaults in 'Source\Views\uDlgDefaults.pas' {FrmDefaultConfig},
+  uDlgFilter in 'Source\Views\uDlgFilter.pas' {DlgFilter},
+  uDlgProgress in 'Source\Views\uDlgProgress.pas' {DlgProgress},
+  uFrmMain in 'Source\Views\uFrmMain.pas' {FrmMain},
+  uFrmShellScript in 'Source\Views\uFrmShellScript.pas' {FrmShellScript},
+  uFrmSplash in 'Source\Views\uFrmSplash.pas' {frmSplash};
 
 {$R *.res}
 

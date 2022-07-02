@@ -3,7 +3,12 @@ unit uConstants;
 interface
 
 const
+  cShellScript='deployment.bat';
   //frmMain
+  cDefaultOutDir='Compressed\';
+  cJPAllExt='*.jp*';
+  cJpgExt='*.jpg';
+  cJpegExt='*.jpeg';
   cSettingsFilename='settings.json';
   previewMinWidth=530;
   origMinWidth=400;
@@ -12,7 +17,7 @@ const
   cSplashBGColor = 5209163;
   //uJPEGCompressor
   cScaleBelowQuality = 25;
-  cMinQuality = 1;
+  cMinQuality = 1;  //allow user pick 1
   cMaxQuality = 100;
   cDefaultQuality = 80;
   cTargetInterval = 5;
@@ -44,8 +49,15 @@ const
   cActivatedCaption = 'Turbo Image Compressor - Pro';
   cEvaluationCaption = 'Turbo Image Compressor';
   cContactVersionURL = 'https://eireware.com/contact';
+  //affiliate
   cLatestVersionURL = 'https://orcaireland.com/software/TurboImageCompressor_Setup.exe';
   cVersionFile = 'https://orcaireland.com/software/version.json';
+  //messages
+  cMsgShellScriptWelcome = 'Use this feature to create a .bat file. '+sLineBreak+sLineBreak+
+                           'This CMD script will run after the compression queue has completed. '+sLineBreak+sLineBreak+
+                           'This may be used to deploy images to a website.';
+  cMsgScanningDisk = 'Scanning disk, please wait...';
+  cMsgClosingApp = 'Are you sure you want to close this application?';
 
 implementation
 

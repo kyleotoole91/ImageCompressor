@@ -124,6 +124,8 @@ type
     miReplaceOriginals: TMenuItem;
     miClearFiles: TMenuItem;
     miSaveSettings: TMenuItem;
+    Deployment1: TMenuItem;
+    DeploymentScript1: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -191,6 +193,7 @@ type
     procedure ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure miClearFilesClick(Sender: TObject);
     procedure miSaveSettingsClick(Sender: TObject);
+    procedure DeploymentScript1Click(Sender: TObject);
   private
     { Private declarations }
     fDirectoryScanned,
@@ -227,7 +230,6 @@ type
     function SizeOfFileKB(const AFilename: string): uInt64;
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     procedure ObjToForm(AImageConfig: TImageConfig=nil);
-    procedure ScanDisk;
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure OpenURL(const AURL: string);
     procedure CheckHideLabels;
@@ -244,6 +246,7 @@ type
     procedure AcceptFiles(var AMsg: TMessage); message WM_DROPFILES;
     procedure SaveFormSettings;
     procedure LoadFormSettings;
+    procedure ScanDisk;
   public
     { Public declarations }
     property EvaluationMode: boolean read fEvaluationMode write SetEvaluationMode;
@@ -255,7 +258,7 @@ var
 implementation
 
 uses
-  uDlgFilter, uDlgProgress, REST.JSON;
+  uDlgFilter, uDlgProgress, REST.JSON, uFrmShellScript;
 
 {$R *.dfm}
 
@@ -321,7 +324,7 @@ begin
   seMaxWidthPx.Value := cDefaultMaxWidth;
   seMaxHeightPx.Value := cDefaultMaxHeight;
   fWorkingDir := TPath.GetPicturesPath;
-  fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+'Compressed\';
+  fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+cDefaultOutDir;
   ebOutputDir.Text := fOutputDir;
   pcMain.ActivePage := tsHome;
   ClientWidth := 1820;
@@ -358,6 +361,7 @@ begin
     Scan(Sender);
     LoadFormSettings;
     fFormClosing := false;
+    mmMessages.Lines.Clear;
     inherited;
   end;
 end;
@@ -404,7 +408,7 @@ begin
   AHasReplaceOriginals := fReplaceOriginals;
   if cbApplyToAll.Checked then begin
     AHasTargetKB := cbCompress.Checked and (seTargetKBs.Value > 0);
-    AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > integer(rmFastest)); //allow fastest in demo
+    AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > integer(rmRecommended)); //allow rmRecommended in demo
   end else begin
     AHasTargetKB := false;
     AHasResampling := false;
@@ -433,7 +437,7 @@ begin
     end;
   end;
   if Assigned(fImageConfig) and fEvaluationMode then
-    fImageConfig.ResampleMode := rmFastest;
+    fImageConfig.ResampleMode := rmRecommended;
 end;
 
 procedure TFrmMain.ObjToForm(AImageConfig: TImageConfig=nil);
@@ -753,7 +757,7 @@ begin
         if ExtractFileExt(filename) <> '' then
           AddFile(filename)
         else begin
-          filenames := TDirectory.GetFiles(filename, '*.jp*', TSearchOption.soAllDirectories);
+          filenames := TDirectory.GetFiles(filename, cJPAllExt, TSearchOption.soAllDirectories);
           for filename in filenames do
             AddFile(Validate(filename));
         end;
@@ -803,6 +807,7 @@ begin
     json.B['replaceOriginals'] := fReplaceOriginals;
     json.B['deepScan'] := fDeepScan;
     json.I['pnlFilesWidth'] := pnlFiles.Width;
+    json.I['pnlOriginalWidth'] := pnlOriginal.Width;
     json.B['applyToAll'] := cbApplyToAll.Checked;
     json.S['jsonFilename'] := ebFilename.Text;
     json.SaveTo(cSettingsFilename);
@@ -836,6 +841,7 @@ begin
           fDeepScan := json.B['deepScan'];
           cbApplyToAll.Checked := json.B['applyToAll'];
           ebFilename.Text := json.S['jsonFilename'];
+          pnlOriginal.Width := json.I['pnlOriginalWidth'];
           if pnlFiles.Width <> 0 then
             pnlFiles.Width := json.I['pnlFilesWidth'];
           miDeepScan.Checked := fDeepScan;
@@ -1161,7 +1167,7 @@ end;
 
 procedure TFrmMain.CloseApplication1Click(Sender: TObject);
 begin
-  if MessageDlg('Are you sure you want to close this application?', TMsgDlgType.mtConfirmation, mbOKCancel, 0) = mrOK then
+  if MessageDlg(cMsgClosingApp, TMsgDlgType.mtConfirmation, mbOKCancel, 0) = mrOK then
     Close;
 end;
 
@@ -1177,6 +1183,17 @@ begin
     if cbCreateJSONFile.Checked and
        (AJSON.AsArray.Count > 0) then
       AJSON.SaveTo(newfilename, true);
+  end;
+end;
+
+procedure TFrmMain.DeploymentScript1Click(Sender: TObject);
+begin
+  with TFrmShellScript.Create(Self) do begin
+    try
+      ShowModal;
+    finally
+      Free;
+    end;
   end;
 end;
 
@@ -1310,16 +1327,16 @@ begin
   try
     fFilenameList.Clear;
     if fDeepScan then begin
-      dlgProgress.Text := 'Scanning disk, please wait...';
+      dlgProgress.Text := cMsgScanningDisk;
       dlgProgress.Show;
       Application.ProcessMessages;
     end;
     try
       if ebStartPath.Text <> '' then begin
         if fDeepScan then
-          filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soAllDirectories)
+          filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soAllDirectories)
         else
-          filenames := TDirectory.GetFiles(ebStartPath.Text, '*.jp*', TSearchOption.soTopDirectoryOnly);
+          filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soTopDirectoryOnly);
         for filename in filenames do
           fFilenameList.Add(filename);
       end;
@@ -1479,7 +1496,7 @@ begin
     try
       DefaultFolder := ebStartPath.Text;
       Options := [fdoFileMustExist];
-      FileTypes.Add.FileMask := '*.jpg';
+      FileTypes.Add.FileMask := cJpgExt;
       if Execute then begin
         imgHome.Align := alNone;
         fWorkingDir := ExtractFilePath(FileName);
@@ -1586,7 +1603,8 @@ begin
       if hasReplaceOriginals then
         sl.Add('• Replacing original files is only available in the Pro version.');
       if hasMultipleImages then
-        sl.Add('• Batch processing is only available in the Pro version. Please process one image at time.');
+        sl.Add('• Batch processing is only available in the Pro version. '+sLineBreak+sLineBreak+
+               'Please process one image at time.');
       if hasTargetKB then
         sl.Add('• Target file size is only available in the Pro version.');
       if hasResampling then
