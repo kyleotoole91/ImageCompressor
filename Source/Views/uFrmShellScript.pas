@@ -29,19 +29,24 @@ type
     fDosCommand: TDosCommand;
     fRecordModified: boolean;
     fRunOnCompletion: boolean;
+    fAllowSave: boolean;
     procedure SetRunOnCompletion(const Value: boolean);
   public
     property RecordModified: boolean read fRecordModified;
     property RunOnCompletion: boolean read fRunOnCompletion write SetRunOnCompletion;
+    property AllowSave: boolean read fAllowSave write fAllowSave;
   end;
 
 implementation
 
+uses
+  Winapi.ShellAPI;
 {$R *.dfm}
 
 procedure TFrmShellScript.FormCreate(Sender: TObject);
 begin
   inherited;
+  fAllowSave := false;
   fFile := TStringList.Create;
   fDosCommand := TDosCommand.Create(Self);
   fDosCommand.OutputLines := mmOutput.Lines;
@@ -69,12 +74,17 @@ end;
 procedure TFrmShellScript.btnOKClick(Sender: TObject);
 begin
   inherited;
-  fRecordModified := true;
-  fFile.Clear;
-  fFile.Text := mmInput.Text;
-  fFile.SaveToFile(cShellScript);
-  fRunOnCompletion := cbRunOnCompletion.Checked;
-  Close;
+  if not fAllowSave then begin
+    if MessageDlg(cDeployScriptEval+sLineBreak+sLineBreak+cLinkToBuyMessage, mtWarning, mbOKCancel, 0) = mrOk then
+      ShellExecute(0, 'open', PChar(cGumRoadLink), nil, nil, SW_SHOWNORMAL);
+  end else begin
+    fRecordModified := true;
+    fFile.Clear;
+    fFile.Text := mmInput.Text;
+    fFile.SaveToFile(cShellScript);
+    fRunOnCompletion := cbRunOnCompletion.Checked;
+    Close;
+  end;
 end;
 
 procedure TFrmShellScript.btnCancelClick(Sender: TObject);

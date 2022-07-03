@@ -24,8 +24,6 @@ object FrmShellScript: TFrmShellScript
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 302
-    ExplicitWidth = 660
     object Panel2: TPanel
       Left = 585
       Top = 0
@@ -34,7 +32,6 @@ object FrmShellScript: TFrmShellScript
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 304
       object btnOK: TButton
         Left = 271
         Top = 7
@@ -84,8 +81,6 @@ object FrmShellScript: TFrmShellScript
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 654
-    ExplicitHeight = 296
     object Splitter1: TSplitter
       Left = 557
       Top = 0
@@ -115,7 +110,6 @@ object FrmShellScript: TFrmShellScript
       ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 0
-      ExplicitWidth = 593
     end
     object mmOutput: TMemo
       Left = 560

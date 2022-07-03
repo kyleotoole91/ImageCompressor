@@ -58,7 +58,7 @@ type
     lbImgHeightVal: TLabel;
     mmMenu: TMainMenu;
     File1: TMenuItem;
-    mmiScan: TMenuItem;
+    mmiOpenFolder: TMenuItem;
     mmiOpen: TMenuItem;
     cbStretch: TCheckBox;
     View1: TMenuItem;
@@ -367,8 +367,8 @@ begin
     fFormCreating := false;
   finally
     Screen.Cursor := crDefault;
-    Scan(Sender);
     LoadFormSettings;
+    Scan(Sender);
     fFormClosing := false;
     mmMessages.Lines.Clear;
     inherited;
@@ -377,7 +377,7 @@ end;
 
 function TFrmMain.FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
 begin
-  if fSelectedFilename <> '' then begin
+  if (fSelectedFilename <> '') or Assigned(AImageConfig) then begin
     if Assigned(AImageConfig) then
       result := AImageConfig
     else
@@ -648,9 +648,14 @@ end;
 
 procedure TFrmMain.miDeepScanClick(Sender: TObject);
 begin
-  miDeepScan.Checked := not miDeepScan.Checked;
-  fDeepScan := miDeepScan.Checked;
-  Scan(Sender);
+  if fEvaluationMode then begin
+    if MessageDlg(cDeepScanEval+sLineBreak+sLineBreak+cLinkToBuyMessage, mtWarning, mbOKCancel, 0) = mrOk then
+      OpenURL(cGumRoadLink);
+  end else begin
+    miDeepScan.Checked := not miDeepScan.Checked;
+    fDeepScan := miDeepScan.Checked;
+    Scan(Sender);
+  end;
 end;
 
 procedure TFrmMain.miDownloadClick(Sender: TObject);
@@ -858,14 +863,9 @@ begin
             pnlFiles.Width := json.I['pnlFilesWidth'];
           miDeepScan.Checked := fDeepScan;
           miReplaceOriginals.Checked := fReplaceOriginals;
-          if (fDeepScan) and
-             (fFilenameList.Count > 0) then begin
-            fSelectedFilename := fFilenameList.Strings[0];
-            Scan(nil);
-            LoadImagePreview(fSelectedFilename);
-          end;
         end;
       finally
+        fSelectedFilename := '';
         if Assigned(imgConfig) then
           imgConfig.Free
       end;
@@ -971,21 +971,27 @@ begin
      Assigned(AImage) and
      (not fFormCreating) then begin
     try
-      AJPEG.Scale := jsHalf; //switching scale forces update which shows the compressed version
-      if miApplyBestFit.Checked then begin  //Set scale (reduces shrink artifacting at a low cost)
-        SetLabels;
-        scale := integer(AJPEG.Scale);
-        while (scale <= 3) and
-              ((AJPEG.Width > (AImage.Width+oversizeAllowance)) or
-               (AJPEG.Height > (AImage.Height+oversizeAllowance))) do begin
-          jsScale := TJPEGScale(scale);
-          AJPEG.Scale := jsScale;
-          Inc(scale);
-        end;
-      end else
-        SetLabels;
-    finally
-      AImage.Picture.Assign(AJPEG);
+      try
+        AJPEG.Scale := jsHalf; //switching scale forces update which shows the compressed version
+        if miApplyBestFit.Checked then begin  //Set scale (reduces shrink artifacting at a low cost)
+          SetLabels;
+          scale := integer(AJPEG.Scale);
+          while (scale <= 3) and
+                ((AJPEG.Width > (AImage.Width+oversizeAllowance)) or
+                 (AJPEG.Height > (AImage.Height+oversizeAllowance))) do begin
+            jsScale := TJPEGScale(scale);
+            AJPEG.Scale := jsScale;
+            Inc(scale);
+          end;
+        end else
+          SetLabels;
+      finally
+        if Assigned(AJPEG) then
+          AImage.Picture.Assign(AJPEG);
+      end;
+    except
+      on e: exception do
+        MessageDlg(e.Message, mtError, mbOKCancel, 0)
     end;
   end;
 end;
@@ -1205,6 +1211,7 @@ procedure TFrmMain.DeploymentScript1Click(Sender: TObject);
 begin
   with TFrmShellScript.Create(Self) do begin
     try
+      AllowSave := not fEvaluationMode;
       RunOnCompletion := fRunScript;
       ShowModal;
       if RecordModified then
@@ -1327,7 +1334,8 @@ end;
 
 procedure TFrmMain.ResizeEvent(Sender: TObject);
 begin
-  if not fFormClosing then begin
+  if (not fFormClosing) and
+     (fSelectedFilename <> '') then begin
     Screen.Cursor := crHourGlass;
     try
       CheckHideLabels;
@@ -1505,7 +1513,8 @@ begin
       DefaultFolder := fWorkingDir;
       Options := [fdoPickFolders];
       if Execute then begin
-        if Sender = ebStartPath then begin
+        if (Sender = ebStartPath) or
+           (Sender = mmiOpenFolder) then begin
           ebStartPath.Text := FileName;
           Scan(Sender);
         end else

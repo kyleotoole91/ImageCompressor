@@ -861,7 +861,7 @@ object FrmMain: TFrmMain
     Left = 144
     object File1: TMenuItem
       Caption = 'File'
-      object mmiScan: TMenuItem
+      object mmiOpenFolder: TMenuItem
         Caption = 'Open folder'
         ShortCut = 113
         OnClick = ShowFolderSelect

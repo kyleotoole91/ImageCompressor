@@ -54,11 +54,13 @@ const
   cLatestVersionURL = 'https://orcaireland.com/software/TurboImageCompressor_Setup.exe';
   cVersionFile = 'https://orcaireland.com/software/version.json';
   //messages
+  cDeployScriptEval='Deployment batch scripts are only available in the Pro version.';
+  cDeepScanEval='Deep scan is only available in the Pro version.';
   cLinkToBuyMessage='Would you like to be directed to our web page to purchase the Pro version now?';
-  cBatchProcessEvaluation='Please select at least one image to process';
-  cReplaceOrigEval='• Replacing original files is only available in the Pro version';
-  cBatchProcessingEval='• Batch processing is only available in the Pro version';
-  cTargetEval='• Target file size is only available in the Pro version';
+  cBatchProcessEvaluation='Please select at least one image to process.';
+  cReplaceOrigEval='• Replacing original files is only available in the Pro version.';
+  cBatchProcessingEval='• Batch processing is only available in the Pro version.';
+  cTargetEval='• Target file size is only available in the Pro version.';
   cResamplingEval='• Best resampling is only available in the Pro version';
   cMsgShellScriptWelcome = 'Use this feature to create a .bat file. '+sLineBreak+sLineBreak+
                            'This CMD script will run after the compression queue has completed. '+sLineBreak+sLineBreak+
