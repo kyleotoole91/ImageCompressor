@@ -127,6 +127,7 @@ type
     miAdvanced: TMenuItem;
     DeploymentScript1: TMenuItem;
     miSelectOutputDir: TMenuItem;
+    tmrOnShow: TTimer;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -197,6 +198,7 @@ type
     procedure DeploymentScript1Click(Sender: TObject);
     procedure miSelectOutputDirClick(Sender: TObject);
     procedure ebStartPathEnter(Sender: TObject);
+    procedure tmrOnShowTimer(Sender: TObject);
   private
     { Private declarations }
     fDosCommand: TDosCommand;
@@ -304,6 +306,7 @@ begin
   ClientWidth := 1820;
   ClientHeight := 950;
   spOriginal.Left := 784;
+  tmrOnShow.Enabled := false;
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -358,6 +361,7 @@ end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
 begin
+  inherited;
   Screen.Cursor := crHourGlass;
   try
     fFormClosing := true;
@@ -371,7 +375,8 @@ begin
     Scan(Sender);
     fFormClosing := false;
     mmMessages.Lines.Clear;
-    inherited;
+    if fSelectedFilename = '' then
+      tmrOnShow.Enabled := true;
   end;
 end;
 
@@ -1646,6 +1651,13 @@ procedure TFrmMain.tbQualityKeyDown(Sender: TObject; var Key: Word; Shift: TShif
 begin
   if key = VK_RETURN then
     CheckCompressPreviewLoad(Sender);
+end;
+
+procedure TFrmMain.tmrOnShowTimer(Sender: TObject);
+begin
+  tmrOnShow.Enabled := false;
+  MessageDlg('No images found in the default source directory. '+sLineBreak+sLineBreak+
+             'Please drag and drop images or folders, use the File menu option or enter another source directory.', TMsgDlgType.mtInformation, mbOKCancel, 0);
 end;
 
 procedure TFrmMain.tmrResizeTimer(Sender: TObject);

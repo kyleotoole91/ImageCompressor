@@ -1005,4 +1005,11 @@ object FrmMain: TFrmMain
       OnClick = miFullscreenClick
     end
   end
+  object tmrOnShow: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = tmrOnShowTimer
+    Left = 364
+    Top = 352
+  end
 end
