@@ -24,6 +24,7 @@ type
     procedure btnRunClick(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure OnTerminated(Sender: TObject);
   private
     fFile: TStringList;
     fDosCommand: TDosCommand;
@@ -46,10 +47,22 @@ uses
 procedure TFrmShellScript.FormCreate(Sender: TObject);
 begin
   inherited;
-  fAllowSave := false;
   fFile := TStringList.Create;
   fDosCommand := TDosCommand.Create(Self);
+  fAllowSave := false;
   fDosCommand.OutputLines := mmOutput.Lines;
+  fDosCommand.OnTerminated := OnTerminated;
+end;
+
+procedure TFrmShellScript.FormDestroy(Sender: TObject);
+begin
+  try
+    fFile.Free;
+    fDosCommand.Stop;
+    fDosCommand.Free;
+  finally
+    inherited;
+  end;
 end;
 
 procedure TFrmShellScript.FormShow(Sender: TObject);
@@ -63,6 +76,12 @@ begin
   end else
     MessageDlg(cMsgShellScriptWelcome, mtInformation, [mbOK], 0);
   mmInput.SetFocus;
+end;
+
+procedure TFrmShellScript.OnTerminated(Sender: TObject);
+begin
+  btnRun.Enabled := true;
+  Screen.Cursor := crDefault;
 end;
 
 procedure TFrmShellScript.SetRunOnCompletion(const Value: boolean);
@@ -97,21 +116,13 @@ end;
 procedure TFrmShellScript.btnRunClick(Sender: TObject);
 begin
   inherited;
+  Screen.Cursor := crHourGlass;
+  btnRun.Enabled := false;
   mmOutput.Lines.Clear;
   fFile.Text := mmInput.Text;
   fFile.SaveToFile(cShellTestScript);
   fDosCommand.CommandLine := 'cmd /c "'+cShellTestScript+'"';
   fDosCommand.Execute;
-end;
-
-procedure TFrmShellScript.FormDestroy(Sender: TObject);
-begin
-  try
-    fFile.Free;
-    fDosCommand.Free;
-  finally
-    inherited;
-  end;
 end;
 
 end.

@@ -3,7 +3,7 @@ object FrmShellScript: TFrmShellScript
   Top = 0
   Caption = 'Deployment Script (.bat)'
   ClientHeight = 479
-  ClientWidth = 1015
+  ClientWidth = 1226
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,19 +19,21 @@ object FrmShellScript: TFrmShellScript
   object Panel1: TPanel
     Left = 0
     Top = 438
-    Width = 1015
+    Width = 1226
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 1015
     object Panel2: TPanel
-      Left = 585
+      Left = 796
       Top = 0
       Width = 430
       Height = 41
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 585
       object btnOK: TButton
         Left = 271
         Top = 7
@@ -76,13 +78,14 @@ object FrmShellScript: TFrmShellScript
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1009
+    Width = 1220
     Height = 432
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 1009
     object Splitter1: TSplitter
-      Left = 557
+      Left = 790
       Top = 0
       Height = 432
       Align = alRight
@@ -93,7 +96,7 @@ object FrmShellScript: TFrmShellScript
     object mmInput: TMemo
       Left = 0
       Top = 0
-      Width = 557
+      Width = 790
       Height = 432
       Hint = 'Eg: Connect via SSH and move images to server'
       Align = alClient
@@ -110,11 +113,12 @@ object FrmShellScript: TFrmShellScript
       ScrollBars = ssVertical
       ShowHint = True
       TabOrder = 0
+      ExplicitWidth = 557
     end
     object mmOutput: TMemo
-      Left = 560
+      Left = 793
       Top = 0
-      Width = 449
+      Width = 427
       Height = 432
       Hint = 'Output'
       Align = alRight

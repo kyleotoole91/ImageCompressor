@@ -209,7 +209,7 @@ type
     fDeepScan,
     fEvaluationMode,
     fImageChanged: boolean;
-    fFormClosing,
+    fFormOpenClose,
     fLoadingPreview: boolean;
     fFilterSizeKB: uInt64;
     fJSON: ISuperObject;
@@ -289,7 +289,7 @@ begin
   fLicenseValidator := TLicenseValidator.Create;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   fMessages := TStringList.Create;
-  fFormClosing := false;
+  fFormOpenClose := false;
   fLoading := false;
   seTargetKBs.Value := 0;
   tbQuality.Min := cMinQuality;
@@ -354,7 +354,7 @@ end;
 
 procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  fFormClosing := true;
+  fFormOpenClose := true;
   DragAcceptFiles(Self.Handle, false);
   inherited;
 end;
@@ -364,7 +364,7 @@ begin
   inherited;
   Screen.Cursor := crHourGlass;
   try
-    fFormClosing := true;
+    fFormOpenClose := true;
     mmMessages.Clear;
     pcMain.ActivePage := tsHome;
     ebStartPath.Text := fWorkingDir;
@@ -373,7 +373,7 @@ begin
     Screen.Cursor := crDefault;
     LoadFormSettings;
     Scan(Sender);
-    fFormClosing := false;
+    fFormOpenClose := false;
     mmMessages.Lines.Clear;
     if fSelectedFilename = '' then
       tmrOnShow.Enabled := true;
@@ -1339,7 +1339,7 @@ end;
 
 procedure TFrmMain.ResizeEvent(Sender: TObject);
 begin
-  if (not fFormClosing) and
+  if (not fFormOpenClose) and
      (fSelectedFilename <> '') then begin
     Screen.Cursor := crHourGlass;
     try
@@ -1387,6 +1387,9 @@ begin
         for filename in filenames do
           fFilenameList.Add(filename);
       end;
+      if (not fFormOpenClose) and
+         (fFilenameList.Count = 0) then
+        MessageDlg('No images found.', mtWarning, mbOKCancel, 0);
       fDirectoryScanned := true;
     except
       on e: exception do
@@ -1656,7 +1659,8 @@ procedure TFrmMain.tmrOnShowTimer(Sender: TObject);
 begin
   tmrOnShow.Enabled := false;
   MessageDlg('No images found in the default source directory. '+sLineBreak+sLineBreak+
-             'Please drag and drop images or folders, use the File menu option or enter another source directory.', TMsgDlgType.mtInformation, mbOKCancel, 0);
+             'Please drag and drop images or folders to build a compression queue.'+sLineBreak+sLineBreak+
+             'Alternatively, use the File -> Open menu option.', TMsgDlgType.mtInformation, mbOKCancel, 0);
 end;
 
 procedure TFrmMain.tmrResizeTimer(Sender: TObject);
