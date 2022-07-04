@@ -1074,7 +1074,7 @@ begin
         fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
         fTotalSavedKB := 0;
         fNumProcessed := 0;
-        //mmMessages.Lines.BeginUpdate;
+        mmMessages.Lines.BeginUpdate;
         fMessages.Add('--------------------- Start ---------------------------');
         filename := ebStartPath.Text;
         if LowerCase(ExtractFileExt(filename)) = '.jpg' then
@@ -1121,7 +1121,7 @@ begin
     end;
   finally
     fJSON := nil;
-    //mmMessages.Lines.EndUpdate;
+    mmMessages.Lines.EndUpdate;
     btnStart.Enabled := true;
   end;
 end;
