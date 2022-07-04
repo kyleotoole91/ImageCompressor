@@ -936,7 +936,7 @@ object FrmMain: TFrmMain
       Caption = 'Settings'
       OnClick = Settings1Click
       object miDeepScan: TMenuItem
-        Caption = 'Deep Scan '
+        Caption = 'Deep scan '
         ShortCut = 117
         OnClick = miDeepScanClick
       end
@@ -953,7 +953,7 @@ object FrmMain: TFrmMain
     object miAdvanced: TMenuItem
       Caption = 'Advanced'
       object DeploymentScript1: TMenuItem
-        Caption = 'Deployment Script'
+        Caption = 'Deployment script'
         OnClick = DeploymentScript1Click
       end
     end

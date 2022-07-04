@@ -1480,7 +1480,6 @@ end;
 procedure TFrmMain.SetEvaluationMode(const Value: boolean);
 begin
   fEvaluationMode := Value;
-  miPurchaseLicense.Caption := 'Purchase License Key';
   if fEvaluationMode then
     Caption := cEvaluationCaption
   else
