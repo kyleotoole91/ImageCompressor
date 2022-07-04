@@ -1049,10 +1049,12 @@ var
   filename: string;
   startTime: TDateTime;
   dlgProgrss: TDlgProgress;
+  runScript: boolean;
 begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
   startTime := Now;
+  runScript := fRunScript;
   try
     if ((fReplaceOriginals) or
         (ExtractFileName(ebStartPath.Text) = '') or
@@ -1060,6 +1062,10 @@ begin
         (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
                             'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
         ValidSelection(Sender) then begin
+      if runScript and
+         (mrNo = MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
+                            'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
+        runScript := false;
       Screen.Cursor := crHourGlass;
       dlgProgrss := TDlgProgress.Create(Self);
       try
@@ -1088,7 +1094,7 @@ begin
         end;
         if cbCreateJSONFile.Checked then
           CreateJSONFile(fJSON);
-        if fRunScript then
+        if runScript then
           RunDeploymentScript;
       finally
         dlgProgrss.Free;
