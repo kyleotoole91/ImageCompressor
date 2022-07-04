@@ -11,20 +11,22 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     btnOK: TButton;
-    btnCancel: TButton;
+    btnClose: TButton;
     Panel3: TPanel;
     mmInput: TMemo;
     mmOutput: TMemo;
     Splitter1: TSplitter;
     btnRun: TButton;
     cbRunOnCompletion: TCheckBox;
-    procedure btnCancelClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnRunClick(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure OnTerminated(Sender: TObject);
+    procedure mmInputChange(Sender: TObject);
+    procedure cbRunOnCompletionClick(Sender: TObject);
   private
     fFile: TStringList;
     fDosCommand: TDosCommand;
@@ -78,6 +80,11 @@ begin
   mmInput.SetFocus;
 end;
 
+procedure TFrmShellScript.mmInputChange(Sender: TObject);
+begin
+  btnOK.Enabled := true;
+end;
+
 procedure TFrmShellScript.OnTerminated(Sender: TObject);
 begin
   btnRun.Enabled := true;
@@ -106,7 +113,12 @@ begin
   end;
 end;
 
-procedure TFrmShellScript.btnCancelClick(Sender: TObject);
+procedure TFrmShellScript.cbRunOnCompletionClick(Sender: TObject);
+begin
+  btnOK.Enabled := true;
+end;
+
+procedure TFrmShellScript.btnCloseClick(Sender: TObject);
 begin
   inherited;
   fRecordModified := false;

@@ -62,9 +62,11 @@ const
   cBatchProcessingEval='• Batch processing is only available in the Pro version.';
   cTargetEval='• Target file size is only available in the Pro version.';
   cResamplingEval='• Best resampling is only available in the Pro version';
-  cMsgShellScriptWelcome = 'Use this feature to create a .bat file. '+sLineBreak+sLineBreak+
-                           'This CMD script will run after the compression queue has completed. '+sLineBreak+sLineBreak+
-                           'This may be used to deploy images to a website.';
+  cMsgShellScriptWelcome = 'Use this feature to create and run .bat file. '+sLineBreak+sLineBreak+
+                           'This script can be set to run after the compression queue has completed. '+sLineBreak+sLineBreak+
+                           'This is usefull for deploying the compressed images to a website (eg SCP).'+sLineBreak+sLineBreak+
+                           'NB: OpensSSH programs such as scp.exe may need to be copied or moved to a directory that has read permissions. '+
+                           'Configuring PATH environment variables is recommended.';
   cMsgScanningDisk = 'Scanning disk, please wait...';
   cMsgClosingApp = 'Are you sure you want to close this application?';
 

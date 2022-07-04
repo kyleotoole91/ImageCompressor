@@ -2,8 +2,8 @@ object FrmShellScript: TFrmShellScript
   Left = 0
   Top = 0
   Caption = 'Deployment Script (.bat)'
-  ClientHeight = 479
-  ClientWidth = 1226
+  ClientHeight = 429
+  ClientWidth = 1070
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,15 +18,16 @@ object FrmShellScript: TFrmShellScript
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 438
-    Width = 1226
+    Top = 388
+    Width = 1070
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 438
     ExplicitWidth = 1015
     object Panel2: TPanel
-      Left = 796
+      Left = 640
       Top = 0
       Width = 430
       Height = 41
@@ -35,26 +36,27 @@ object FrmShellScript: TFrmShellScript
       TabOrder = 0
       ExplicitLeft = 585
       object btnOK: TButton
-        Left = 271
-        Top = 7
+        Left = 269
+        Top = 8
         Width = 75
         Height = 25
-        Caption = 'Save'
+        Caption = 'OK'
+        Enabled = False
         TabOrder = 1
         OnClick = btnOKClick
       end
-      object btnCancel: TButton
-        Left = 352
-        Top = 7
+      object btnClose: TButton
+        Left = 350
+        Top = 8
         Width = 75
         Height = 25
-        Caption = 'Cancel'
+        Caption = 'Close'
         TabOrder = 2
-        OnClick = btnCancelClick
+        OnClick = btnCloseClick
       end
       object btnRun: TButton
-        Left = 190
-        Top = 7
+        Left = 188
+        Top = 8
         Width = 75
         Height = 25
         Hint = 'Result shown in right side panel'
@@ -65,12 +67,13 @@ object FrmShellScript: TFrmShellScript
         OnClick = btnRunClick
       end
       object cbRunOnCompletion: TCheckBox
-        Left = 26
-        Top = 11
+        Left = 24
+        Top = 12
         Width = 158
         Height = 17
         Caption = 'Run script after compressing'
         TabOrder = 3
+        OnClick = cbRunOnCompletionClick
       end
     end
   end
@@ -78,16 +81,17 @@ object FrmShellScript: TFrmShellScript
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1220
-    Height = 432
+    Width = 1064
+    Height = 382
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
     ExplicitWidth = 1009
+    ExplicitHeight = 432
     object Splitter1: TSplitter
-      Left = 790
+      Left = 640
       Top = 0
-      Height = 432
+      Height = 382
       Align = alRight
       ExplicitLeft = 424
       ExplicitTop = -3
@@ -96,9 +100,11 @@ object FrmShellScript: TFrmShellScript
     object mmInput: TMemo
       Left = 0
       Top = 0
-      Width = 790
-      Height = 432
-      Hint = 'Eg: Connect via SSH and move images to server'
+      Width = 640
+      Height = 382
+      Hint = 
+        'Eg: Execute commands to transfer images via SCP and import the .' +
+        'json into database'
       Align = alClient
       Color = clDefault
       Font.Charset = DEFAULT_CHARSET
@@ -110,16 +116,17 @@ object FrmShellScript: TFrmShellScript
         'Memo1')
       ParentFont = False
       ParentShowHint = False
-      ScrollBars = ssVertical
+      ScrollBars = ssBoth
       ShowHint = True
       TabOrder = 0
-      ExplicitWidth = 557
+      OnChange = mmInputChange
+      ExplicitWidth = 441
     end
     object mmOutput: TMemo
-      Left = 793
+      Left = 643
       Top = 0
-      Width = 427
-      Height = 432
+      Width = 421
+      Height = 382
       Hint = 'Output'
       Align = alRight
       Color = clDefault
@@ -133,7 +140,7 @@ object FrmShellScript: TFrmShellScript
       ParentFont = False
       ParentShowHint = False
       ReadOnly = True
-      ScrollBars = ssVertical
+      ScrollBars = ssBoth
       ShowHint = True
       TabOrder = 1
     end
