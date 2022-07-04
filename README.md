@@ -1,7 +1,6 @@
 # Turbo Image Compressor
 
-
-![Compressor](https://user-images.githubusercontent.com/49255786/172027377-40bf8501-e70c-4c2c-82ab-fcf1b74d0ef1.JPG)
+![TurboImage](https://user-images.githubusercontent.com/49255786/177213327-0aac0054-cb46-40b1-969f-6ee56f266a44.JPG)
 
 This project was written in Delphi (Object Pascal), built using RAD Studio 10.4. 
 It makes use of the Image32 graphics library and the superobject JSON writer/parser.
