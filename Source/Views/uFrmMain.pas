@@ -1114,6 +1114,7 @@ begin
         fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
         fMessages.Add('--------------------- End -------------------------');
         mmMessages.Lines.Add(fMessages.Text);
+        mmMessages.Lines.EndUpdate;
         if fReplaceOriginals then
           LoadImagePreview(fSelectedFilename);
         Screen.Cursor := crDefault;
@@ -1121,7 +1122,6 @@ begin
     end;
   finally
     fJSON := nil;
-    mmMessages.Lines.EndUpdate;
     btnStart.Enabled := true;
   end;
 end;

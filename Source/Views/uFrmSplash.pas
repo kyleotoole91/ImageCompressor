@@ -35,7 +35,7 @@ type
     { Public declarations }
     property StartApp: boolean read fStartApp;
     property HasValidLicense: boolean read fHasValidLicense;
-    function GetLatestVersion: boolean;
+    function UpdateAvailable: boolean;
   end;
 
   procedure GetBuildInfo(var V1, V2, V3, V4: word);
@@ -80,7 +80,7 @@ begin
   Timer1.Enabled := true;
 end;
 
-function TfrmSplash.GetLatestVersion;
+function TfrmSplash.UpdateAvailable: boolean;
 var
   http: THTTPClient;
   json: ISuperObject;
@@ -129,7 +129,7 @@ begin
       lbMessage.Caption := 'Starting Free version..';
     end else
       lbMessage.Caption := 'Starting Pro version...';
-    if GetLatestVersion and
+    if UpdateAvailable and
        (not AlreadyAskedVersion) then begin
       if (fLatestVersion <> fVersion) and
          (MessageDlg('There is a newer version of this software ('+fLatestVersion+').'+sLineBreak+sLineBreak+
