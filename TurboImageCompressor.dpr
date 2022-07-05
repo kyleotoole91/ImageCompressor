@@ -11,7 +11,8 @@ uses
   uDlgProgress in 'Source\Views\uDlgProgress.pas' {DlgProgress},
   uFrmMain in 'Source\Views\uFrmMain.pas' {FrmMain},
   uFrmShellScript in 'Source\Views\uFrmShellScript.pas' {FrmShellScript},
-  uFrmSplash in 'Source\Views\uFrmSplash.pas' {frmSplash};
+  uFrmSplash in 'Source\Views\uFrmSplash.pas' {frmSplash},
+  uScriptVariables in 'Source\Utilis\uScriptVariables.pas';
 
 {$R *.res}
 

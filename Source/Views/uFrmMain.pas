@@ -199,6 +199,7 @@ type
     procedure miSelectOutputDirClick(Sender: TObject);
     procedure ebStartPathEnter(Sender: TObject);
     procedure tmrOnShowTimer(Sender: TObject);
+    procedure ebOutputDirChange(Sender: TObject);
   private
     { Private declarations }
     fDosCommand: TDosCommand;
@@ -229,6 +230,7 @@ type
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fFilenameList: TStringList;
+    procedure SetPrefixDir(const AOutputPath: string);
     procedure RunDeploymentScript;
     function ValidSelection(Sender: TObject): boolean;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
@@ -822,7 +824,7 @@ begin
     jsonStr := TJson.ObjectToJsonString(imgConfig);
     json := SO(jsonStr);
     json.S['sourceDir'] := ebStartPath.Text;
-    json.S['outputDir'] := ebOutputDir.Text;
+    json.S[cOutputDir] := ebOutputDir.Text;
     json.I['filterSizeKB'] := fFilterSizeKB;
     json.B['replaceOriginals'] := fReplaceOriginals;
     json.B['deepScan'] := fDeepScan;
@@ -856,7 +858,7 @@ begin
           if json.S['sourceDir'] <> '' then
             ebStartPath.Text := json.S['sourceDir'];
           if ebOutputDir.Text <> '' then
-            ebOutputDir.Text := json.S['outputDir'];
+            ebOutputDir.Text := json.S[cOutputDir];
           fFilterSizeKB := json.I['filterSizeKB'];
           fReplaceOriginals := json.B['replaceOriginals'];
           fDeepScan := json.B['deepScan'];
@@ -1057,14 +1059,13 @@ begin
   runScript := fRunScript;
   try
     if ((fReplaceOriginals) or
-        (ExtractFileName(ebStartPath.Text) = '') or
-        (ExtractFilePath(ebStartPath.Text) <> ExtractFilePath(ebOutputDir.Text)) or
+        (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text)) or
         (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
                             'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
         ValidSelection(Sender) then begin
       if runScript and
-         (mrNo = MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
-                            'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
+        (mrYes <> MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
+                             'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
         runScript := false;
       Screen.Cursor := crHourGlass;
       dlgProgrss := TDlgProgress.Create(Self);
@@ -1276,6 +1277,11 @@ end;
 procedure TFrmMain.ebDescriptionChange(Sender: TObject);
 begin
   btnApply.Enabled := true;
+end;
+
+procedure TFrmMain.ebOutputDirChange(Sender: TObject);
+begin
+  SetPrefixDir(ebOutputDir.Text);
 end;
 
 procedure TFrmMain.ebPrefixChange(Sender: TObject);
@@ -1495,6 +1501,16 @@ begin
     Caption := cActivatedCaption;
 end;
 
+procedure TFrmMain.SetPrefixDir(const AOutputPath: string);
+var
+  prefix,
+  topDir: string;
+begin
+  topDir := ExtractFilename(AOutputPath);
+  prefix := ebPrefix.Text;
+  ebPrefix.Text := Copy(prefix, 0, prefix.LastIndexOf('/')+1) + topDir;
+end;
+
 procedure TFrmMain.SetShrinkState(Sender: TObject);
 begin
   if not fLoading then begin
@@ -1523,7 +1539,10 @@ begin
   inherited;
   with TFileOpenDialog.Create(nil) do begin
     try
-      DefaultFolder := fWorkingDir;
+      if Sender = ebStartPath then
+        DefaultFolder := fWorkingDir
+      else
+        DefaultFolder := ebStartPath.Text;
       Options := [fdoPickFolders];
       if Execute then begin
         if (Sender = ebStartPath) or

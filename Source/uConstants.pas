@@ -3,10 +3,14 @@ unit uConstants;
 interface
 
 const
+  //uFrmShellScript
+  cShellOutputPathVar='[OUTPUT_PATH]';
   cShellScript='deployment.bat';
   cShellTestScript='test.bat';
   //frmMain
-  cDefaultOutDir='Compressed\';
+  cOutputDir='outputDir';
+  cDefaultOutDir='Compressed';
+  cSourcePrefix = 'images/';
   cJPAllExt='*.jp*';
   cJpgExt='*.jpg';
   cJpegExt='*.jpeg';

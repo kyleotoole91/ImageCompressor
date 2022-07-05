@@ -341,6 +341,7 @@ object FrmMain: TFrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 1
+            OnChange = ebOutputDirChange
             OnDblClick = ShowFolderSelect
           end
           object cbApplyGraphics: TCheckBox
@@ -434,7 +435,7 @@ object FrmMain: TFrmMain
               Anchors = [akLeft, akTop, akRight]
               Enabled = False
               TabOrder = 0
-              Text = 'images/'
+              Text = 'images/Compressed'
               OnChange = ebPrefixChange
             end
             object ebDescription: TEdit

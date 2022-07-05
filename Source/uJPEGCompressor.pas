@@ -155,7 +155,7 @@ begin
       fEndTime := Now;
       if ASaveToDisk then begin
         SaveToDisk;
-        fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+MilliSecondsBetween(fStartTime, fEndTime).ToString+'ms');
+        fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+SecondsBetween(fStartTime, fEndTime).ToString+'ms');
         fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
         fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
         fMessages.Add('JPEG Saved to: '+fOutputDir+ExtractFileName(fSourceFilename));
