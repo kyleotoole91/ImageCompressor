@@ -10,6 +10,7 @@ object FrmShellScript: TFrmShellScript
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  Menu = MainMenu1
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnCreate = FormCreate
@@ -24,8 +25,6 @@ object FrmShellScript: TFrmShellScript
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 438
-    ExplicitWidth = 1015
     object Panel2: TPanel
       Left = 640
       Top = 0
@@ -34,7 +33,6 @@ object FrmShellScript: TFrmShellScript
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 585
       object btnOK: TButton
         Left = 269
         Top = 8
@@ -86,8 +84,6 @@ object FrmShellScript: TFrmShellScript
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 1009
-    ExplicitHeight = 432
     object Splitter1: TSplitter
       Left = 640
       Top = 0
@@ -120,7 +116,6 @@ object FrmShellScript: TFrmShellScript
       ShowHint = True
       TabOrder = 0
       OnChange = mmInputChange
-      ExplicitWidth = 441
     end
     object mmOutput: TMemo
       Left = 643
@@ -143,6 +138,21 @@ object FrmShellScript: TFrmShellScript
       ScrollBars = ssBoth
       ShowHint = True
       TabOrder = 1
+    end
+  end
+  object MainMenu1: TMainMenu
+    Left = 211
+    Top = 59
+    object Insert1: TMenuItem
+      Caption = 'Add Variable'
+      object cbInsertVar: TMenuItem
+        Caption = 'Output directory'
+        OnClick = cbInsertVarClick
+      end
+      object Sourceprefixsaved1: TMenuItem
+        Caption = 'Source prefix'
+        OnClick = Sourceprefixsaved1Click
+      end
     end
   end
 end

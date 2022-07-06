@@ -4,11 +4,14 @@ interface
 
 const
   //uFrmShellScript
-  cShellOutputPathVar='[OUTPUT_PATH]';
+  cShellOutputPathVar='[OUTPUT_DIR]';
+  cShellPrefixVar='[SOURCE_PREFIX]';
   cShellScript='deployment.bat';
   cShellTestScript='test.bat';
+  cShellTempScript='temp.bat';
   //frmMain
   cOutputDir='outputDir';
+  cPrefix='prefix';
   cDefaultOutDir='Compressed';
   cSourcePrefix = 'images/';
   cJPAllExt='*.jp*';

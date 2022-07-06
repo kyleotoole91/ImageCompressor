@@ -3,8 +3,8 @@ unit uFrmShellScript;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, uConstants, DosCommand, System.UITypes;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uScriptVariables,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, uConstants, DosCommand, System.UITypes, Vcl.Menus;
 
 type
   TFrmShellScript = class(TForm)
@@ -18,6 +18,10 @@ type
     Splitter1: TSplitter;
     btnRun: TButton;
     cbRunOnCompletion: TCheckBox;
+    MainMenu1: TMainMenu;
+    Insert1: TMenuItem;
+    cbInsertVar: TMenuItem;
+    Sourceprefixsaved1: TMenuItem;
     procedure btnCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -27,17 +31,23 @@ type
     procedure OnTerminated(Sender: TObject);
     procedure mmInputChange(Sender: TObject);
     procedure cbRunOnCompletionClick(Sender: TObject);
+    procedure cbInsertVarClick(Sender: TObject);
+    procedure Sourceprefixsaved1Click(Sender: TObject);
   private
+    fScriptRunner: TScriptVariables;
     fFile: TStringList;
-    fDosCommand: TDosCommand;
     fRecordModified: boolean;
     fRunOnCompletion: boolean;
     fAllowSave: boolean;
     procedure SetRunOnCompletion(const Value: boolean);
+    procedure SetOutputPath(const Value: string);
+    procedure SetSourcePrefix(const Value: string);
   public
     property RecordModified: boolean read fRecordModified;
     property RunOnCompletion: boolean read fRunOnCompletion write SetRunOnCompletion;
     property AllowSave: boolean read fAllowSave write fAllowSave;
+    property OutputPath: string write SetOutputPath;
+    property SourcePrefix: string write SetSourcePrefix;
   end;
 
 implementation
@@ -49,19 +59,21 @@ uses
 procedure TFrmShellScript.FormCreate(Sender: TObject);
 begin
   inherited;
-  fFile := TStringList.Create;
-  fDosCommand := TDosCommand.Create(Self);
   fAllowSave := false;
-  fDosCommand.OutputLines := mmOutput.Lines;
-  fDosCommand.OnTerminated := OnTerminated;
+  fFile := TStringList.Create;
+  fScriptRunner := TScriptVariables.Create(Self);
+  fScriptRunner.OutputLines := mmOutput.Lines;
+  fScriptRunner.DosCommand.OnTerminated := OnTerminated;
 end;
 
 procedure TFrmShellScript.FormDestroy(Sender: TObject);
 begin
   try
     fFile.Free;
-    fDosCommand.Stop;
-    fDosCommand.Free;
+    try
+      fScriptRunner.Free;
+    except
+    end;
   finally
     inherited;
   end;
@@ -91,10 +103,25 @@ begin
   Screen.Cursor := crDefault;
 end;
 
+procedure TFrmShellScript.SetOutputPath(const Value: string);
+begin
+  fScriptRunner.OutputPath := Value;
+end;
+
+procedure TFrmShellScript.SetSourcePrefix(const Value: string);
+begin
+  fScriptRunner.SourcePrefix := Value;
+end;
+
 procedure TFrmShellScript.SetRunOnCompletion(const Value: boolean);
 begin
   fRunOnCompletion := Value;
   cbRunOnCompletion.Checked := fRunOnCompletion;
+end;
+
+procedure TFrmShellScript.Sourceprefixsaved1Click(Sender: TObject);
+begin
+  mmInput.Text := mmInput.Text + cShellPrefixVar;
 end;
 
 procedure TFrmShellScript.btnOKClick(Sender: TObject);
@@ -111,6 +138,11 @@ begin
     fRunOnCompletion := cbRunOnCompletion.Checked;
     Close;
   end;
+end;
+
+procedure TFrmShellScript.cbInsertVarClick(Sender: TObject);
+begin
+  mmInput.Text := mmInput.Text + cShellOutputPathVar;
 end;
 
 procedure TFrmShellScript.cbRunOnCompletionClick(Sender: TObject);
@@ -133,8 +165,8 @@ begin
   mmOutput.Lines.Clear;
   fFile.Text := mmInput.Text;
   fFile.SaveToFile(cShellTestScript);
-  fDosCommand.CommandLine := 'cmd /c "'+cShellTestScript+'"';
-  fDosCommand.Execute;
+  fScriptRunner.ScriptFilename := cShellTestScript;
+  fScriptRunner.RunScript;
 end;
 
 end.

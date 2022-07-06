@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
   Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants;
+  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uScriptVariables;
 
 type
   TFrmMain = class(TForm)
@@ -202,7 +202,7 @@ type
     procedure ebOutputDirChange(Sender: TObject);
   private
     { Private declarations }
-    fDosCommand: TDosCommand;
+    fScriptVariables: TScriptVariables;
     fRunScript,
     fDirectoryScanned,
     fDrapAndDropping,
@@ -275,7 +275,7 @@ uses
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
-  fDosCommand := TDosCommand.Create(nil);
+  fScriptVariables := TScriptVariables.Create(Self);
   fRunScript := false;
   DragAcceptFiles(Self.Handle, true);
   fFilenameList := TStringList.Create;
@@ -321,7 +321,7 @@ begin
     fJPEGCompressor.Free;
     fLicenseValidator.Free;
     fJSON := nil;
-    fDosCommand.Free;
+    fScriptVariables.Free;
   finally
     inherited;
   end;
@@ -832,6 +832,7 @@ begin
     json.I['pnlOriginalWidth'] := pnlOriginal.Width;
     json.B['applyToAll'] := cbApplyToAll.Checked;
     json.S['jsonFilename'] := ebFilename.Text;
+    json.S['prefix'] := ebPrefix.Text;
     json.B['runScript'] := fRunScript;
     json.SaveTo(cSettingsFilename);
   finally
@@ -866,6 +867,7 @@ begin
           ebFilename.Text := json.S['jsonFilename'];
           pnlOriginal.Width := json.I['pnlOriginalWidth'];
           fRunScript := json.B['runScript'];
+          ebPrefix.Text := json.S['prefix'];
           if pnlFiles.Width <> 0 then
             pnlFiles.Width := json.I['pnlFilesWidth'];
           miDeepScan.Checked := fDeepScan;
@@ -1223,6 +1225,8 @@ procedure TFrmMain.DeploymentScript1Click(Sender: TObject);
 begin
   with TFrmShellScript.Create(Self) do begin
     try
+      OutputPath := ebOutputDir.Text;
+      SourcePrefix := ebPrefix.Text;
       AllowSave := not fEvaluationMode;
       RunOnCompletion := fRunScript;
       ShowModal;
@@ -1370,9 +1374,10 @@ procedure TFrmMain.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
     mmMessages.Lines.Add('Running deployment script: ');
-    fDosCommand.CommandLine := 'cmd /c "'+cShellScript+'"';
-    fDosCommand.OutputLines := mmMessages.Lines;
-    fDosCommand.Execute;           
+    fScriptVariables.OutputPath := ebOutputDir.Text;
+    fScriptVariables.ScriptFilename := cShellScript;
+    fScriptVariables.OutputLines := mmMessages.Lines;
+    fScriptVariables.RunScript;
   end;
 end;
 
