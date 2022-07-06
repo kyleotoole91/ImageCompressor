@@ -386,7 +386,7 @@ object FrmMain: TFrmMain
               ShowHint = True
               State = cbChecked
               TabOrder = 0
-              OnClick = cbCreateJSONFileClick
+              OnClick = cbIncludeInJSONFileClick
             end
             object ebFilename: TEdit
               Left = 61
@@ -449,14 +449,14 @@ object FrmMain: TFrmMain
               OnChange = ebDescriptionChange
             end
           end
-          object cbCreateJSONFile: TCheckBox
+          object cbIncludeInJSONFile: TCheckBox
             Left = 628
             Top = 66
             Width = 110
             Height = 17
             Caption = 'Include in JSON file'
             TabOrder = 6
-            OnClick = cbCreateJSONFileClick
+            OnClick = cbIncludeInJSONFileClick
           end
         end
         object pnlFiles: TPanel
@@ -950,16 +950,16 @@ object FrmMain: TFrmMain
         Caption = 'Auto compelte prefix (append output dir name)'
         OnClick = miAutoPrefixClick
       end
-      object miRestoreDefaults: TMenuItem
-        Caption = 'Restore defaults'
-        OnClick = miRestoreDefaultsClick
-      end
       object N7: TMenuItem
         Caption = '-'
       end
       object miSaveSettings: TMenuItem
         Caption = 'Save current settings'
         OnClick = miSaveSettingsClick
+      end
+      object miRestoreDefaults: TMenuItem
+        Caption = 'Restore defaults'
+        OnClick = miRestoreDefaultsClick
       end
     end
     object miAdvanced: TMenuItem

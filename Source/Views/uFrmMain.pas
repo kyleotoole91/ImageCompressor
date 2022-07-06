@@ -72,7 +72,7 @@ type
     lbDescription: TLabel;
     ebPrefix: TEdit;
     ebDescription: TEdit;
-    cbCreateJSONFile: TCheckBox;
+    cbIncludeInJSONFile: TCheckBox;
     cbApplyToAll: TCheckBox;
     btnApply: TButton;
     ebFilename: TEdit;
@@ -134,7 +134,7 @@ type
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
-    procedure cbCreateJSONFileClick(Sender: TObject);
+    procedure cbIncludeInJSONFileClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -398,7 +398,7 @@ begin
         Compress := cbCompress.Checked;
         Quality := seQuality.Value;
         TargetKB := seTargetKBs.Value;
-        AddToJSON := cbCreateJSONFile.Checked;
+        AddToJSON := cbIncludeInJSONFile.Checked;
         Description := ebDescription.Text;
         SourcePrefix := ebPrefix.Text;
         ApplyGraphics := cbApplyGraphics.Checked;
@@ -505,7 +505,7 @@ begin
           seQuality.Value := Quality;
           tbQuality.Position := Quality;
           seTargetKBs.Value := TargetKB;
-          cbCreateJSONFile.Checked := AddToJSON;
+          cbIncludeInJSONFile.Checked := AddToJSON;
           ebDescription.Text := Description;
           ebPrefix.Text := SourcePrefix;
           cbApplyGraphics.Checked := ApplyGraphics;
@@ -668,7 +668,7 @@ var
 begin
   for a := 0 to cblFiles.Count-1 do
     cblFiles.Checked[a] := true;
-  btnStart.Enabled := (cblFiles.Count > 0) and (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
+  btnStart.Enabled := (cblFiles.Count > 0) and (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked);
 end;
 
 procedure TFrmMain.mniUnSelectAllClick(Sender: TObject);
@@ -957,6 +957,9 @@ begin
             fFormData.ShrinkByValue := ShrinkByValue;
             pnlFiles.Width := 247;
             pnlOriginal.Width := 439;
+            ebOutputDir.Enabled := true;
+            cbIncludeInJSONFile.Enabled := true;
+            ebFilename.Enabled := true;
           finally
             Free;
           end;
@@ -1186,7 +1189,7 @@ begin
             end;
           end;
         end;
-        if cbCreateJSONFile.Checked then
+        if cbIncludeInJSONFile.Checked then
           CreateJSONFile(fJSON);
         if runScript then
           RunDeploymentScript;
@@ -1271,7 +1274,7 @@ end;
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
   btnStart.Enabled := (FileIsSelected or fImageChanged) and
-                      (cbCreateJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
+                      (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
 end;
 
@@ -1306,7 +1309,7 @@ begin
     if FileExists(newfilename) then
       DeleteFile(newfilename);
     ForceDirectories(ExtractFilePath(newfilename));
-    if cbCreateJSONFile.Checked and
+    if cbIncludeInJSONFile.Checked and
        (AJSON.AsArray.Count > 0) then
       AJSON.SaveTo(newfilename, true);
   end;
@@ -1346,15 +1349,16 @@ begin
   if ValidSelection(Sender) then begin
     ebOutputDir.Enabled := not fFormData.ReplaceOriginals;
     ebFilename.Enabled := not fFormData.ReplaceOriginals;
-    cbCreateJSONFile.Enabled := not fFormData.ReplaceOriginals;
-    if cbCreateJSONFile.Checked then
-      cbCreateJSONFile.Checked := false;
+    cbIncludeInJSONFile.Enabled := not fFormData.ReplaceOriginals;
+    if cbIncludeInJSONFile.Checked then
+      cbIncludeInJSONFile.Checked := false;
   end else
     miReplaceOriginals.Checked := false;
 end;
 
 procedure TFrmMain.miRestoreDefaultsClick(Sender: TObject);
 var
+  oldDeepScan: boolean;
   oldStartPath: string;
   msg: string;
 begin
@@ -1364,10 +1368,12 @@ begin
     msg := cRestoreDefaultsMessage;
   if MessageDlg(msg, mtWarning, mbOKCancel, 0) = mrOk then begin
     oldStartPath := ebStartPath.Text;
+    oldDeepScan := miDeepScan.Checked;
     try
       LoadFormSettings(true);
     finally
-      if oldStartPath <> ebStartPath.Text then
+      if (oldStartPath <> ebStartPath.Text) or
+         (oldDeepScan <> miDeepScan.Checked) then
         Scan(Sender);
     end;
   end;
@@ -1720,7 +1726,7 @@ begin
         cblFiles.Items.Add(ExtractFileName(fSelectedFilename));
         if cblFiles.Items.Count > 0 then begin
           cblFiles.Checked[0] := true;
-          btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbCreateJSONFile.Checked;
+          btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
           if btnStart.Enabled and
              cbCompressPreview.Checked then
             LoadCompressedPreview(Sender)
@@ -1750,12 +1756,12 @@ begin
   end;
 end;
 
-procedure TFrmMain.cbCreateJSONFileClick(Sender: TObject);
+procedure TFrmMain.cbIncludeInJSONFileClick(Sender: TObject);
 begin
-  ebPrefix.Enabled := cbCreateJSONFile.Checked;
-  lbPrefix.Enabled := cbCreateJSONFile.Checked;
-  lbDescription.Enabled := cbCreateJSONFile.Checked;
-  ebDescription.Enabled := cbCreateJSONFile.Checked;
+  ebPrefix.Enabled := cbIncludeInJSONFile.Checked;
+  lbPrefix.Enabled := cbIncludeInJSONFile.Checked;
+  lbDescription.Enabled := cbIncludeInJSONFile.Checked;
+  ebDescription.Enabled := cbIncludeInJSONFile.Checked;
   btnApply.Enabled := true;
   CheckStartOk(Sender);
 end;
