@@ -363,7 +363,7 @@ object FrmMain: TFrmMain
             Height = 81
             Anchors = [akTop, akRight, akBottom]
             Caption = ' Globals '
-            TabOrder = 7
+            TabOrder = 8
             object lbFilename: TLabel
               Left = 9
               Top = 56
@@ -406,7 +406,7 @@ object FrmMain: TFrmMain
             Width = 847
             Height = 75
             Anchors = [akLeft, akTop, akRight]
-            TabOrder = 8
+            TabOrder = 7
             DesignSize = (
               847
               75)
