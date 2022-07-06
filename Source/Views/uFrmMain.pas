@@ -1908,8 +1908,7 @@ end;
 procedure TFrmMain.miSaveSettingsClick(Sender: TObject);
 begin
   SaveFormSettings;
-  MessageDlg('The current settings have been saved.'+sLineBreak+sLineBreak+
-             'They will be restored on the next startup.', mtInformation, [mbOK], 0);
+  MessageDlg(cMsgSaveSettings, mtInformation, [mbOK], 0);
 end;
 
 procedure TFrmMain.miShowOriginalClick(Sender: TObject);

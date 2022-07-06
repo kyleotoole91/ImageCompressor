@@ -81,6 +81,8 @@ const
                            'Configuring PATH environment variables is recommended.';
   cMsgScanningDisk = 'Scanning disk, please wait...';
   cMsgClosingApp = 'Are you sure you want to close this application?';
+  cMsgSaveSettings = 'The current settings have been saved.'+sLineBreak+sLineBreak+
+                     'They will be used as your default settings and restored on the next startup.';
 
 implementation
 
