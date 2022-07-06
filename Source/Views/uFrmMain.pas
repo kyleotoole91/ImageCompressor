@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
-  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand,
+  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand, uFormData,
   Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uScriptVariables;
 
 type
@@ -128,6 +128,7 @@ type
     DeploymentScript1: TMenuItem;
     miSelectOutputDir: TMenuItem;
     tmrOnShow: TTimer;
+    miAutoPrefix: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -200,14 +201,13 @@ type
     procedure ebStartPathEnter(Sender: TObject);
     procedure tmrOnShowTimer(Sender: TObject);
     procedure ebOutputDirChange(Sender: TObject);
+    procedure miAutoPrefixClick(Sender: TObject);
   private
     { Private declarations }
+    fRunScript: boolean;
     fScriptVariables: TScriptVariables;
-    fRunScript,
     fDirectoryScanned,
     fDrapAndDropping,
-    fReplaceOriginals,
-    fDeepScan,
     fEvaluationMode,
     fImageChanged: boolean;
     fFormOpenClose,
@@ -230,6 +230,7 @@ type
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fFilenameList: TStringList;
+    fFormData: TFormData;
     procedure SetPrefixDir(const AOutputPath: string);
     procedure RunDeploymentScript;
     function ValidSelection(Sender: TObject): boolean;
@@ -239,7 +240,7 @@ type
     function SelectedFileCount: integer;
     function SizeOfFileKB(const AFilename: string): uInt64;
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
-    procedure ObjToForm(AImageConfig: TImageConfig=nil);
+    procedure ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure OpenURL(const AURL: string);
     procedure CheckHideLabels;
@@ -275,13 +276,13 @@ uses
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
-  fScriptVariables := TScriptVariables.Create(Self);
   fRunScript := false;
+  fFormData := TFormData.Create;
+  fScriptVariables := TScriptVariables.Create(Self);
   DragAcceptFiles(Self.Handle, true);
   fFilenameList := TStringList.Create;
   fDirectoryScanned := true;
   fDrapAndDropping := false;
-  fDeepScan := false;
   fFilterSizeKB := 0;
   fImageChanged := true;
   fFormCreating := true;
@@ -320,8 +321,8 @@ begin
     fMessages.Free;
     fJPEGCompressor.Free;
     fLicenseValidator.Free;
-    fJSON := nil;
     fScriptVariables.Free;
+    fFormData.Free;
   finally
     inherited;
   end;
@@ -409,6 +410,22 @@ begin
         else
           ShrinkByValue := seMaxHeightPx.Value;
         Filename := fSelectedFilename;
+        if AImageConfig is TFormData then begin
+          with TFormData(AImageConfig) do begin
+            DeepScan := miDeepScan.Checked;
+            ReplaceOriginals := miReplaceOriginals.Checked;
+            AutoPrefix := miAutoPrefix.Checked;
+            SourceDir := ebStartPath.Text;
+            OutputDir := ebOutputDir.Text;
+            FilterSizeKB := fFilterSizeKB;
+            PnlFilesWidth := pnlFiles.Width;
+            PnlOriginalWidth := pnlOriginal.Width;
+            ApplyToAll := cbApplyToAll.Checked;
+            JsonFilename := ebFilename.Text;
+            Prefix := ebPrefix.Text;
+            RunScript := fRunScript;
+          end;
+        end;
       end;
     end;
   end else
@@ -421,7 +438,7 @@ var
   imgConfig: TImageConfig;
 begin
   AHasMultipleImages := SelectedFileCount > 1;
-  AHasReplaceOriginals := fReplaceOriginals;
+  AHasReplaceOriginals := fFormData.ReplaceOriginals;
   if cbApplyToAll.Checked then begin
     AHasTargetKB := cbCompress.Checked and (seTargetKBs.Value > 0);
     AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > integer(rmRecommended)); //allow rmRecommended in demo
@@ -450,6 +467,17 @@ begin
     if not Assigned(fImageConfig) then begin
       fImageConfig := TImageConfig.Create;
       fImageConfig.Filename := fSelectedFilename;
+      fImageConfig.Quality := fFormData.Quality;
+      fImageConfig.Compress := fFormData.Compress;
+      fImageConfig.ApplyGraphics := fFormData.ApplyGraphics;
+      fImageConfig.TagetKB := fFormData.TagetKB;
+      fImageConfig.ShrinkByWidth := fFormData.ShrinkByWidth;
+      fImageConfig.ShrinkByValue := fFormData.ShrinkByValue;
+      fImageConfig.ResampleMode := fFormData.ResampleMode;
+      fImageConfig.RotateAmount := fFormData.RotateAmount;
+      fImageConfig.AddToJSON := fFormData.AddToJSON;
+      fImageConfig.Description := fFormData.Description;
+      fImageConfig.SourcePrefix := fFormData.SourcePrefix;
       fImageConfigList.Add(fSelectedFilename, fImageConfig);
     end;
   end;
@@ -457,7 +485,7 @@ begin
     fImageConfig.ResampleMode := rmRecommended;
 end;
 
-procedure TFrmMain.ObjToForm(AImageConfig: TImageConfig=nil);
+procedure TFrmMain.ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
 var
   imageConfig: TImageConfig;
 begin
@@ -469,27 +497,45 @@ begin
       imageConfig := fImageConfig;
     if Assigned(imageConfig) then begin
       with imageConfig do begin
-        cbCompress.Checked := Compress;
-        seQuality.Value := Quality;
-        tbQuality.Position := Quality;
-        seTargetKBs.Value := TagetKB;
-        cbCreateJSONFile.Checked := AddToJSON;
-        ebDescription.Text := Description;
-        ebPrefix.Text := SourcePrefix;
-        cbApplyGraphics.Checked := ApplyGraphics;
-        fSelectedFilename := Filename;
-        rbByWidth.Checked := ShrinkByWidth;
-        rbByHeight.Checked := not ShrinkByWidth;
-        cbCompressPreview.Checked := false;
-        cbStretch.Checked := Stretch;
-        cbRotateAmount.ItemIndex := integer(RotateAmount);
-        cbResampleMode.ItemIndex := integer(ResampleMode);
-        if rbByWidth.Checked then
-          seMaxWidthPx.Value := ShrinkByValue
-        else
-          seMaxHeightPx.Value := ShrinkByValue;
-        if fSelectedFilename <> '' then
-          Filename := fSelectedFilename;
+        if not AOnlyFormData then begin
+          cbCompress.Checked := Compress;
+          seQuality.Value := Quality;
+          tbQuality.Position := Quality;
+          seTargetKBs.Value := TagetKB;
+          cbCreateJSONFile.Checked := AddToJSON;
+          ebDescription.Text := Description;
+          ebPrefix.Text := SourcePrefix;
+          cbApplyGraphics.Checked := ApplyGraphics;
+          fSelectedFilename := Filename;
+          rbByWidth.Checked := ShrinkByWidth;
+          rbByHeight.Checked := not ShrinkByWidth;
+          cbCompressPreview.Checked := false;
+          cbStretch.Checked := Stretch;
+          cbRotateAmount.ItemIndex := integer(RotateAmount);
+          cbResampleMode.ItemIndex := integer(ResampleMode);
+          if rbByWidth.Checked then
+            seMaxWidthPx.Value := ShrinkByValue
+          else
+            seMaxHeightPx.Value := ShrinkByValue;
+          if fSelectedFilename <> '' then
+            Filename := fSelectedFilename;
+        end;
+        if AImageConfig is TFormData then begin
+          with TFormData(AImageConfig) do begin
+            miDeepScan.Checked := DeepScan;
+            miReplaceOriginals.Checked := ReplaceOriginals;
+            miAutoPrefix.Checked := AutoPrefix;
+            ebStartPath.Text := SourceDir;
+            ebOutputDir.Text := OutputDir;
+            fFilterSizeKB := FilterSizeKB;
+            pnlFiles.Width := PnlFilesWidth;
+            pnlOriginal.Width := PnlOriginalWidth;
+            cbApplyToAll.Checked := ApplyToAll;
+            ebFilename.Text := JsonFilename;
+            ebPrefix.Text := Prefix;
+            fRunScript := RunScript;
+          end;
+        end;
       end;
     end;
   finally
@@ -660,7 +706,7 @@ begin
       OpenURL(cGumRoadLink);
   end else begin
     miDeepScan.Checked := not miDeepScan.Checked;
-    fDeepScan := miDeepScan.Checked;
+    fFormData.DeepScan := miDeepScan.Checked;
     Scan(Sender);
   end;
 end;
@@ -801,10 +847,22 @@ begin
 end;
 
 procedure TFrmMain.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
+var
+  sourcePrefix: string;
 begin
   with fJSON.AsArray do begin
     Add(NewJSONObject);
-    O[Count-1].S['original'] := fImageConfig.SourcePrefix+ExtractFileName(fImageConfig.Filename);
+    sourcePrefix := fImageConfig.SourcePrefix;
+    if sourcePrefix <> '' then begin
+      if (sourcePrefix.Contains('/')) and
+         (not sourcePrefix.EndsWith('/')) then
+        sourcePrefix := sourcePrefix +'/'
+      else if (sourcePrefix.Contains('\')) and
+              (not sourcePrefix.EndsWith('\')) then
+        sourcePrefix := sourcePrefix + '\';
+      sourcePrefix := sourcePrefix + ExtractFileName(fImageConfig.Filename);
+    end;
+    O[Count-1].S['original'] := sourcePrefix;
     O[Count-1].S['description'] := fImageConfig.Description;
     O[Count-1].I['fileSize'] := ACompressedFileSize;
     O[Count-1].I['originalFilesize'] := AOriginalFileSize;
@@ -814,71 +872,74 @@ end;
 
 procedure TFrmMain.SaveFormSettings;
 var
-  imgConfig: TImageConfig;
   jsonStr: string;
   json: ISuperObject;
 begin
-  imgConfig := TImageConfig.Create;
   try
-    imgConfig := FormToObj(imgConfig);
-    jsonStr := TJson.ObjectToJsonString(imgConfig);
+    FormToObj(fFormData);
+    jsonStr := TJson.ObjectToJsonString(fFormData);
     json := SO(jsonStr);
     json.S['sourceDir'] := ebStartPath.Text;
     json.S[cOutputDir] := ebOutputDir.Text;
     json.I['filterSizeKB'] := fFilterSizeKB;
-    json.B['replaceOriginals'] := fReplaceOriginals;
-    json.B['deepScan'] := fDeepScan;
+    json.B['replaceOriginals'] := fFormData.ReplaceOriginals;
+    json.B['deepScan'] := fFormData.DeepScan;
     json.I['pnlFilesWidth'] := pnlFiles.Width;
     json.I['pnlOriginalWidth'] := pnlOriginal.Width;
     json.B['applyToAll'] := cbApplyToAll.Checked;
     json.S['jsonFilename'] := ebFilename.Text;
     json.S['prefix'] := ebPrefix.Text;
     json.B['runScript'] := fRunScript;
+    json.B['autoPrefix'] := fFormData.AutoPrefix;
     json.SaveTo(cSettingsFilename);
   finally
-    imgConfig.Free;
     json := nil;
   end;
 end;
 
 procedure TFrmMain.LoadFormSettings;
 var
-  imgConfig: TImageConfig;
   sl: TStringList;
   json: ISuperObject;
 begin
   sl := TStringList.Create;
   try
+    if Assigned(fFormData) then
+      fFormData.Free;
     if FileExists(cSettingsFilename) then begin
       sl.LoadFromFile(cSettingsFilename);
-      imgConfig := TJson.JsonToObject<TImageConfig>(sl.Text);
+      fFormData := TJson.JsonToObject<TFormData>(sl.Text);
       try
-        if Assigned(imgConfig) then begin
-          ObjToForm(imgConfig);
+        if Assigned(fFormData) then begin
+          ObjToForm(fFormData);
           json := SO(sl.Text);
           if json.S['sourceDir'] <> '' then
             ebStartPath.Text := json.S['sourceDir'];
           if ebOutputDir.Text <> '' then
             ebOutputDir.Text := json.S[cOutputDir];
           fFilterSizeKB := json.I['filterSizeKB'];
-          fReplaceOriginals := json.B['replaceOriginals'];
-          fDeepScan := json.B['deepScan'];
+          fFormData.ReplaceOriginals := json.B['replaceOriginals'];
+          fFormData.DeepScan := json.B['deepScan'];
           cbApplyToAll.Checked := json.B['applyToAll'];
           ebFilename.Text := json.S['jsonFilename'];
           pnlOriginal.Width := json.I['pnlOriginalWidth'];
-          fRunScript := json.B['runScript'];
+          fFormData.RunScript := json.B['runScript'];
           ebPrefix.Text := json.S['prefix'];
+          fFormData.AutoPrefix := json.B['autoPrefix'];
           if pnlFiles.Width <> 0 then
             pnlFiles.Width := json.I['pnlFilesWidth'];
-          miDeepScan.Checked := fDeepScan;
-          miReplaceOriginals.Checked := fReplaceOriginals;
         end;
       finally
         fSelectedFilename := '';
-        if Assigned(imgConfig) then
-          imgConfig.Free
       end;
     end;
+    if not Assigned(fFormData) then begin
+      fFormData := TFormData.Create;
+      fFormData.OutputDir := cDefaultOutDir;
+      fFormData.SourceDir := TPath.GetPicturesPath;
+      fFormData.Prefix := cDefaultSourcePrefix;
+      ObjToForm(fFormData)
+    end
   finally
     sl.Free;
     json := nil;
@@ -910,7 +971,7 @@ begin
            (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
           if (fFilterSizeKB <= 0) or
              (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
-            if fDeepScan or fDrapAndDropping then
+            if fFormData.DeepScan or fDrapAndDropping then
               cblFiles.Items.Add(filename)
             else
               cblFiles.Items.Add(ExtractFileName(filename));
@@ -1017,6 +1078,12 @@ begin
   end;
 end;
 
+procedure TFrmMain.miAutoPrefixClick(Sender: TObject);
+begin
+  miAutoPrefix.Checked := not miAutoPrefix.Checked;
+  fFormData.AutoPrefix := miAutoPrefix.Checked;
+end;
+
 procedure TFrmMain.btnApplyClick(Sender: TObject);
   procedure SelectCurrentImage;
   var
@@ -1060,7 +1127,7 @@ begin
   startTime := Now;
   runScript := fRunScript;
   try
-    if ((fReplaceOriginals) or
+    if ((fFormData.ReplaceOriginals) or
         (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text)) or
         (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
                             'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
@@ -1084,7 +1151,7 @@ begin
           ProcessFile(filename)
         else begin
           for filename in fFilenameList do begin
-            if fDeepScan or (not fDirectoryScanned) then begin
+            if fFormData.DeepScan or (not fDirectoryScanned) then begin
               if (cblFiles.Items.IndexOf(filename) >= 0) and
                  (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
                 ProcessFile(filename);
@@ -1118,7 +1185,7 @@ begin
         fMessages.Add('--------------------- End -------------------------');
         mmMessages.Lines.Add(fMessages.Text);
         mmMessages.Lines.EndUpdate;
-        if fReplaceOriginals then
+        if fFormData.ReplaceOriginals then
           LoadImagePreview(fSelectedFilename);
         Screen.Cursor := crDefault;
       end;
@@ -1251,11 +1318,11 @@ end;
 procedure TFrmMain.miReplaceOriginalsClick(Sender: TObject);
 begin
   miReplaceOriginals.Checked := not miReplaceOriginals.Checked;
-  fReplaceOriginals := miReplaceOriginals.Checked;
+  fFormData.ReplaceOriginals := miReplaceOriginals.Checked;
   if ValidSelection(Sender) then begin
-    ebOutputDir.Enabled := not fReplaceOriginals;
-    ebFilename.Enabled := not fReplaceOriginals;
-    cbCreateJSONFile.Enabled := not fReplaceOriginals;
+    ebOutputDir.Enabled := not fFormData.ReplaceOriginals;
+    ebFilename.Enabled := not fFormData.ReplaceOriginals;
+    cbCreateJSONFile.Enabled := not fFormData.ReplaceOriginals;
     if cbCreateJSONFile.Checked then
       cbCreateJSONFile.Checked := false;
   end else
@@ -1285,7 +1352,8 @@ end;
 
 procedure TFrmMain.ebOutputDirChange(Sender: TObject);
 begin
-  SetPrefixDir(ebOutputDir.Text);
+  if fFormData.AutoPrefix then
+    SetPrefixDir(ebOutputDir.Text);
 end;
 
 procedure TFrmMain.ebPrefixChange(Sender: TObject);
@@ -1328,7 +1396,7 @@ begin
           ShrinkByMaxPx := fImageConfig.ShrinkByValue;
           ResampleMode := fImageConfig.ResampleMode;
           RotateAmount := fImageConfig.RotateAmount;
-          ReplaceOriginal := fReplaceOriginals;
+          ReplaceOriginal := fFormData.ReplaceOriginals;
           Process(AFilename);
           fTotalSavedKB := fTotalSavedKB + (OriginalFileSize - CompressedFileSize);
           if fImageConfig.AddToJSON and
@@ -1390,14 +1458,14 @@ begin
   dlgProgress := TDlgProgress.Create(Self);
   try
     fFilenameList.Clear;
-    if fDeepScan then begin
+    if fFormData.DeepScan then begin
       dlgProgress.Text := cMsgScanningDisk;
       dlgProgress.Show;
       Application.ProcessMessages;
     end;
     try
       if ebStartPath.Text <> '' then begin
-        if fDeepScan then
+        if fFormData.DeepScan then
           filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soAllDirectories)
         else
           filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soTopDirectoryOnly);

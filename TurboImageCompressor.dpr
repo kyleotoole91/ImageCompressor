@@ -2,7 +2,6 @@ program TurboImageCompressor;
 
 uses
   Vcl.Forms,
-  uImageConfig in 'Source\uImageConfig.pas',
   uJPEGCompressor in 'Source\uJPEGCompressor.pas',
   uLicenseValidator in 'Source\uLicenseValidator.pas',
   uConstants in 'Source\uConstants.pas',
@@ -12,7 +11,9 @@ uses
   uFrmMain in 'Source\Views\uFrmMain.pas' {FrmMain},
   uFrmShellScript in 'Source\Views\uFrmShellScript.pas' {FrmShellScript},
   uFrmSplash in 'Source\Views\uFrmSplash.pas' {frmSplash},
-  uScriptVariables in 'Source\Utilis\uScriptVariables.pas';
+  uScriptVariables in 'Source\Utilis\uScriptVariables.pas',
+  uFormData in 'Source\Serialized\uFormData.pas',
+  uImageConfig in 'Source\Serialized\uImageConfig.pas';
 
 {$R *.res}
 

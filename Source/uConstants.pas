@@ -13,7 +13,7 @@ const
   cOutputDir='outputDir';
   cPrefix='prefix';
   cDefaultOutDir='Compressed';
-  cSourcePrefix = 'images/';
+  cDefaultSourcePrefix = 'images/';
   cJPAllExt='*.jp*';
   cJpgExt='*.jpg';
   cJpegExt='*.jpeg';

@@ -73,7 +73,7 @@ begin
   fPreviewModified := false;
   fRecordModified := false;
   fAddToJSON := true;
-  fSourcePrefix := cSourcePrefix+cDefaultOutDir;
+  fSourcePrefix := cDefaultSourcePrefix;
   fDescription := '';
   fCompress := true;
   fApplyGraphics := false;

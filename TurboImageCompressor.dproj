@@ -120,7 +120,6 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Source\uImageConfig.pas"/>
         <DCCReference Include="Source\uJPEGCompressor.pas"/>
         <DCCReference Include="Source\uLicenseValidator.pas"/>
         <DCCReference Include="Source\uConstants.pas"/>
@@ -149,6 +148,8 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Source\Utilis\uScriptVariables.pas"/>
+        <DCCReference Include="Source\Serialized\uFormData.pas"/>
+        <DCCReference Include="Source\Serialized\uImageConfig.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
