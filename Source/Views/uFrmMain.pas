@@ -129,6 +129,8 @@ type
     miSelectOutputDir: TMenuItem;
     tmrOnShow: TTimer;
     miAutoPrefix: TMenuItem;
+    miRestoreDefaults: TMenuItem;
+    N7: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -202,6 +204,7 @@ type
     procedure tmrOnShowTimer(Sender: TObject);
     procedure ebOutputDirChange(Sender: TObject);
     procedure miAutoPrefixClick(Sender: TObject);
+    procedure miRestoreDefaultsClick(Sender: TObject);
   private
     { Private declarations }
     fRunScript: boolean;
@@ -256,7 +259,7 @@ type
     procedure SetEvaluationMode(const Value: boolean);
     procedure AcceptFiles(var AMsg: TMessage); message WM_DROPFILES;
     procedure SaveFormSettings;
-    procedure LoadFormSettings;
+    procedure LoadFormSettings(const ARestoreDefaults: boolean=false);
     procedure ScanDisk;
   public
     { Public declarations }
@@ -394,7 +397,7 @@ begin
       with result do begin
         Compress := cbCompress.Checked;
         Quality := seQuality.Value;
-        TagetKB := seTargetKBs.Value;
+        TargetKB := seTargetKBs.Value;
         AddToJSON := cbCreateJSONFile.Checked;
         Description := ebDescription.Text;
         SourcePrefix := ebPrefix.Text;
@@ -470,7 +473,7 @@ begin
       fImageConfig.Quality := fFormData.Quality;
       fImageConfig.Compress := fFormData.Compress;
       fImageConfig.ApplyGraphics := fFormData.ApplyGraphics;
-      fImageConfig.TagetKB := fFormData.TagetKB;
+      fImageConfig.TargetKB := fFormData.TargetKB;
       fImageConfig.ShrinkByWidth := fFormData.ShrinkByWidth;
       fImageConfig.ShrinkByValue := fFormData.ShrinkByValue;
       fImageConfig.ResampleMode := fFormData.ResampleMode;
@@ -501,7 +504,7 @@ begin
           cbCompress.Checked := Compress;
           seQuality.Value := Quality;
           tbQuality.Position := Quality;
-          seTargetKBs.Value := TagetKB;
+          seTargetKBs.Value := TargetKB;
           cbCreateJSONFile.Checked := AddToJSON;
           ebDescription.Text := Description;
           ebPrefix.Text := SourcePrefix;
@@ -562,7 +565,7 @@ begin
         fJPEGCompressor.Compress := imageConfig.Compress;
         fJPEGCompressor.ApplyGraphics := imageConfig.ApplyGraphics;
         fJPEGCompressor.CompressionQuality := imageConfig.Quality;
-        fJPEGCompressor.TargetKB := imageConfig.TagetKB;
+        fJPEGCompressor.TargetKB := imageConfig.TargetKB;
         fJPEGCompressor.ShrinkByHeight := not imageConfig.ShrinkByWidth;
         fJPEGCompressor.ShrinkByMaxPx := imageConfig.ShrinkByValue;
         fJPEGCompressor.ResampleMode := imageConfig.ResampleMode;
@@ -897,16 +900,19 @@ begin
   end;
 end;
 
-procedure TFrmMain.LoadFormSettings;
+procedure TFrmMain.LoadFormSettings(const ARestoreDefaults: boolean=false);
 var
   sl: TStringList;
   json: ISuperObject;
 begin
   sl := TStringList.Create;
   try
-    if Assigned(fFormData) then
+    if Assigned(fFormData) then begin
       fFormData.Free;
-    if FileExists(cSettingsFilename) then begin
+      fFormData := nil;
+    end;
+    if (not ARestoreDefaults) and
+       (FileExists(cSettingsFilename)) then begin
       sl.LoadFromFile(cSettingsFilename);
       fFormData := TJson.JsonToObject<TFormData>(sl.Text);
       try
@@ -935,9 +941,27 @@ begin
     end;
     if not Assigned(fFormData) then begin
       fFormData := TFormData.Create;
-      fFormData.OutputDir := cDefaultOutDir;
-      fFormData.SourceDir := TPath.GetPicturesPath;
-      fFormData.Prefix := cDefaultSourcePrefix;
+      if ARestoreDefaults then begin
+        with TImageConfig.Create do begin
+          try
+            fFormData.Quality := Quality;
+            fFormData.FilterSizeKB := 0;
+            fFormData.Compress := Compress;
+            fFormData.TargetKB := TargetKB;
+            fFormData.ResampleMode := ResampleMode;
+            fFormData.RotateAmount := RotateAmount;
+            fFormData.ApplyGraphics := ApplyGraphics;
+            fFormData.Description := Description;
+            fFormData.Description := Description;
+            fFormData.ShrinkByWidth := ShrinkByWidth;
+            fFormData.ShrinkByValue := ShrinkByValue;
+            pnlFiles.Width := 247;
+            pnlOriginal.Width := 439;
+          finally
+            Free;
+          end;
+        end;
+      end;
       ObjToForm(fFormData)
     end
   finally
@@ -1329,6 +1353,19 @@ begin
     miReplaceOriginals.Checked := false;
 end;
 
+procedure TFrmMain.miRestoreDefaultsClick(Sender: TObject);
+var
+  oldStartPath: string;
+begin
+  oldStartPath := ebStartPath.Text;
+  try
+    LoadFormSettings(true);
+  finally
+    if oldStartPath <> ebStartPath.Text then
+      Scan(Sender);
+  end;
+end;
+
 procedure TFrmMain.OpenURL(const AURL: string);
 var
   url: string;
@@ -1390,7 +1427,7 @@ begin
           Compress := fImageConfig.Compress;
           ApplyGraphics := fImageConfig.ApplyGraphics;
           CompressionQuality := fImageConfig.Quality;
-          TargetKB := fImageConfig.TagetKB;
+          TargetKB := fImageConfig.TargetKB;
           OutputDir := ebOutputDir.Text;
           ShrinkByHeight := not fImageConfig.ShrinkByWidth;
           ShrinkByMaxPx := fImageConfig.ShrinkByValue;

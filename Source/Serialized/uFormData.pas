@@ -3,7 +3,7 @@ unit uFormData;
 interface
 
 uses
-  uImageConfig;
+  uImageConfig, uConstants, System.IOUtils, System.SysUtils;
 
 type
   TFormData = class(TImageConfig)
@@ -21,6 +21,8 @@ type
     fRunScript: boolean;
     fAutoPrefix: boolean;
   public
+    constructor Create;
+    procedure Reset;
     property SourceDir: string read fSourceDir write fSourceDir;
     property OutputDir: string read fOutputDir write fOutputDir;
     property FilterSizeKB: Int64 read fFilterSizeKB write fFilterSizeKB;
@@ -36,5 +38,24 @@ type
   end;
 
 implementation
+
+{ TFormData }
+
+constructor TFormData.Create;
+begin
+  inherited;
+  Reset;
+end;
+
+procedure TFormData.Reset;
+begin
+  fApplyToAll := true;
+  JsonFilename := cJSONFilename;
+  fSourceDir := TPath.GetPicturesPath;
+  fOutputDir := IncludeTrailingPathDelimiter(fSourceDir) + cDefaultOutDir;
+  fPrefix := cDefaultSourcePrefix;
+  fPnlFilesWidth := cDefaultFilesWidth;
+  fPnlOriginalWidth := cDefaultOriginalWidth;
+end;
 
 end.

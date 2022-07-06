@@ -950,6 +950,13 @@ object FrmMain: TFrmMain
         Caption = 'Auto compelte prefix (append output dir name)'
         OnClick = miAutoPrefixClick
       end
+      object miRestoreDefaults: TMenuItem
+        Caption = 'Restore defaults'
+        OnClick = miRestoreDefaultsClick
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
       object miSaveSettings: TMenuItem
         Caption = 'Save current settings'
         OnClick = miSaveSettingsClick

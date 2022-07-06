@@ -10,6 +10,8 @@ const
   cShellTestScript='test.bat';
   cShellTempScript='temp.bat';
   //frmMain
+  cDefaultFilesWidth=247;
+  cDefaultOriginalWidth=439;
   cOutputDir='outputDir';
   cPrefix='prefix';
   cDefaultOutDir='Compressed';
@@ -18,6 +20,7 @@ const
   cJpgExt='*.jpg';
   cJpegExt='*.jpeg';
   cSettingsFilename='settings.json';
+  cJSONFilename='images.json';
   previewMinWidth=530;
   origMinWidth=400;
   oversizeAllowance=75;

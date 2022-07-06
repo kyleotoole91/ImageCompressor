@@ -110,7 +110,7 @@ begin
       cbCompress.Checked := Compress;
       seQuality.Value := Quality;
       tbQuality.Position := Quality;
-      seTargetKBs.Value := TagetKB;
+      seTargetKBs.Value := TargetKB;
       cbCreateJSONFile.Checked := AddToJSON;
       ebDescription.Text := Description;
       ebPrefix.Text := SourcePrefix;
@@ -132,7 +132,7 @@ begin
   with fImageConfig do begin
     Compress := cbCompress.Checked;
     Quality := seQuality.Value;
-    TagetKB := seTargetKBs.Value;
+    TargetKB := seTargetKBs.Value;
     AddToJSON := cbCreateJSONFile.Checked;
     Description := ebDescription.Text;
     SourcePrefix := ebPrefix.Text;

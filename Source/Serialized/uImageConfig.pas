@@ -18,7 +18,7 @@ type
     fCompress: boolean;
     fApplyGraphics: boolean;
     fQuality: integer;
-    fTagetKB: Int64;
+    fTargetKB: Int64;
     fShrinkByWidth: boolean;
     fShrinkByValue: integer;
     fRecordModified: boolean;
@@ -30,7 +30,7 @@ type
     procedure SetApplyGraphics(const Value: boolean);
     procedure SetShrinkByValue(const Value: integer);
     procedure SetShrinkByWidth(const Value: boolean);
-    procedure SetTagetKB(const Value: Int64);
+    procedure SetTargetKB(const Value: Int64);
     procedure SetResampleMode(const Value: TResampleMode);
     procedure SetRotateAmount(const Value: TRotateAmount);
     procedure SetRecordModified(const Value: boolean);
@@ -46,7 +46,7 @@ type
     property Description: string read fDescription write fDescription;
     property Compress: boolean read fCompress write SetCompress;
     property Quality: integer read fQuality write SetQuality;
-    property TagetKB: Int64 read fTagetKB write SetTagetKB;
+    property TargetKB: Int64 read fTargetKB write SetTargetKB;
     property ApplyGraphics: boolean read fApplyGraphics write SetApplyGraphics;
     property ShrinkByWidth: boolean read fShrinkByWidth write SetShrinkByWidth;
     property ShrinkByValue: integer read fShrinkByValue write SetShrinkByValue;
@@ -63,13 +63,13 @@ implementation
 constructor TImageConfig.Create;
 begin
   inherited;
-  fResampleMode := rmRecommended;
-  fRotateAmount := raNone;
   Reset;
 end;
 
 procedure TImageConfig.Reset;
 begin
+  fResampleMode := rmRecommended;
+  fRotateAmount := raNone;
   fPreviewModified := false;
   fRecordModified := false;
   fAddToJSON := true;
@@ -80,7 +80,7 @@ begin
   fPreviewCompression := false;
   fStretch := false;
   fQuality := cDefaultQuality;
-  fTagetKB := 0;
+  fTargetKB := 0;
   fShrinkByWidth := true;
   fShrinkByValue := cDefaultMaxWidth;
 end;
@@ -139,10 +139,10 @@ begin
   fShrinkByWidth := Value;
 end;
 
-procedure TImageConfig.SetTagetKB(const Value: Int64);
+procedure TImageConfig.SetTargetKB(const Value: Int64);
 begin
-  RecordModified := fRecordModified or (fTagetKB <> Value);
-  fTagetKB := Value;
+  RecordModified := fRecordModified or (fTargetKB <> Value);
+  fTargetKB := Value;
 end;
 
 
