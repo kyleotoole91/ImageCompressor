@@ -15,7 +15,6 @@ type
     tsLogs: TTabSheet;
     pnlMain: TPanel;
     Panel2: TPanel;
-    mmMessages: TMemo;
     Panel3: TPanel;
     btnStart: TButton;
     Label3: TLabel;
@@ -131,6 +130,9 @@ type
     miAutoPrefix: TMenuItem;
     miRestoreDefaults: TMenuItem;
     N7: TMenuItem;
+    mmMessages: TMemo;
+    spScript: TSplitter;
+    mmScript: TMemo;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -205,6 +207,7 @@ type
     procedure ebOutputDirChange(Sender: TObject);
     procedure miAutoPrefixClick(Sender: TObject);
     procedure miRestoreDefaultsClick(Sender: TObject);
+    procedure pcMainChange(Sender: TObject);
   private
     { Private declarations }
     fRunScript: boolean;
@@ -234,6 +237,7 @@ type
     fImageConfigList: TDictionary<string, TImageConfig>;
     fFilenameList: TStringList;
     fFormData: TFormData;
+    procedure ToggleScriptLog(const AStartup: boolean=false);
     procedure SetPrefixDir(const AOutputPath: string);
     procedure RunDeploymentScript;
     function ValidSelection(Sender: TObject): boolean;
@@ -279,6 +283,7 @@ uses
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  ToggleScriptLog(true);
   fRunScript := false;
   fFormData := TFormData.Create;
   fScriptVariables := TScriptVariables.Create(Self);
@@ -1148,16 +1153,17 @@ var
   startTime: TDateTime;
   dlgProgrss: TDlgProgress;
   runScript: boolean;
+  replacingOriginals: boolean;
 begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
   startTime := Now;
   runScript := fRunScript;
   try
-    if ((fFormData.ReplaceOriginals) or
-        (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text)) or
-        (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                            'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
+    replacingOriginals := fFormData.ReplaceOriginals or (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text));
+    if ((not replacingOriginals) or
+       (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
+                           'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
         ValidSelection(Sender) then begin
       if runScript and
         (mrYes <> MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
@@ -1324,8 +1330,10 @@ begin
       AllowSave := not fEvaluationMode;
       RunOnCompletion := fRunScript;
       ShowModal;
-      if RecordModified then
+      if RecordModified then begin
         fRunScript := RunOnCompletion;
+        ToggleScriptLog;
+      end;
     finally
       Free;
     end;
@@ -1385,6 +1393,11 @@ var
 begin
   url := StringReplace(AURL, '"', '%22', [rfReplaceAll]);
   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TFrmMain.pcMainChange(Sender: TObject);
+begin
+  ToggleScriptLog;
 end;
 
 procedure TFrmMain.pmViewsPopup(Sender: TObject);
@@ -1491,10 +1504,9 @@ end;
 procedure TFrmMain.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
-    mmMessages.Lines.Add('Running deployment script: ');
     fScriptVariables.OutputPath := ebOutputDir.Text;
     fScriptVariables.ScriptFilename := cShellScript;
-    fScriptVariables.OutputLines := mmMessages.Lines;
+    fScriptVariables.OutputLines := mmScript.Lines;
     fScriptVariables.RunScript;
   end;
 end;
@@ -1814,6 +1826,18 @@ end;
 procedure TFrmMain.tmrResizeTimer(Sender: TObject);
 begin
   ResizeEvent(Sender)
+end;
+
+procedure TFrmMain.ToggleScriptLog(const AStartup: boolean=false);
+begin
+  if AStartup then begin
+    spScript.Visible := false;
+    mmScript.Visible := false;
+    mmScript.Lines.Clear;
+  end else begin
+    mmScript.Visible := fRunScript;
+    spScript.Visible := fRunScript;
+  end;
 end;
 
 function TFrmMain.ValidSelection(Sender: TObject): boolean;

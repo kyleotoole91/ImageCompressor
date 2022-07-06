@@ -36,9 +36,10 @@ object FrmMain: TFrmMain
     Top = 3
     Width = 1638
     Height = 909
-    ActivePage = tsHome
+    ActivePage = tsLogs
     Align = alClient
     TabOrder = 0
+    OnChange = pcMainChange
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
@@ -754,11 +755,19 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        object spScript: TSplitter
+          Left = 0
+          Top = 601
+          Width = 1624
+          Height = 6
+          Cursor = crVSplit
+          Align = alBottom
+        end
         object mmMessages: TMemo
           Left = 0
           Top = 0
           Width = 1624
-          Height = 875
+          Height = 601
           Align = alClient
           Lines.Strings = (
             'mmMessages')
@@ -766,6 +775,27 @@ object FrmMain: TFrmMain
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitHeight = 577
+        end
+        object mmScript: TMemo
+          Left = 0
+          Top = 607
+          Width = 1624
+          Height = 268
+          Align = alBottom
+          Color = clNone
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clHighlightText
+          Font.Height = -12
+          Font.Name = 'Consolas'
+          Font.Style = []
+          Lines.Strings = (
+            'mmMessages')
+          ParentFont = False
+          PopupMenu = pmResults
+          ReadOnly = True
+          ScrollBars = ssVertical
+          TabOrder = 1
         end
       end
     end
