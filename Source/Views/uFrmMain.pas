@@ -1356,13 +1356,20 @@ end;
 procedure TFrmMain.miRestoreDefaultsClick(Sender: TObject);
 var
   oldStartPath: string;
+  msg: string;
 begin
-  oldStartPath := ebStartPath.Text;
-  try
-    LoadFormSettings(true);
-  finally
-    if oldStartPath <> ebStartPath.Text then
-      Scan(Sender);
+  if FileExists(cSettingsFilename) then
+    msg := cRestoreDefaultsMessage + cRestoreDefaultsMessage2
+  else
+    msg := cRestoreDefaultsMessage;
+  if MessageDlg(msg, mtWarning, mbOKCancel, 0) = mrOk then begin
+    oldStartPath := ebStartPath.Text;
+    try
+      LoadFormSettings(true);
+    finally
+      if oldStartPath <> ebStartPath.Text then
+        Scan(Sender);
+    end;
   end;
 end;
 

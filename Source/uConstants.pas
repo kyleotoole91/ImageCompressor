@@ -64,6 +64,8 @@ const
   cLatestVersionURL = 'https://orcaireland.com/software/TurboImageCompressor_Setup.exe';
   cVersionFile = 'https://orcaireland.com/software/version.json';
   //messages
+  cRestoreDefaultsMessage='Are you sure you want to restore default settings?';
+  cRestoreDefaultsMessage2=sLineBreak+sLineBreak+'Save Current Settings is needed for this to take effect on the next startup.';
   cDeployScriptEval='Deployment batch scripts are only available in the Pro version.';
   cDeepScanEval='Deep scan is only available in the Pro version.';
   cLinkToBuyMessage='Would you like to be directed to our web page to purchase the Pro version now?';
