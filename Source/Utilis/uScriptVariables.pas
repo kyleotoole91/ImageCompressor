@@ -17,12 +17,12 @@ type
     fDosCommand: TDosCommand;
     fErrorMsg: string;
     procedure SetOutputLines(const Value: TStrings);
-    procedure LoadSavedSettings;
   public
     constructor Create(const AOwner: TComponent);
     destructor Destroy; override;
     function Parse: string;
     procedure RunScript;
+    function LoadSavedSettings: boolean;
     property ErrorMsg: string read fErrorMsg write fErrorMsg;
     property OutputLines: TStrings read fOutputLines write SetOutputLines;
     property ScriptFilename: string read fScriptFilename write fScriptFilename;
@@ -42,6 +42,7 @@ begin
   fErrorMsg := '';
   fFile := TStringList.Create;
   fDosCommand := TDosCommand.Create(AOwner);
+  fScriptFilename := cShellScript;
 end;
 
 destructor TScriptVariables.Destroy;
@@ -54,14 +55,23 @@ begin
   end;
 end;
 
-procedure TScriptVariables.LoadSavedSettings;
+function TScriptVariables.LoadSavedSettings: boolean;
 var
   so: ISuperObject;
 begin
   try
-    so := TSuperObject.ParseFile(cSettingsFilename, false);
-    fOutputPath := so.S[cOutputDir];
-    fSourcePrefix := so.S[cPrefix];
+    result := FileExists(cSettingsFilename);
+    if result then begin
+      try
+        so := TSuperObject.ParseFile(cSettingsFilename, false);
+        if fOutputPath = '' then
+          fOutputPath := so.S[cOutputDir];
+        if fSourcePrefix = '' then
+          fSourcePrefix := so.S[cPrefix];
+      except
+        result := false;
+      end;
+    end;
   finally
     so := nil;
   end;
@@ -74,7 +84,8 @@ begin
   try
     if (fScriptFilename <> '') and
        (FileExists(fScriptFilename)) then begin
-      if fOutputPath = '' then
+      if (fOutputPath = '') or
+         (fSourcePrefix = '') then
         LoadSavedSettings;
       fFile.LoadFromFile(fScriptFilename);
       fOutputFile := fFile.Text.Replace(cShellOutputPathVar, fOutputPath)

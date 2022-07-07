@@ -121,7 +121,7 @@ end;
 
 procedure TFrmShellScript.Sourceprefixsaved1Click(Sender: TObject);
 begin
-  mmInput.Text := mmInput.Text + cShellPrefixVar;
+  mmInput.SelText := cShellPrefixVar;
 end;
 
 procedure TFrmShellScript.btnOKClick(Sender: TObject);
@@ -142,7 +142,7 @@ end;
 
 procedure TFrmShellScript.cbInsertVarClick(Sender: TObject);
 begin
-  mmInput.Text := mmInput.Text + cShellOutputPathVar;
+  mmInput.SelText := cShellOutputPathVar;
 end;
 
 procedure TFrmShellScript.cbRunOnCompletionClick(Sender: TObject);

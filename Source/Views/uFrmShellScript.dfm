@@ -146,11 +146,11 @@ object FrmShellScript: TFrmShellScript
     object Insert1: TMenuItem
       Caption = 'Add Variable'
       object cbInsertVar: TMenuItem
-        Caption = 'Output directory'
+        Caption = 'Output directory (saved value)'
         OnClick = cbInsertVarClick
       end
       object Sourceprefixsaved1: TMenuItem
-        Caption = 'Source prefix'
+        Caption = 'Source prefix (saved value)'
         OnClick = Sourceprefixsaved1Click
       end
     end

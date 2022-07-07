@@ -130,8 +130,12 @@ type
     miAutoPrefix: TMenuItem;
     miRestoreDefaults: TMenuItem;
     N7: TMenuItem;
-    mmMessages: TMemo;
     spScript: TSplitter;
+    pnlLogs: TPanel;
+    Panel1: TPanel;
+    mmMessages: TMemo;
+    pnlScript: TPanel;
+    Panel4: TPanel;
     mmScript: TMemo;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
@@ -893,6 +897,7 @@ begin
     json.B['replaceOriginals'] := fFormData.ReplaceOriginals;
     json.B['deepScan'] := fFormData.DeepScan;
     json.I['pnlFilesWidth'] := pnlFiles.Width;
+    json.I['pnlScriptHeight'] := pnlScript.Height;
     json.I['pnlOriginalWidth'] := pnlOriginal.Width;
     json.B['applyToAll'] := cbApplyToAll.Checked;
     json.S['jsonFilename'] := ebFilename.Text;
@@ -934,6 +939,7 @@ begin
           cbApplyToAll.Checked := json.B['applyToAll'];
           ebFilename.Text := json.S['jsonFilename'];
           pnlOriginal.Width := json.I['pnlOriginalWidth'];
+          pnlScript.Height := json.I['pnlScriptHeight'];
           fFormData.RunScript := json.B['runScript'];
           ebPrefix.Text := json.S['prefix'];
           fFormData.AutoPrefix := json.B['autoPrefix'];
@@ -1220,6 +1226,8 @@ begin
         mmMessages.Lines.EndUpdate;
         if fFormData.ReplaceOriginals then
           LoadImagePreview(fSelectedFilename);
+        if runScript then
+          pcMain.ActivePage := tsLogs;
         Screen.Cursor := crDefault;
       end;
     end;
@@ -1504,8 +1512,12 @@ end;
 procedure TFrmMain.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
-    fScriptVariables.OutputPath := ebOutputDir.Text;
-    fScriptVariables.ScriptFilename := cShellScript;
+    if not fScriptVariables.LoadSavedSettings then begin
+      if fScriptVariables.OutputPath = '' then
+        fScriptVariables.OutputPath := ebOutputDir.Text;
+      if fScriptVariables.SourcePrefix = '' then
+        fScriptVariables.SourcePrefix := ebPrefix.Text;
+    end;
     fScriptVariables.OutputLines := mmScript.Lines;
     fScriptVariables.RunScript;
   end;
@@ -1832,10 +1844,10 @@ procedure TFrmMain.ToggleScriptLog(const AStartup: boolean=false);
 begin
   if AStartup then begin
     spScript.Visible := false;
-    mmScript.Visible := false;
+    pnlScript.Visible := false;
     mmScript.Lines.Clear;
   end else begin
-    mmScript.Visible := fRunScript;
+    pnlScript.Visible := fRunScript;
     spScript.Visible := fRunScript;
   end;
 end;

@@ -757,45 +757,98 @@ object FrmMain: TFrmMain
         TabOrder = 0
         object spScript: TSplitter
           Left = 0
-          Top = 601
+          Top = 416
           Width = 1624
           Height = 6
           Cursor = crVSplit
           Align = alBottom
+          ExplicitLeft = 16
+          ExplicitTop = 589
         end
-        object mmMessages: TMemo
+        object pnlLogs: TPanel
           Left = 0
           Top = 0
           Width = 1624
-          Height = 601
+          Height = 416
           Align = alClient
-          Lines.Strings = (
-            'mmMessages')
-          PopupMenu = pmResults
-          ReadOnly = True
-          ScrollBars = ssVertical
+          BevelOuter = bvNone
           TabOrder = 0
-          ExplicitHeight = 577
+          ExplicitLeft = 16
+          ExplicitTop = 7
+          ExplicitWidth = 1153
+          ExplicitHeight = 401
+          object Panel1: TPanel
+            Left = 0
+            Top = 0
+            Width = 1624
+            Height = 19
+            Align = alTop
+            Alignment = taLeftJustify
+            BevelOuter = bvNone
+            Caption = ' Compression logs:'
+            TabOrder = 0
+          end
+          object mmMessages: TMemo
+            Left = 0
+            Top = 19
+            Width = 1624
+            Height = 397
+            Align = alClient
+            Lines.Strings = (
+              'mmMessages')
+            PopupMenu = pmResults
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 1
+            ExplicitLeft = -151
+            ExplicitTop = 24
+            ExplicitWidth = 1304
+            ExplicitHeight = 321
+          end
         end
-        object mmScript: TMemo
+        object pnlScript: TPanel
           Left = 0
-          Top = 607
+          Top = 422
           Width = 1624
-          Height = 268
+          Height = 453
           Align = alBottom
-          Color = clNone
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clHighlightText
-          Font.Height = -12
-          Font.Name = 'Consolas'
-          Font.Style = []
-          Lines.Strings = (
-            'mmMessages')
-          ParentFont = False
-          PopupMenu = pmResults
-          ReadOnly = True
-          ScrollBars = ssVertical
+          BevelOuter = bvNone
           TabOrder = 1
+          object Panel4: TPanel
+            Left = 0
+            Top = 0
+            Width = 1624
+            Height = 17
+            Align = alTop
+            Alignment = taLeftJustify
+            BevelOuter = bvNone
+            Caption = 'Script logs:'
+            TabOrder = 0
+            ExplicitWidth = 1001
+          end
+          object mmScript: TMemo
+            Left = 0
+            Top = 17
+            Width = 1624
+            Height = 436
+            Align = alClient
+            Color = clNone
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clHighlightText
+            Font.Height = -12
+            Font.Name = 'Consolas'
+            Font.Style = []
+            Lines.Strings = (
+              'mmMessages')
+            ParentFont = False
+            PopupMenu = pmResults
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 1
+            ExplicitLeft = 24
+            ExplicitTop = -221
+            ExplicitHeight = 442
+          end
         end
       end
     end
