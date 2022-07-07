@@ -63,7 +63,7 @@ var
 implementation
 
 uses
-  uJPEGCompressor;
+  uJPEGCompressor, uConstants;
 
 {$R *.dfm}
 

@@ -8,7 +8,6 @@ uses
 type
   TResampleMode = (rmNone=0, rmFastest=1, rmRecommended=2, rmBest=3);
   TRotateAmount = (raNone=0, ra90=1, ra180=2, ra270=3);
-
   TJPEGCompressor = class(TObject)
   strict private
     fResampleMode: TResampleMode;
