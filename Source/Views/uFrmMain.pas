@@ -240,7 +240,6 @@ type
     fFilenameList: TStringList;
     fFormData: TFormData;
     fFrmMainController: TFrmMainController;
-    procedure ToggleScriptLog(const AStartup: boolean=false);
     procedure SetPrefixDir(const AOutputPath: string);
     function GetSelectedFileName: string;
     function SelectedFileCount: integer;
@@ -266,7 +265,6 @@ uses
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
-  ToggleScriptLog(true);
   fRunScript := false;
   fFormData := TFormData.Create;
   DragAcceptFiles(Self.Handle, true);
@@ -796,8 +794,10 @@ begin
         mmMessages.Lines.EndUpdate;
         if fFormData.ReplaceOriginals then
           fFrmMainController.LoadImagePreview(fSelectedFilename);
-        if runScript then
+        if runScript then begin
+          fFrmMainController.ToggleScriptLog;
           pcMain.ActivePage := tsLogs;
+        end;
         Screen.Cursor := crDefault;
       end;
     end;
@@ -886,7 +886,7 @@ begin
       ShowModal;
       if RecordModified then begin
         fRunScript := RunOnCompletion;
-        ToggleScriptLog;
+        fFrmMainController.ToggleScriptLog;
       end;
     finally
       Free;
@@ -943,7 +943,7 @@ end;
 
 procedure TFrmMain.pcMainChange(Sender: TObject);
 begin
-  ToggleScriptLog;
+  fFrmMainController.ToggleScriptLog;
 end;
 
 procedure TFrmMain.pmViewsPopup(Sender: TObject);
@@ -1270,18 +1270,6 @@ end;
 procedure TFrmMain.tmrResizeTimer(Sender: TObject);
 begin
   ResizeEvent(Sender)
-end;
-
-procedure TFrmMain.ToggleScriptLog(const AStartup: boolean=false);
-begin
-  if AStartup then begin
-    spScript.Visible := false;
-    pnlScript.Visible := false;
-    mmScript.Lines.Clear;
-  end else begin
-    pnlScript.Visible := fRunScript;
-    spScript.Visible := fRunScript;
-  end;
 end;
 
 procedure TFrmMain.cblFilesClick(Sender: TObject);

@@ -14,6 +14,7 @@ type
     fImageConfigList: TDictionary<string, TImageConfig>;
   public
     constructor Create(const AOwner: TComponent);
+    procedure ToggleScriptLog(const AStartup: boolean=false);
     destructor Destroy; override;
     procedure RunDeploymentScript;
     function ValidSelection(Sender: TObject): boolean;
@@ -53,6 +54,7 @@ begin
     fOwner := AOwner;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   fScriptVariables := TScriptVariables.Create(AOwner);
+  ToggleScriptLog(true);
 end;
 
 destructor TFrmMainController.Destroy;
@@ -229,7 +231,7 @@ end;
 
 procedure TFrmMainController.ProcessFile(const AFilename: string);
 begin
-  with TFrmMain(TObject) do begin
+  with TFrmMain(fOwner) do begin
     fStartTime := Now;
     try
       fFilename := AFilename;
@@ -375,6 +377,20 @@ begin
     result := 0;
   {$WARNINGS ON}
   FindClose(sr);
+end;
+
+procedure TFrmMainController.ToggleScriptLog(const AStartup: boolean);
+begin
+  with TFrmMain(fOwner) do begin
+    if AStartup then begin
+      spScript.Visible := false;
+      pnlScript.Visible := false;
+      mmScript.Lines.Clear;
+    end else begin
+      pnlScript.Visible := fRunScript;
+      spScript.Visible := fRunScript;
+    end;
+  end;
 end;
 
 procedure TFrmMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
