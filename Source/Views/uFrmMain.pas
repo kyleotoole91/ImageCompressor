@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uJPEGCompressor,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
   Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand, uFormData,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uScriptVariables, uFrmMainController;
+  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uScriptVariables, uMainController;
 
 type
   TFrmMain = class(TForm)
@@ -238,8 +238,7 @@ type
     fJPEGCompressor: TJPEGCompressor;
     fImageConfig: TImageConfig;
     fFilenameList: TStringList;
-    fFormData: TFormData;
-    fFrmMainController: TFrmMainController;
+    fMainController: TMainController;
     procedure SetPrefixDir(const AOutputPath: string);
     function GetSelectedFileName: string;
     function SelectedFileCount: integer;
@@ -266,7 +265,6 @@ procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   inherited;
   fRunScript := false;
-  fFormData := TFormData.Create;
   DragAcceptFiles(Self.Handle, true);
   fFilenameList := TStringList.Create;
   fDirectoryScanned := true;
@@ -297,7 +295,7 @@ begin
   ClientHeight := 950;
   spOriginal.Left := 784;
   tmrOnShow.Enabled := false;
-  fFrmMainController := TFrmMainController.Create(Self);
+  fMainController := TMainController.Create(Self);
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -308,9 +306,8 @@ begin
       fMessages.Free;
       fJPEGCompressor.Free;
       fLicenseValidator.Free;
-      fFormData.Free;
-      fFrmMainController.ClearConfigList;
-      fFrmMainController.Free;
+      fMainController.ClearConfigList;
+      fMainController.Free;
     except
     end;
   finally
@@ -352,7 +349,7 @@ begin
     fFormCreating := false;
   finally
     Screen.Cursor := crDefault;
-    fFrmMainController.LoadFormSettings;
+    fMainController.LoadFormSettings;
     Scan(Sender);
     fFormOpenClose := false;
     mmMessages.Lines.Clear;
@@ -373,7 +370,7 @@ begin
     stretch := cbStretch.Checked;
     imageConfig := TImageConfig.Create;
     try
-      fFrmMainController.FormToObj(imageConfig);
+      fMainController.FormToObj(imageConfig);
       if (fImageConfig.PreviewModified) or
          (fJPEGCompressor.SourceFilename <> fSelectedFilename) then begin
         fJPEGCompressor.OutputDir := ebOutputDir.Text;
@@ -393,7 +390,7 @@ begin
       end;
     finally
       cbStretch.Checked := false;
-      fFrmMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
+      fMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
       lbImgSizeKBVal.Caption := fJPEGCompressor.CompressedFilesize.ToString;
       lbImgWidthVal.Caption := fJPEGCompressor.ImageWidth.ToString;
       lbImgHeightVal.Caption := fJPEGCompressor.ImageHeight.ToString;
@@ -463,24 +460,24 @@ end;
 
 procedure TFrmMain.miContactClick(Sender: TObject);
 begin
-  fFrmMainController.OpenURL(cContactVersionURL);
+  fMainController.OpenURL(cContactVersionURL);
 end;
 
 procedure TFrmMain.miDeepScanClick(Sender: TObject);
 begin
   if fEvaluationMode then begin
     if MessageDlg(cDeepScanEval+sLineBreak+sLineBreak+cLinkToBuyMessage, mtWarning, mbOKCancel, 0) = mrOk then
-      fFrmMainController.OpenURL(cGumRoadLink);
+      fMainController.OpenURL(cGumRoadLink);
   end else begin
     miDeepScan.Checked := not miDeepScan.Checked;
-    fFormData.DeepScan := miDeepScan.Checked;
+    fMainController.FormData.DeepScan := miDeepScan.Checked;
     Scan(Sender);
   end;
 end;
 
 procedure TFrmMain.miDownloadClick(Sender: TObject);
 begin
-  fFrmMainController.OpenURL(cLatestVersionURL);
+  fMainController.OpenURL(cLatestVersionURL);
 end;
 
 procedure TFrmMain.miEnterLicenseClick(Sender: TObject);
@@ -606,7 +603,7 @@ begin
       cblFiles.Selected[selectedIndex] := true;
       fSelectedFilename := cblFiles.Items[selectedIndex];
     end;
-    fFrmMainController.LoadSelectedFromFile;
+    fMainController.LoadSelectedFromFile;
   finally
     fDrapAndDropping := false;
     DragFinish(AMsg.WParam);
@@ -622,7 +619,7 @@ var
 begin
   if (not fDrapAndDropping) and
      (Sender <> miClearFiles) then
-    fFrmMainController.ScanDisk;
+    fMainController.ScanDisk;
   Screen.Cursor := crHourGlass;
   cblFiles.Items.BeginUpdate;
   badFilenames := TStringList.Create;
@@ -632,13 +629,13 @@ begin
       CheckStartOk(Sender);
       fWorkingDir := ebStartPath.Text;
       cblFiles.Items.Clear;
-      fFrmMainController.ClearConfigList;
+      fMainController.ClearConfigList;
       for filename in fFilenameList do begin
         if (not filename.Contains('!')) and
            (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
           if (fFilterSizeKB <= 0) or
-             (fFrmMainController.SizeOfFileKB(filename) >= fFilterSizeKB) then begin
-            if fFormData.DeepScan or fDrapAndDropping then
+             (fMainController.SizeOfFileKB(filename) >= fFilterSizeKB) then begin
+            if fMainController.FormData.DeepScan or fDrapAndDropping then
               cblFiles.Items.Add(filename)
             else
               cblFiles.Items.Add(ExtractFileName(filename));
@@ -649,7 +646,7 @@ begin
       end;
       for a:=0 to badFilenames.Count-1 do
         fFilenameList.Delete(fFilenameList.IndexOf(badFilenames.Strings[a]));
-      imageLoaded := fFrmMainController.LoadSelectedFromFile;
+      imageLoaded := fMainController.LoadSelectedFromFile;
       cbApplyToAll.Checked := true;
       btnStart.Enabled := false;
       SetControlState(imageLoaded);
@@ -677,8 +674,8 @@ begin
   miApplyBestFit.Checked := not miApplyBestFit.Checked;
   Screen.Cursor := crHourGlass;
   try
-    fFrmMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
-    fFrmMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
+    fMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
+    fMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -687,7 +684,7 @@ end;
 procedure TFrmMain.miAutoPrefixClick(Sender: TObject);
 begin
   miAutoPrefix.Checked := not miAutoPrefix.Checked;
-  fFormData.AutoPrefix := miAutoPrefix.Checked;
+  fMainController.FormData.AutoPrefix := miAutoPrefix.Checked;
 end;
 
 procedure TFrmMain.btnApplyClick(Sender: TObject);
@@ -708,7 +705,7 @@ procedure TFrmMain.btnApplyClick(Sender: TObject);
     end;
   end;
 begin
-  fFrmMainController.FormToObj;
+  fMainController.FormToObj;
   SelectCurrentImage;
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
@@ -734,11 +731,11 @@ begin
   startTime := Now;
   runScript := fRunScript;
   try
-    replacingOriginals := fFormData.ReplaceOriginals or (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text));
+    replacingOriginals := fMainController.FormData.ReplaceOriginals or (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text));
     if ((not replacingOriginals) or
        (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
                            'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
-        fFrmMainController.ValidSelection(Sender) then begin
+        fMainController.ValidSelection(Sender) then begin
       if runScript and
         (mrYes <> MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
                              'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
@@ -755,24 +752,24 @@ begin
         fMessages.Add('--------------------- Start ---------------------------');
         filename := ebStartPath.Text;
         if LowerCase(ExtractFileExt(filename)) = '.jpg' then
-          fFrmMainController.ProcessFile(filename)
+          fMainController.ProcessFile(filename)
         else begin
           for filename in fFilenameList do begin
-            if fFormData.DeepScan or (not fDirectoryScanned) then begin
+            if fMainController.FormData.DeepScan or (not fDirectoryScanned) then begin
               if (cblFiles.Items.IndexOf(filename) >= 0) and
                  (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
-                fFrmMainController.ProcessFile(filename);
+                fMainController.ProcessFile(filename);
             end else begin
               if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
                  (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then
-                fFrmMainController.ProcessFile(filename);
+                fMainController.ProcessFile(filename);
             end;
           end;
         end;
         if cbIncludeInJSONFile.Checked then
-          fFrmMainController.CreateJSONFile(fJSON);
+          fMainController.CreateJSONFile(fJSON);
         if runScript then
-          fFrmMainController.RunDeploymentScript;
+          fMainController.RunDeploymentScript;
       finally
         dlgProgrss.Free;
         if fNumProcessed = 0 then
@@ -792,10 +789,10 @@ begin
         fMessages.Add('--------------------- End -------------------------');
         mmMessages.Lines.Add(fMessages.Text);
         mmMessages.Lines.EndUpdate;
-        if fFormData.ReplaceOriginals then
-          fFrmMainController.LoadImagePreview(fSelectedFilename);
+        if fMainController.FormData.ReplaceOriginals then
+          fMainController.LoadImagePreview(fSelectedFilename);
         if runScript then begin
-          fFrmMainController.ToggleScriptLog;
+          fMainController.ToggleScriptLog;
           pcMain.ActivePage := tsLogs;
         end;
         Screen.Cursor := crDefault;
@@ -815,13 +812,13 @@ begin
       if Sender <> cbCompressPreview then
         fImageConfig.PreviewModified := true;
       if (Sender = cbCompressPreview) and (not cbCompressPreview.Checked) then
-        fFrmMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome)
+        fMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome)
       else if cbCompressPreview.Checked then begin
         if cbCompress.Checked or cbApplyGraphics.Checked then
           LoadCompressedPreview(Sender)
         else if Assigned(Sender) and (Sender=cbCompressPreview) or
                 ((not cbCompress.Checked) and (not cbApplyGraphics.Checked)) then
-          fFrmMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
+          fMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
         cbStretch.Enabled := cbCompressPreview.Enabled;
       end;
       if (Sender <> cblFiles) and
@@ -857,7 +854,7 @@ end;
 
 procedure TFrmMain.CheckStartOk(Sender: TObject);
 begin
-  btnStart.Enabled := (fFrmMainController.FileIsSelected or fImageChanged) and
+  btnStart.Enabled := (fMainController.FileIsSelected or fImageChanged) and
                       (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
                       ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
 end;
@@ -886,7 +883,7 @@ begin
       ShowModal;
       if RecordModified then begin
         fRunScript := RunOnCompletion;
-        fFrmMainController.ToggleScriptLog;
+        fMainController.ToggleScriptLog;
       end;
     finally
       Free;
@@ -896,7 +893,7 @@ end;
 
 procedure TFrmMain.miPurchaseLicenseClick(Sender: TObject);
 begin
-  fFrmMainController.OpenURL(cGumRoadLink);
+  fMainController.OpenURL(cGumRoadLink);
 end;
 
 procedure TFrmMain.miRefreshClick(Sender: TObject);
@@ -907,11 +904,11 @@ end;
 procedure TFrmMain.miReplaceOriginalsClick(Sender: TObject);
 begin
   miReplaceOriginals.Checked := not miReplaceOriginals.Checked;
-  fFormData.ReplaceOriginals := miReplaceOriginals.Checked;
-  if fFrmMainController.ValidSelection(Sender) then begin
-    ebOutputDir.Enabled := not fFormData.ReplaceOriginals;
-    ebFilename.Enabled := not fFormData.ReplaceOriginals;
-    cbIncludeInJSONFile.Enabled := not fFormData.ReplaceOriginals;
+  fMainController.FormData.ReplaceOriginals := miReplaceOriginals.Checked;
+  if fMainController.ValidSelection(Sender) then begin
+    ebOutputDir.Enabled := not fMainController.FormData.ReplaceOriginals;
+    ebFilename.Enabled := not fMainController.FormData.ReplaceOriginals;
+    cbIncludeInJSONFile.Enabled := not fMainController.FormData.ReplaceOriginals;
     if cbIncludeInJSONFile.Checked then
       cbIncludeInJSONFile.Checked := false;
   end else
@@ -932,7 +929,7 @@ begin
     oldStartPath := ebStartPath.Text;
     oldDeepScan := miDeepScan.Checked;
     try
-      fFrmMainController.LoadFormSettings(true);
+      fMainController.LoadFormSettings(true);
     finally
       if (oldStartPath <> ebStartPath.Text) or
          (oldDeepScan <> miDeepScan.Checked) then
@@ -943,7 +940,7 @@ end;
 
 procedure TFrmMain.pcMainChange(Sender: TObject);
 begin
-  fFrmMainController.ToggleScriptLog;
+  fMainController.ToggleScriptLog;
 end;
 
 procedure TFrmMain.pmViewsPopup(Sender: TObject);
@@ -961,8 +958,10 @@ end;
 
 procedure TFrmMain.ebOutputDirChange(Sender: TObject);
 begin
-  if fFormData.AutoPrefix then
-    SetPrefixDir(ebOutputDir.Text);
+  if Assigned(fMainController) then begin
+    if fMainController.FormData.AutoPrefix then
+      SetPrefixDir(ebOutputDir.Text);
+  end;
 end;
 
 procedure TFrmMain.ebPrefixChange(Sender: TObject);
@@ -995,9 +994,9 @@ begin
     try
       CheckHideLabels;
       if not cbStretch.Checked then
-        fFrmMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
+        fMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
       if not cbStretchOriginal.Checked then
-        fFrmMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
+        fMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgOriginal);
     finally
       Screen.Cursor := crDefault;
     end;
@@ -1180,36 +1179,8 @@ begin
 end;
 
 procedure TFrmMain.ShowFileSelect(Sender: TObject);
-begin
-  with TFileOpenDialog.Create(nil) do begin
-    try
-      DefaultFolder := ebStartPath.Text;
-      Options := [fdoFileMustExist];
-      FileTypes.Add.FileMask := cJpgExt;
-      if Execute then begin
-        imgHome.Align := alNone;
-        fWorkingDir := ExtractFilePath(FileName);
-        fSelectedFilename := Filename;
-        ebStartPath.Text := fWorkingDir;
-        cblFiles.Clear;
-        cblFiles.Items.Add(ExtractFileName(fSelectedFilename));
-        if cblFiles.Items.Count > 0 then begin
-          cblFiles.Checked[0] := true;
-          btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
-          if btnStart.Enabled and
-             cbCompressPreview.Checked then
-            LoadCompressedPreview(Sender)
-          else
-            fFrmMainController.LoadImagePreview(fSelectedFilename);
-        end else
-          fFrmMainController.LoadImagePreview(fSelectedFilename);
-        SetControlState(FileExists(fSelectedFilename));
-      end;
-    finally
-      Free;
-      imgHome.Align := alClient;
-    end;
-  end;
+begin                                     
+  fMainController.ShowFileSelect(Sender);
 end;
 {$WARNINGS ON}
 procedure TFrmMain.cbCompressClick(Sender: TObject);
@@ -1278,7 +1249,7 @@ begin
   if (GetSelectedFileName <> '') and
      (fImageChanged) then begin
     cbCompressPreview.Checked := false;
-    fFrmMainController.LoadSelectedFromFile;
+    fMainController.LoadSelectedFromFile;
     cbCompressClick(Sender);
     cbApplyGraphicsClick(Sender);
     if fImageChanged then
@@ -1289,7 +1260,7 @@ end;
 
 procedure TFrmMain.cblFilesClickCheck(Sender: TObject);
 begin
-  btnStart.Enabled := fFrmMainController.FileIsSelected;
+  btnStart.Enabled := fMainController.FileIsSelected;
 end;
 
 procedure TFrmMain.cbResampleModeChange(Sender: TObject);
@@ -1330,7 +1301,7 @@ end;
 
 procedure TFrmMain.miSaveSettingsClick(Sender: TObject);
 begin
-  fFrmMainController.SaveFormSettings;
+  fMainController.SaveFormSettings;
   MessageDlg(cMsgSaveSettings, mtInformation, [mbOK], 0);
 end;
 
@@ -1366,7 +1337,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     imgHome.Stretch := cbStretch.Checked;
-    fFrmMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
+    fMainController.LoadImage(fJPEGCompressor.JPEG, imgHome);
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1377,7 +1348,7 @@ begin
   Screen.Cursor := crHourGlass;
   try
     imgOriginal.Stretch := cbStretchOriginal.Checked;
-    fFrmMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
+    fMainController.LoadImage(fJPEGCompressor.JPEGOriginal, imgHome);
   finally
     Screen.Cursor := crDefault;
   end

@@ -800,10 +800,6 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
-            ExplicitLeft = -151
-            ExplicitTop = 24
-            ExplicitWidth = 1304
-            ExplicitHeight = 321
           end
         end
         object pnlScript: TPanel
@@ -845,9 +841,6 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
-            ExplicitLeft = 24
-            ExplicitTop = -221
-            ExplicitHeight = 442
           end
         end
       end

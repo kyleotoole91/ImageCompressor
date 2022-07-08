@@ -1,19 +1,23 @@
-unit uFrmMainController;
+unit uMainController;
 
 interface
 
 uses
-  System.Classes, SuperObject, uImageConfig, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Forms, Vcl.Dialogs, REST.JSON,
-  Winapi.ShellAPI, WinApi.Windows, System.IOUtils, System.Types, uDlgProgress, uScriptVariables, System.Generics.Collections;
+  System.Classes, SuperObject, uImageConfig, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Forms, Vcl.Dialogs, REST.JSON, Vcl.Controls,
+  Winapi.ShellAPI, WinApi.Windows, System.IOUtils, System.Types, uDlgProgress, uScriptVariables, System.Generics.Collections,
+  uMainModel, uFormData;
 
 type
-  TFrmMainController = class(TObject)
+  TMainController = class(TObject)
   strict private
+    fFormData: TFormData;
+    fMainModel: TMainModel;
     fOwner: TComponent;
     fScriptVariables: TScriptVariables;
     fImageConfigList: TDictionary<string, TImageConfig>;
   public
     constructor Create(const AOwner: TComponent);
+    function ShowFileSelect(Sender: TObject): string;
     procedure ToggleScriptLog(const AStartup: boolean=false);
     destructor Destroy; override;
     procedure RunDeploymentScript;
@@ -36,29 +40,36 @@ type
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     procedure ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
     property Owner: TComponent read fOwner write fOwner;
+    property FormData: TFormData read fFormData write fFormData;
   end;
 
 implementation
 
 uses
-  System.SysUtils, uFormData, System.UITypes, uConstants, uJPEGCompressor, uFrmMain;
+  System.SysUtils, System.UITypes, uConstants, uJPEGCompressor, uFrmMain;
 
-{TFrmMainController}
+{TMainController}
 
-constructor TFrmMainController.Create(const AOwner: TComponent);
+constructor TMainController.Create(const AOwner: TComponent);
 begin
   inherited Create;
   if not (AOwner is TFrmMain) then
     raise Exception.Create('Unsupported class type')
   else
     fOwner := AOwner;
+  fFormData := TFormData.Create;
+  fMainModel := TMainModel.Create(Self);
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   fScriptVariables := TScriptVariables.Create(AOwner);
   ToggleScriptLog(true);
 end;
 
-destructor TFrmMainController.Destroy;
+destructor TMainController.Destroy;
 begin
+  if Assigned(fFormData) then
+    fFormData.Free;
+  if Assigned(fMainModel) then
+    fMainModel.Free;
   if Assigned(fImageConfigList) then
     fImageConfigList.Free;
   if Assigned(fScriptVariables) then
@@ -66,7 +77,42 @@ begin
   inherited;
 end;
 
-procedure TFrmMainController.CreateJSONFile(const AJSON: ISuperObject);
+function TMainController.ShowFileSelect(Sender: TObject): string;
+begin
+  with TFileOpenDialog.Create(nil) do begin
+    with TFrmMain(fOwner) do begin
+      try
+        DefaultFolder := ebStartPath.Text;
+        Options := [fdoFileMustExist];
+        FileTypes.Add.FileMask := cJpgExt;
+        if Execute then begin
+          imgHome.Align := alNone;
+          fWorkingDir := ExtractFilePath(FileName);
+          fSelectedFilename := Filename;
+          ebStartPath.Text := fWorkingDir;
+          cblFiles.Clear;
+          cblFiles.Items.Add(ExtractFileName(fSelectedFilename));
+          if cblFiles.Items.Count > 0 then begin
+            cblFiles.Checked[0] := true;
+            btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
+            if btnStart.Enabled and
+               cbCompressPreview.Checked then
+              LoadCompressedPreview(Sender)
+            else
+              fMainController.LoadImagePreview(fSelectedFilename);
+          end else
+            fMainController.LoadImagePreview(fSelectedFilename);
+          SetControlState(FileExists(fSelectedFilename));
+        end;
+      finally
+        Free;
+        imgHome.Align := alClient;
+      end;
+    end;
+  end;
+end;
+
+procedure TMainController.CreateJSONFile(const AJSON: ISuperObject);
 var
   newfilename: string;
 begin
@@ -83,7 +129,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
+procedure TMainController.ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
 var
   imageConfig: TImageConfig;
 begin
@@ -144,7 +190,7 @@ begin
 end;
 
 
-function TFrmMainController.LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
+function TMainController.LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
 begin
   try
     Screen.Cursor := crHourGlass;
@@ -174,7 +220,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.ClearConfigList;
+procedure TMainController.ClearConfigList;
 var
   key: string;
 begin
@@ -185,7 +231,7 @@ begin
   end;
 end;
 
-function TFrmMainController.FileIsSelected: boolean;
+function TMainController.FileIsSelected: boolean;
 var
   a: integer;
 begin
@@ -199,7 +245,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.LoadImageConfig(const AFilename: string);
+procedure TMainController.LoadImageConfig(const AFilename: string);
 var
   key: string;
 begin
@@ -229,7 +275,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.ProcessFile(const AFilename: string);
+procedure TMainController.ProcessFile(const AFilename: string);
 begin
   with TFrmMain(fOwner) do begin
     fStartTime := Now;
@@ -238,7 +284,7 @@ begin
       fSelectedFilename := fFilename;
       LoadImageConfig(fFilename);
       if cbApplyToAll.Checked then
-        fFrmMainController.FormToObj;
+        fMainController.FormToObj;
       if Assigned(fImageConfig) and
          (fImageConfig.Compress or
           fImageConfig.ApplyGraphics) then begin
@@ -274,7 +320,12 @@ begin
   end;
 end;
 
-procedure TFrmMainController.LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
+procedure TMainController.LoadFormSettings(const ARestoreDefaults: boolean);
+begin
+  fMainModel.LoadFormSettings(ARestoreDefaults);
+end;
+
+procedure TMainController.LoadImage(const AJPEG: TJPEGImage; const AImage: TImage);
 var
   scale: integer;
   jsScale: TJPEGScale;
@@ -339,7 +390,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
+procedure TMainController.HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
 var
   key: string;
   imgConfig: TImageConfig;
@@ -366,7 +417,7 @@ begin
   end;
 end;
 
-function TFrmMainController.SizeOfFileKB(const AFilename: string): uInt64;
+function TMainController.SizeOfFileKB(const AFilename: string): uInt64;
 var
   sr : TSearchRec;
 begin
@@ -379,7 +430,7 @@ begin
   FindClose(sr);
 end;
 
-procedure TFrmMainController.ToggleScriptLog(const AStartup: boolean);
+procedure TMainController.ToggleScriptLog(const AStartup: boolean);
 begin
   with TFrmMain(fOwner) do begin
     if AStartup then begin
@@ -393,7 +444,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
+procedure TMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
 var
   sourcePrefix: string;
 begin
@@ -419,7 +470,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.LoadImagePreview(const AFilename: string);
+procedure TMainController.LoadImagePreview(const AFilename: string);
 begin
   with TFrmMain(fOwner) do begin
     if (AFilename <> '') and Assigned(fJPEGCompressor) then begin
@@ -444,7 +495,7 @@ begin
   end;
 end;
 
-function TFrmMainController.FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
+function TMainController.FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
 begin
   with TFrmMain(fOwner) do begin
     if (fSelectedFilename <> '') or Assigned(AImageConfig) then begin
@@ -495,37 +546,7 @@ begin
   end;
 end;
 
-procedure TFrmMainController.SaveFormSettings;
-var
-  jsonStr: string;
-  json: ISuperObject;
-begin
-  try
-    with TFrmMain(fOwner) do begin
-      FormToObj(fFormData);
-      jsonStr := TJson.ObjectToJsonString(fFormData);
-      json := SO(jsonStr);
-      json.S['sourceDir'] := ebStartPath.Text;
-      json.S[cOutputDir] := ebOutputDir.Text;
-      json.I['filterSizeKB'] := fFilterSizeKB;
-      json.B['replaceOriginals'] := fFormData.ReplaceOriginals;
-      json.B['deepScan'] := fFormData.DeepScan;
-      json.I['pnlFilesWidth'] := pnlFiles.Width;
-      json.I['pnlScriptHeight'] := pnlScript.Height;
-      json.I['pnlOriginalWidth'] := pnlOriginal.Width;
-      json.B['applyToAll'] := cbApplyToAll.Checked;
-      json.S['jsonFilename'] := ebFilename.Text;
-      json.S['prefix'] := ebPrefix.Text;
-      json.B['runScript'] := fRunScript;
-      json.B['autoPrefix'] := fFormData.AutoPrefix;
-      json.SaveTo(cSettingsFilename);
-    end;
-  finally
-    json := nil;
-  end;
-end;
-
-procedure TFrmMainController.RunDeploymentScript;
+procedure TMainController.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
     with TFrmMain(fOwner) do begin
@@ -541,7 +562,7 @@ begin
   end;
 end;
 
-function TFrmMainController.ValidSelection(Sender: TObject): boolean;
+function TMainController.ValidSelection(Sender: TObject): boolean;
 var
   sl: TStringList;
   hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals: boolean;
@@ -550,10 +571,10 @@ begin
   try
     with TFrmMain(fOwner) do begin
       if (Sender <> miReplaceOriginals) and
-         (not fFrmMainController.FileIsSelected) then
+         (not fMainController.FileIsSelected) then
         MessageDlg(cBatchProcessEvaluation, mtError, mbOKCancel, 0)
       else if fEvaluationMode then begin
-        fFrmMainController.HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
+        fMainController.HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
         if hasReplaceOriginals then
           sl.Add(cReplaceOrigEval);
         if hasMultipleImages then
@@ -572,7 +593,7 @@ begin
       result := sl.Count = 0;
       if not result then begin
         if fEvaluationMode and (MessageDlg(sl.Text, mtWarning, mbOKCancel, 0) = mrOk) then begin
-          fFrmMainController.OpenURL(cGumRoadLink);
+          fMainController.OpenURL(cGumRoadLink);
           miEnterLicenseClick(nil);
         end;
       end;
@@ -582,84 +603,7 @@ begin
   end;
 end;
 
-
-procedure TFrmMainController.LoadFormSettings(const ARestoreDefaults: boolean=false);
-var
-  sl: TStringList;
-  json: ISuperObject;
-begin
-  sl := TStringList.Create;
-  try
-    with TFrmMain(fOwner) do begin
-      if Assigned(fFormData) then begin
-        fFormData.Free;
-        fFormData := nil;
-      end;
-      if (not ARestoreDefaults) and
-         (FileExists(cSettingsFilename)) then begin
-        sl.LoadFromFile(cSettingsFilename);
-        fFormData := TJson.JsonToObject<TFormData>(sl.Text);
-        try
-          if Assigned(fFormData) then begin
-            ObjToForm(fFormData);
-            json := SO(sl.Text);
-            if json.S['sourceDir'] <> '' then
-              ebStartPath.Text := json.S['sourceDir'];
-            if ebOutputDir.Text <> '' then
-              ebOutputDir.Text := json.S[cOutputDir];
-            fFilterSizeKB := json.I['filterSizeKB'];
-            fFormData.ReplaceOriginals := json.B['replaceOriginals'];
-            fFormData.DeepScan := json.B['deepScan'];
-            cbApplyToAll.Checked := json.B['applyToAll'];
-            ebFilename.Text := json.S['jsonFilename'];
-            pnlOriginal.Width := json.I['pnlOriginalWidth'];
-            pnlScript.Height := json.I['pnlScriptHeight'];
-            fFormData.RunScript := json.B['runScript'];
-            ebPrefix.Text := json.S['prefix'];
-            fFormData.AutoPrefix := json.B['autoPrefix'];
-            if pnlFiles.Width <> 0 then
-              pnlFiles.Width := json.I['pnlFilesWidth'];
-          end;
-        finally
-          fSelectedFilename := '';
-        end;
-      end;
-      if not Assigned(fFormData) then begin
-        fFormData := TFormData.Create;
-        if ARestoreDefaults then begin
-          with TImageConfig.Create do begin
-            try
-              fFormData.Quality := Quality;
-              fFormData.FilterSizeKB := 0;
-              fFormData.Compress := Compress;
-              fFormData.TargetKB := TargetKB;
-              fFormData.ResampleMode := ResampleMode;
-              fFormData.RotateAmount := RotateAmount;
-              fFormData.ApplyGraphics := ApplyGraphics;
-              fFormData.Description := Description;
-              fFormData.Description := Description;
-              fFormData.ShrinkByWidth := ShrinkByWidth;
-              fFormData.ShrinkByValue := ShrinkByValue;
-              pnlFiles.Width := 247;
-              pnlOriginal.Width := 439;
-              ebOutputDir.Enabled := true;
-              cbIncludeInJSONFile.Enabled := true;
-              ebFilename.Enabled := true;
-            finally
-              Free;
-            end;
-          end;
-        end;
-        ObjToForm(fFormData)
-      end
-    end;
-  finally
-    sl.Free;
-    json := nil;
-  end;
-end;
-
-procedure TFrmMainController.OpenURL(const AURL: string);
+procedure TMainController.OpenURL(const AURL: string);
 var
   url: string;
 begin
@@ -668,7 +612,12 @@ begin
 end;
 
 
-procedure TFrmMainController.ScanDisk;
+procedure TMainController.SaveFormSettings;
+begin
+  fMainModel.SaveFormSettings;
+end;
+
+procedure TMainController.ScanDisk;
 var
   filenames: TStringDynArray;
   dlgProgress: TDlgProgress;

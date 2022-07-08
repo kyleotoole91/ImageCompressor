@@ -14,7 +14,8 @@ uses
   uScriptVariables in 'Source\Utilis\uScriptVariables.pas',
   uFormData in 'Source\Serialized\uFormData.pas',
   uImageConfig in 'Source\Serialized\uImageConfig.pas',
-  uFrmMainController in 'Source\Controllers\uFrmMainController.pas';
+  uMainController in 'Source\Controllers\uMainController.pas',
+  uMainModel in 'Source\Models\uMainModel.pas';
 
 {$R *.res}
 
