@@ -12,6 +12,8 @@ const
   //frmMain
   cDefaultFilesWidth=247;
   cDefaultOriginalWidth=439;
+  cDefaultPnlScriptHeight=543;
+  cDefaultPnlFilesWidth=247;
   cOutputDir='outputDir';
   cPrefix='prefix';
   cDefaultOutDir='Compressed';

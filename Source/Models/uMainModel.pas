@@ -91,13 +91,21 @@ begin
               FormData.DeepScan := json.B['deepScan'];
               cbApplyToAll.Checked := json.B['applyToAll'];
               ebFilename.Text := json.S['jsonFilename'];
-              pnlOriginal.Width := json.I['pnlOriginalWidth'];
-              pnlScript.Height := json.I['pnlScriptHeight'];
               FormData.RunScript := json.B['runScript'];
               ebPrefix.Text := json.S['prefix'];
               FormData.AutoPrefix := json.B['autoPrefix'];
-              if pnlFiles.Width <> 0 then
-                pnlFiles.Width := json.I['pnlFilesWidth'];
+              if sl.Text.Contains('pnlOriginalWidth') then
+                pnlOriginal.Width := json.I['pnlOriginalWidth']
+              else
+                pnlOriginal.Width := cDefaultOriginalWidth;
+              if sl.Text.Contains('pnlScript') then
+                pnlScript.Height := json.I['pnlScriptHeight']
+              else
+                pnlScript.Height := cDefaultPnlScriptHeight;
+              if sl.Text.Contains('pnlFiles') then
+                pnlFiles.Width := json.I['pnlFilesWidth']
+              else
+                pnlFiles.Width := cDefaultPnlFilesWidth;
             end;
           finally
             fSelectedFilename := '';

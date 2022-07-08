@@ -724,18 +724,21 @@ var
   startTime: TDateTime;
   dlgProgrss: TDlgProgress;
   runScript: boolean;
-  replacingOriginals: boolean;
+  replacingOriginals, ok: boolean;
 begin
   fJSON := TSuperObject.Create(stArray);
   btnStart.Enabled := false;
   startTime := Now;
   runScript := fRunScript;
   try
-    replacingOriginals := fMainController.FormData.ReplaceOriginals or (ExtractFilePath(ebStartPath.Text) = ExtractFilePath(ebOutputDir.Text));
-    if ((not replacingOriginals) or
-       (mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                           'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0))) and
-        fMainController.ValidSelection(Sender) then begin
+    replacingOriginals := (fMainController.FormData.ReplaceOriginals) or
+                          (IncludeTrailingPathDelimiter(ebStartPath.Text) = IncludeTrailingPathDelimiter(ebOutputDir.Text));
+    if replacingOriginals then begin
+      ok := mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
+                               'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
+    end else
+      ok := true;
+    if ok and fMainController.ValidSelection(Sender) then begin
       if runScript and
         (mrYes <> MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
                              'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then

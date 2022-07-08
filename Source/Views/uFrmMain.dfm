@@ -36,7 +36,7 @@ object FrmMain: TFrmMain
     Top = 3
     Width = 1638
     Height = 909
-    ActivePage = tsLogs
+    ActivePage = tsHome
     Align = alClient
     TabOrder = 0
     OnChange = pcMainChange
@@ -773,10 +773,6 @@ object FrmMain: TFrmMain
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitLeft = 16
-          ExplicitTop = 7
-          ExplicitWidth = 1153
-          ExplicitHeight = 401
           object Panel1: TPanel
             Left = 0
             Top = 0
@@ -820,7 +816,6 @@ object FrmMain: TFrmMain
             BevelOuter = bvNone
             Caption = 'Script logs:'
             TabOrder = 0
-            ExplicitWidth = 1001
           end
           object mmScript: TMemo
             Left = 0

@@ -106,10 +106,8 @@ end;
 
 procedure TfrmSplash.Timer1Timer(Sender: TObject);
 var
-  startTime: TDateTime;
   licenseKey: string;
 begin
-  startTime := Now;
   try
     Timer1.Enabled := false;
     Screen.Cursor := crHourGlass;
@@ -141,8 +139,6 @@ begin
     end;
   finally
     Application.ProcessMessages;
-    if MilliSecondsBetween(Now, startTime) < 500 then
-      Sleep(500); //give time to see info
     Screen.Cursor := crDefault;
     Close;
   end;
