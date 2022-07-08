@@ -112,16 +112,14 @@
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.1.5;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.1.6;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Release>1</VerInfo_Release>
-        <VerInfo_Build>5</VerInfo_Build>
+        <VerInfo_Build>6</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Source\uJPEGCompressor.pas"/>
-        <DCCReference Include="Source\uLicenseValidator.pas"/>
         <DCCReference Include="Source\uConstants.pas"/>
         <DCCReference Include="Source\Views\uDlgDefaults.pas">
             <Form>FrmDefaultConfig</Form>
@@ -152,6 +150,8 @@
         <DCCReference Include="Source\Serialized\uImageConfig.pas"/>
         <DCCReference Include="Source\Controllers\uMainController.pas"/>
         <DCCReference Include="Source\Models\uMainModel.pas"/>
+        <DCCReference Include="Source\Utilis\uJPEGCompressor.pas"/>
+        <DCCReference Include="Source\Utilis\uLicenseValidator.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

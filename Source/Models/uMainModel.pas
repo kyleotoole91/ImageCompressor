@@ -3,8 +3,7 @@ unit uMainModel;
 interface
 
 uses
-  System.Classes, SuperObject, uImageConfig, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Forms, Vcl.Dialogs, REST.JSON, Vcl.Controls,
-  Winapi.ShellAPI, WinApi.Windows, System.IOUtils, System.Types, uDlgProgress, uScriptVariables, System.Generics.Collections;
+  System.Classes, SuperObject, uImageConfig, Vcl.ExtCtrls, Vcl.Forms, Vcl.Dialogs, REST.JSON;
 
 type
   TMainModel = class(TObject)
@@ -19,7 +18,7 @@ type
 implementation
 
 uses
-  System.SysUtils, uFormData, System.UITypes, uConstants, uJPEGCompressor, uMainController, uFrmMain;
+  System.SysUtils, uFormData, uConstants, uJPEGCompressor, uMainController, uFrmMain;
 
 procedure TMainModel.SaveFormSettings;
 var

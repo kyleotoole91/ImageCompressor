@@ -2,8 +2,6 @@ program TurboImageCompressor;
 
 uses
   Vcl.Forms,
-  uJPEGCompressor in 'Source\uJPEGCompressor.pas',
-  uLicenseValidator in 'Source\uLicenseValidator.pas',
   uConstants in 'Source\uConstants.pas',
   uDlgDefaults in 'Source\Views\uDlgDefaults.pas' {FrmDefaultConfig},
   uDlgFilter in 'Source\Views\uDlgFilter.pas' {DlgFilter},
@@ -15,7 +13,9 @@ uses
   uFormData in 'Source\Serialized\uFormData.pas',
   uImageConfig in 'Source\Serialized\uImageConfig.pas',
   uMainController in 'Source\Controllers\uMainController.pas',
-  uMainModel in 'Source\Models\uMainModel.pas';
+  uMainModel in 'Source\Models\uMainModel.pas',
+  uJPEGCompressor in 'Source\Utilis\uJPEGCompressor.pas',
+  uLicenseValidator in 'Source\Utilis\uLicenseValidator.pas';
 
 {$R *.res}
 
