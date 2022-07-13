@@ -33,7 +33,7 @@ begin
         json := SO(jsonStr);
         json.S['sourceDir'] := ebStartPath.Text;
         json.S[cOutputDir] := ebOutputDir.Text;
-        json.I['filterSizeKB'] := fFilterSizeKB;
+        json.I['filterSizeKB'] := FilterSizeKB;
         json.B['replaceOriginals'] := FormData.ReplaceOriginals;
         json.B['deepScan'] := FormData.DeepScan;
         json.I['pnlFilesWidth'] := pnlFiles.Width;
@@ -42,7 +42,7 @@ begin
         json.B['applyToAll'] := cbApplyToAll.Checked;
         json.S['jsonFilename'] := ebFilename.Text;
         json.S['prefix'] := ebPrefix.Text;
-        json.B['runScript'] := fRunScript;
+        json.B['runScript'] := RunScript;
         json.B['autoPrefix'] := FormData.AutoPrefix;
         json.SaveTo(cSettingsFilename);
       end;
@@ -86,7 +86,7 @@ begin
                 ebStartPath.Text := json.S['sourceDir'];
               if ebOutputDir.Text <> '' then
                 ebOutputDir.Text := json.S[cOutputDir];
-              fFilterSizeKB := json.I['filterSizeKB'];
+              FilterSizeKB := json.I['filterSizeKB'];
               FormData.ReplaceOriginals := json.B['replaceOriginals'];
               FormData.DeepScan := json.B['deepScan'];
               cbApplyToAll.Checked := json.B['applyToAll'];
@@ -108,7 +108,7 @@ begin
                 pnlFiles.Width := cDefaultPnlFilesWidth;
             end;
           finally
-            fSelectedFilename := '';
+            SelectedFilename := '';
           end;
         end;
         if not Assigned(FormData) then begin

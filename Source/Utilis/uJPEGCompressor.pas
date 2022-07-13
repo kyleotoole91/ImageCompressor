@@ -13,7 +13,7 @@ type
     fResampleMode: TResampleMode;
     fRotateAmount: TRotateAmount;
     fOriginalFilesize,
-    fCompressedFilesize: Int64;
+    fCompressedFilesize: uInt64;
     fSourceFilename: string;
     fOutputDir: string;
     fApplyGraphics,
@@ -56,8 +56,8 @@ type
     property ShrinkByMaxPx: integer read fShrinkByMaxPx write fShrinkByMaxPx;
     property CompressionQuality: integer read fCompressionQuality write fCompressionQuality;
     property TargetKB: integer read fTargetKB write fTargetKB;
-    property OriginalFilesize: Int64 read fOriginalFilesize;
-    property CompressedFilesize: Int64 read fCompressedFilesize;
+    property OriginalFilesize: uInt64 read fOriginalFilesize;
+    property CompressedFilesize: uInt64 read fCompressedFilesize;
     property Messages: TStringList read fMessages;
     property JPEG: TJPEGImage read fJPEG;
     property Bitmap: TBitmap read fBitmap;

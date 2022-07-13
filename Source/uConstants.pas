@@ -66,6 +66,10 @@ const
   cLatestVersionURL = 'https://orcaireland.com/software/TurboImageCompressor_Setup.exe';
   cVersionFile = 'https://orcaireland.com/software/version.json';
   //messages
+  cMsgNoImagesFound='No images found in the default source directory. '+sLineBreak+sLineBreak+
+                    'Please drag and drop images or folders to build a compression queue.'+sLineBreak+sLineBreak+
+                    'Alternatively, use the File menu.';
+  cUnSupportedClassType='Unsupported class type';
   cRestoreDefaultsMessage='Are you sure you want to restore default settings?';
   cRestoreDefaultsMessage2=sLineBreak+sLineBreak+'Save Current Settings is needed for this to take effect on the next startup.';
   cDeployScriptEval='Deployment batch scripts are only available in the Pro version.';

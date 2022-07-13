@@ -26,9 +26,6 @@ type
     property RecordModified: boolean read fRecordModified;
   end;
 
-var
-  DlgFilter: TDlgFilter;
-
 implementation
 
 {$R *.dfm}

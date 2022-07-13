@@ -328,7 +328,7 @@ object FrmMain: TFrmMain
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
-            OnDblClick = ShowFolderSelect
+            OnDblClick = ebStartPathDblClick
             OnEnter = ebStartPathEnter
             OnKeyDown = ebStartPathKeyDown
           end
@@ -343,7 +343,7 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 1
             OnChange = ebOutputDirChange
-            OnDblClick = ShowFolderSelect
+            OnDblClick = ebOutputDirDblClick
           end
           object cbApplyGraphics: TCheckBox
             Left = 262
@@ -792,7 +792,7 @@ object FrmMain: TFrmMain
             Align = alClient
             Lines.Strings = (
               'mmMessages')
-            PopupMenu = pmResults
+            PopupMenu = pmLogs
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
@@ -832,7 +832,7 @@ object FrmMain: TFrmMain
             Lines.Strings = (
               'mmMessages')
             ParentFont = False
-            PopupMenu = pmResults
+            PopupMenu = pmScriptLogs
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
@@ -921,7 +921,7 @@ object FrmMain: TFrmMain
       OnClick = miClearFilesClick
     end
   end
-  object pmResults: TPopupMenu
+  object pmLogs: TPopupMenu
     Left = 186
     Top = 278
     object miClear: TMenuItem
@@ -936,12 +936,12 @@ object FrmMain: TFrmMain
       object mmiOpenFolder: TMenuItem
         Caption = 'Open folder'
         ShortCut = 113
-        OnClick = ShowFolderSelect
+        OnClick = mmiOpenFolderClick
       end
       object mmiOpen: TMenuItem
         Caption = 'Open JPG'
         ShortCut = 114
-        OnClick = ShowFileSelect
+        OnClick = mmiOpenClick
       end
       object miSelectOutputDir: TMenuItem
         Caption = 'Select output folder'
@@ -1006,7 +1006,6 @@ object FrmMain: TFrmMain
     end
     object Settings1: TMenuItem
       Caption = 'Settings'
-      OnClick = Settings1Click
       object miDeepScan: TMenuItem
         Caption = 'Deep scan '
         ShortCut = 117
@@ -1035,9 +1034,9 @@ object FrmMain: TFrmMain
     end
     object miAdvanced: TMenuItem
       Caption = 'Advanced'
-      object DeploymentScript1: TMenuItem
+      object miDeploymentScript: TMenuItem
         Caption = 'Deployment script'
-        OnClick = DeploymentScript1Click
+        OnClick = miDeploymentScriptClick
       end
     end
     object miUpgrade: TMenuItem
@@ -1094,5 +1093,13 @@ object FrmMain: TFrmMain
     OnTimer = tmrOnShowTimer
     Left = 364
     Top = 352
+  end
+  object pmScriptLogs: TPopupMenu
+    Left = 282
+    Top = 318
+    object miClearSciptLogs: TMenuItem
+      Caption = 'Clear'
+      OnClick = miClearSciptLogsClick
+    end
   end
 end
