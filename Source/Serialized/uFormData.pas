@@ -16,7 +16,7 @@ type
     fPnlFilesWidth: integer;
     fPnlOriginalWidth: integer;
     fApplyToAll: boolean;
-    fJsonFilename: string;
+    fJSONFilename: string;
     fPrefix: string;
     fRunScript: boolean;
     fAutoPrefix: boolean;
@@ -31,7 +31,7 @@ type
     property PnlFilesWidth: integer read fPnlFilesWidth write fPnlFilesWidth;
     property PnlOriginalWidth: integer read fPnlOriginalWidth write fPnlOriginalWidth;
     property ApplyToAll: boolean read fApplyToAll write fApplyToAll;
-    property JsonFilename: string read fJsonFilename write fJsonFilename;
+    property JSONFilename: string read fJSONFilename write fJSONFilename;
     property Prefix: string read fPrefix write fPrefix;
     property RunScript: boolean read fRunScript write fRunScript;
     property AutoPrefix: boolean read fAutoPrefix write fAutoPrefix;
@@ -50,7 +50,7 @@ end;
 procedure TFormData.Reset;
 begin
   fApplyToAll := true;
-  JsonFilename := cJSONFilename;
+  fJSONFilename := cJSONFilename;
   fSourceDir := TPath.GetPicturesPath;
   fOutputDir := IncludeTrailingPathDelimiter(fSourceDir) + cDefaultOutDir;
   fPrefix := cDefaultSourcePrefix;

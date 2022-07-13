@@ -10,7 +10,11 @@ const
   cShellTestScript='test.bat';
   cShellTempScript='temp.bat';
   //frmMain
+  cDefaultTargetKB=0;
+  cDefaultClientWidth=1820;
+  cDefaultClientHeight=950;
   cDefaultFilesWidth=247;
+  cDefaultImageSplitPause=784;
   cDefaultOriginalWidth=439;
   cDefaultPnlScriptHeight=543;
   cDefaultPnlFilesWidth=247;

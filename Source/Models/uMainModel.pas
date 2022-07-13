@@ -8,9 +8,9 @@ uses
 type
   TMainModel = class(TObject)
   strict private
-    fOwner: TObject;
+    fMainController: TObject;
   public
-    constructor Create(const AOwner: TObject);
+    constructor Create(const AOwnerController: TObject);
     procedure LoadFormSettings(const ARestoreDefaults: boolean=false);
     procedure SaveFormSettings;
   end;
@@ -20,14 +20,23 @@ implementation
 uses
   System.SysUtils, uFormData, uConstants, uJPEGCompressor, uMainController, uFrmMain;
 
+constructor TMainModel.Create(const AOwnerController: TObject);
+begin
+  inherited Create;
+  if not (AOwnerController is TMainController) then
+    raise Exception.Create('Unsupported class type')
+  else
+    fMainController := AOwnerController;
+end;
+
 procedure TMainModel.SaveFormSettings;
 var
   jsonStr: string;
   json: ISuperObject;
 begin
   try
-    with TMainController(fOwner) do begin
-      with TFrmMain(Owner) do begin
+    with TMainController(fMainController) do begin
+      with TFrmMain(MainView) do begin
         FormToObj(FormData);
         jsonStr := TJson.ObjectToJsonString(FormData);
         json := SO(jsonStr);
@@ -52,15 +61,6 @@ begin
   end;
 end;
 
-constructor TMainModel.Create(const AOwner: TObject);
-begin
-  inherited Create;
-  if not (AOwner is TMainController) then
-    raise Exception.Create('Unsupported class type')
-  else
-    fOwner := AOwner;
-end;
-
 procedure TMainModel.LoadFormSettings(const ARestoreDefaults: boolean=false);
 var
   sl: TStringList;
@@ -68,8 +68,8 @@ var
 begin
   sl := TStringList.Create;
   try
-    with TMainController(fOwner) do begin
-      with TFrmMain(Owner) do begin
+    with TMainController(fMainController) do begin
+      with TFrmMain(MainView) do begin
         if Assigned(FormData) then begin
           FormData.Free;
           FormData := nil;

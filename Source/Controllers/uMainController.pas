@@ -10,8 +10,9 @@ uses
 type
   TMainController = class(TObject)
   strict private
-    fLoadingPreview: boolean;
     fMainModel: TMainModel;
+    fMainView: TComponent;
+    fLoadingPreview: boolean;
     fMessages: TStringList;
     fNumProcessed: integer;
     fTotalSavedKB: uInt64;
@@ -25,7 +26,6 @@ type
     fRunScript: boolean;
     fDragAndDropping: boolean;
     fFormData: TFormData;
-    fOwner: TComponent;
     fScriptVariables: TScriptVariables;
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
@@ -37,7 +37,7 @@ type
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
     procedure LoadCompressedPreview(Sender: TObject);
   public
-    constructor Create(const AOwner: TComponent);
+    constructor Create(const AOwnerView: TComponent);
     destructor Destroy; override;
     procedure ScanDisk;
     procedure QualityChange(Sender: TObject);
@@ -88,7 +88,7 @@ type
     function SizeOfFileKB(const AFilename: string): uInt64;
     function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     property DragAndDropping: boolean read fDragAndDropping write fDragAndDropping;
-    property Owner: TComponent read fOwner write fOwner;
+    property MainView: TComponent read fMainView write fMainView;
     property FormData: TFormData read fFormData write fFormData;
     property ImageConfig: TImageConfig read fImageConfig;
     property RunScript: boolean read fRunScript;
@@ -104,7 +104,7 @@ implementation
 uses
   System.UITypes, uFrmMain, uConstants, uFrmShellScript, DateUtils, uDlgFilter;
 
-  function OwnerForm(const AOwner: TObject): TFrmMain;
+  function OwnerView(const AOwner: TComponent): TFrmMain;
   begin
     if AOwner is TFrmMain then
       result := TFrmMain(AOwner)
@@ -114,29 +114,29 @@ uses
 
 {TMainController}
 
-constructor TMainController.Create(const AOwner: TComponent);
+constructor TMainController.Create(const AOwnerView: TComponent);
 begin
   inherited Create;
-  if not (AOwner is TFrmMain) then
+  if not (AOwnerView is TFrmMain) then
     raise Exception.Create(cUnSupportedClassType)
   else
-    fOwner := AOwner;
+    fMainView := AOwnerView;
+  fMainModel := TMainModel.Create(Self);
+  fScriptVariables := TScriptVariables.Create(AOwnerView);
   fMessages := TStringList.Create;
   fNumProcessed := 0;
   fTotalSavedKB := 0;
+  fFilterSizeKB := 0;
+  fSelectedFilename := '';
   fWorkingDir := TPath.GetPicturesPath;
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+cDefaultOutDir;
   fJPEGCompressor := TJPEGCompressor.Create;
   fLicenseValidator := TLicenseValidator.Create;
-  fFilterSizeKB := 0;
-  fSelectedFilename := '';
   fImageChanged := true;
   fRunScript := false;
   fDragAndDropping := false;
   fFormData := TFormData.Create;
-  fMainModel := TMainModel.Create(Self);
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
-  fScriptVariables := TScriptVariables.Create(AOwner);
   ToggleScriptLog(true);
 end;
 
@@ -164,7 +164,7 @@ end;
 
 procedure TMainController.DeepScanClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if EvaluationMode then begin
       if MessageDlg(cDeepScanEval+sLineBreak+sLineBreak+cLinkToBuyMessage, mtWarning, mbOKCancel, 0) = mrOk then
         OpenURL(cGumRoadLink);
@@ -178,9 +178,9 @@ end;
 
 procedure TMainController.ShowDeploymentScript(Sender: TObject);
 begin
-  with TFrmShellScript.Create(fOwner) do begin
+  with TFrmShellScript.Create(fMainView) do begin
     try
-      with OwnerForm(fOwner) do begin
+      with OwnerView(fMainView) do begin
         OutputPath := ebOutputDir.Text;
         SourcePrefix := ebPrefix.Text;
         AllowSave := not EvaluationMode;
@@ -216,18 +216,18 @@ begin
       userCleared := (currentKey <> '') and (newKey = '');
       if userCleared then begin
         fLicenseValidator.DeleteLicense;
-        OwnerForm(fOwner).EvaluationMode := true;
+        OwnerView(fMainView).EvaluationMode := true;
       end else begin
         fLicenseValidator.LicenseKey := newKey;
         if fLicenseValidator.LicenseKey <> '' then begin
           isValid := fLicenseValidator.LicenseIsValid;
-          if OwnerForm(fOwner).EvaluationMode then
-            OwnerForm(fOwner).EvaluationMode := not isValid;
+          if OwnerView(fMainView).EvaluationMode then
+            OwnerView(fMainView).EvaluationMode := not isValid;
         end;
       end;
     finally
       Screen.Cursor := crDefault;
-      if (msg <> '') and OwnerForm(fOwner).EvaluationMode then
+      if (msg <> '') and OwnerView(fMainView).EvaluationMode then
         MessageDlg(msg, TMsgDlgType.mtError, [mbOk], 0)
       else if fLicenseValidator.Message <> '' then
         MessageDlg(fLicenseValidator.Message, TMsgDlgType.mtInformation, [mbOk], 0);
@@ -239,7 +239,7 @@ function TMainController.ShowFileSelect(Sender: TObject): string;
 begin
   with TFileOpenDialog.Create(nil) do begin
     try
-      with OwnerForm(fOwner) do begin
+      with OwnerView(fMainView) do begin
         DefaultFolder := ebStartPath.Text;
         Options := [fdoFileMustExist];
         FileTypes.Add.FileMask := cJpgExt;
@@ -270,7 +270,7 @@ end;
 
 procedure TMainController.ShowFileSizeFilter(Sender: TObject);
 begin
-  with TDlgFilter.Create(fOwner) do begin
+  with TDlgFilter.Create(fMainView) do begin
     try
       Size := fFilterSizeKB;
       ShowModal;
@@ -289,7 +289,7 @@ begin
   result := '';
   with TFileOpenDialog.Create(nil) do begin
     try
-      with OwnerForm(fOwner) do begin
+      with OwnerView(fMainView) do begin
         DefaultFolder := ebOutputDir.Text;
         Options := [fdoPickFolders];
         if Execute then begin
@@ -313,7 +313,7 @@ procedure TMainController.CreateJSONFile(const AJSON: ISuperObject);
 var
   newfilename: string;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if Trim(ebFilename.Text) <> '' then begin
       newfilename := IncludeTrailingPathDelimiter(Trim(fOutputDir))+Trim(ebFilename.Text);
       if FileExists(newfilename) then
@@ -330,7 +330,7 @@ procedure TMainController.ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyF
 var
   imageConfig: TImageConfig;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     Loading := true;
     try
       if Assigned(AImageConfig) then
@@ -391,7 +391,7 @@ begin
   try
     Screen.Cursor := crHourGlass;
     try
-      with OwnerForm(fOwner) do begin
+      with OwnerView(fMainView) do begin
         fImageChanged := true;
         fSelectedFilename := GetSelectedFileName;
         result := (fSelectedFilename <> '') and FileExists(fSelectedFilename);
@@ -410,7 +410,7 @@ begin
   except
     on e: exception do begin
       MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
-      OwnerForm(fOwner).Enabled := false;
+      OwnerView(fMainView).Enabled := false;
       result := false;
     end;
   end;
@@ -418,7 +418,7 @@ end;
 
 function TMainController.AllowStart: boolean;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     result := (FileIsSelected or fImageChanged) and
               (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
               ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
@@ -431,7 +431,7 @@ procedure TMainController.ApplyClick(Sender: TObject);
     a: integer;
     filename: string;
   begin
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       for a := 0 to cblFiles.Items.Count-1 do begin
         filename := cblFiles.Items[a];
         if ExtractFilePath(filename) = '' then
@@ -449,14 +449,14 @@ begin
   SelectCurrentImage;
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
-  OwnerForm(fOwner).cbApplyToAll.Checked := false;
-  OwnerForm(fOwner).btnApply.Enabled := false;
+  OwnerView(fMainView).cbApplyToAll.Checked := false;
+  OwnerView(fMainView).btnApply.Enabled := false;
 end;
 
 procedure TMainController.ApplyGraphicsClick(Sender: TObject);
 begin
   CheckCompressPreviewLoad(Sender);
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     rbByWidth.Enabled := cbApplyGraphics.Checked;
     rbByHeight.Enabled := cbApplyGraphics.Checked;
     seMaxWidthPx.Enabled := rbByWidth.Enabled and rbByWidth.Checked;
@@ -472,7 +472,7 @@ end;
 
 procedure TMainController.CheckCompressPreviewLoad(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if not Loading then begin
       Screen.Cursor := crHourGlass;
       try
@@ -501,7 +501,7 @@ end;
 
 procedure TMainController.CheckHideLabels;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     cbStretchOriginal.Visible := false;
     try
       lbImgSizeKB.Visible := pnlImage.Width >= previewMinWidth;
@@ -527,7 +527,7 @@ procedure TMainController.ClearConfigList;
 var
   key: string;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     for key in fImageConfigList.Keys do
       fImageConfigList.Items[key].Free;
     fImageConfigList.Clear;
@@ -536,7 +536,7 @@ end;
 
 procedure TMainController.ClearFilesClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     ebStartPath.Text := '';
     FilenameList.Clear;
     Scan(Sender);
@@ -545,7 +545,7 @@ end;
 
 procedure TMainController.CompressClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     seQuality.Enabled := cbCompress.Checked and (seTargetKBs.Value = 0);
     tbQuality.Enabled := seQuality.Enabled;
     seTargetKBs.Enabled := cbCompress.Checked;
@@ -561,7 +561,7 @@ var
   a: integer;
 begin
   result := false;
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     for a:=0 to cblFiles.Count-1 do begin
       result := cblFiles.Checked[a];
       if result then
@@ -574,7 +574,7 @@ procedure TMainController.FilesClick(Sender: TObject);
 begin
   if (GetSelectedFileName <> '') and
      (ImageChanged) then begin
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       cbCompressPreview.Checked := false;
       LoadSelectedFromFile;
       cbCompressClick(Sender);
@@ -590,7 +590,7 @@ procedure TMainController.LoadImageConfig(const AFilename: string);
 var
   key: string;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if fSelectedFilename <> '' then begin
       key := fSelectedFilename;
       fImageConfigList.TryGetValue(key, fImageConfig);
@@ -619,7 +619,7 @@ end;
 
 procedure TMainController.ProcessFile(const AFilename: string);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     fStartTime := Now;
     try
       fSelectedFilename := AFilename;
@@ -665,7 +665,7 @@ procedure TMainController.QualityChange(Sender: TObject);
 begin
   if not fLoadingPreview then begin
     CheckCompressPreviewLoad(Sender);
-    with OwnerForm(fOwner) do
+    with OwnerView(fMainView) do
       seQuality.Value := tbQuality.Position;
   end;
 end;
@@ -675,7 +675,7 @@ var
   stretch,
   compressionChanged: boolean;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if cbCompress.Checked or
        cbApplyGraphics.Checked then begin
       Screen.Cursor := crHourGlass;
@@ -747,7 +747,7 @@ var
   end;
   procedure SetLabels;
   begin
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       jpeg.Scale := jsFullSize;
       if jpeg = fJPEGCompressor.JPEGOriginal then begin
         lbImgOrigWidthVal.Caption := jpeg.Width.ToString;
@@ -763,7 +763,7 @@ var
     end;
   end;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if ALoadCompressed then
       jpeg := fJPEGCompressor.JPEG
     else
@@ -803,7 +803,7 @@ var
   key: string;
   imgConfig: TImageConfig;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     AHasMultipleImages := SelectedFileCount > 1;
     AHasReplaceOriginals := fFormData.ReplaceOriginals;
     if cbApplyToAll.Checked then begin
@@ -827,7 +827,7 @@ end;
 
 procedure TMainController.HideFilesClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     miHideFiles.Checked := not pnlFiles.Visible;
     pnlFiles.Visible := not pnlFiles.Visible;
     miHideFiles.Checked := not pnlFiles.Visible;
@@ -837,7 +837,7 @@ end;
 
 procedure TMainController.HideOriginalClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     miHideOriginal.Checked := not miHideOriginal.Checked;
     pnlOriginal.Visible := not miHideOriginal.Checked;
     spOriginal.Visible := not miHideOriginal.Checked;
@@ -847,7 +847,7 @@ end;
 
 procedure TMainController.IncludeInFileClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     ebPrefix.Enabled := cbIncludeInJSONFile.Checked;
     lbPrefix.Enabled := cbIncludeInJSONFile.Checked;
     lbDescription.Enabled := cbIncludeInJSONFile.Checked;
@@ -878,7 +878,7 @@ var
   runScript: boolean;
   replacingOriginals, ok: boolean;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     fJSON := TSuperObject.Create(stArray);
     btnStart.Enabled := false;
     startTime := Now;
@@ -897,7 +897,7 @@ begin
                                'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
           runScript := false;
         Screen.Cursor := crHourGlass;
-        dlgProgrss := TDlgProgress.Create(fOwner);
+        dlgProgrss := TDlgProgress.Create(fMainView);
         try
           dlgProgrss.Show;
           Application.ProcessMessages;
@@ -965,7 +965,7 @@ procedure TMainController.StretchClick(Sender: TObject);
 begin
   Screen.Cursor := crHourGlass;
   try
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       imgHome.Stretch := cbStretch.Checked;
       LoadImage(true, imgHome, miApplyBestFit.Checked);
     end;
@@ -976,7 +976,7 @@ end;
 
 procedure TMainController.TargetFilesizeChange(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     seQuality.Enabled := seTargetKBs.Value <= 0;
     tbQuality.Enabled := seQuality.Enabled;
     btnApply.Enabled := true;
@@ -985,7 +985,7 @@ end;
 
 procedure TMainController.ToggleScriptLog(const AStartup: boolean);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if AStartup then begin
       spScript.Visible := false;
       pnlScript.Visible := false;
@@ -1001,7 +1001,7 @@ procedure TMainController.AddToJSONFile(const AOriginalFileSize: Int64; const AC
 var
   sourcePrefix: string;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     with fJSON.AsArray do begin
       Add(NewJSONObject);
       sourcePrefix := fImageConfig.SourcePrefix;
@@ -1041,7 +1041,7 @@ end;}
 
 procedure TMainController.LoadImagePreview(const AFilename: string);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if (AFilename <> '') and Assigned(fJPEGCompressor) then begin
       Screen.Cursor := crHourGlass;
       try
@@ -1066,7 +1066,7 @@ end;
 
 function TMainController.FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if (fSelectedFilename <> '') or Assigned(AImageConfig) then begin
       if Assigned(AImageConfig) then
         result := AImageConfig
@@ -1117,7 +1117,7 @@ end;
 
 procedure TMainController.FullScreenClick(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     miFullscreen.Checked := not miFullscreen.Checked;
     miImgFullscreen.Checked := miFullscreen.Checked;
     miHideConfig.Checked := miFullscreen.Checked;
@@ -1136,7 +1136,7 @@ var
   a: integer;
 begin
   result := '';
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     for a := 0 to cblFiles.Count-1 do begin
       if cblFiles.Selected[a] then begin
         result := cblFiles.Items[a];
@@ -1158,7 +1158,7 @@ end;
 
 procedure TMainController.ReplaceOriginals(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     miReplaceOriginals.Checked := not miReplaceOriginals.Checked;
     FormData.ReplaceOriginals := miReplaceOriginals.Checked;
     if ValidSelection(Sender) then begin
@@ -1174,7 +1174,7 @@ end;
 
 procedure TMainController.ResizeEvent(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if (fSelectedFilename <> '') then begin
       Screen.Cursor := crHourGlass;
       try
@@ -1201,7 +1201,7 @@ begin
   else
     msg := cRestoreDefaultsMessage;
   if MessageDlg(msg, mtWarning, mbOKCancel, 0) = mrOk then begin
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       oldStartPath := ebStartPath.Text;
       oldDeepScan := miDeepScan.Checked;
       try
@@ -1218,7 +1218,7 @@ end;
 procedure TMainController.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       if not fScriptVariables.LoadSavedSettings then begin
         if fScriptVariables.OutputPath = '' then
           fScriptVariables.OutputPath := ebOutputDir.Text;
@@ -1238,7 +1238,7 @@ var
 begin
   sl := TStringList.Create;
   try
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       if (Sender <> miReplaceOriginals) and
          (not FileIsSelected) then
         MessageDlg(cBatchProcessEvaluation, mtError, mbOKCancel, 0)
@@ -1275,7 +1275,7 @@ end;
 
 procedure TMainController.ViewsPopup(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     miHideOriginalPm.Checked := not pnlOriginal.Visible;
     miSplit.Enabled := pnlOriginal.Visible;
     miHideImageList.Checked := not pnlFiles.Visible;
@@ -1303,7 +1303,7 @@ var
   imageLoaded: boolean;
   badFilenames: TStringList;
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if (not fDragAndDropping) and
        (Sender <> miClearFiles) then
       ScanDisk;
@@ -1362,9 +1362,9 @@ var
   dlgProgress: TDlgProgress;
   filename: string;
 begin
-  dlgProgress := TDlgProgress.Create(fOwner);
+  dlgProgress := TDlgProgress.Create(fMainView);
   try
-    with OwnerForm(fOwner) do begin
+    with OwnerView(fMainView) do begin
       FilenameList.Clear;
       if fFormData.DeepScan then begin
         dlgProgress.Text := cMsgScanningDisk;
@@ -1416,7 +1416,7 @@ end;
 
 procedure TMainController.SetControlState(const AEnabled: boolean);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     SetChildControlES(pnlImage, AEnabled);
     cbCompressPreview.Enabled := AEnabled;
     cbStretch.Enabled := AEnabled;
@@ -1426,7 +1426,7 @@ end;
 
 procedure TMainController.SetShrinkState(Sender: TObject);
 begin
-  with OwnerForm(fOwner) do begin
+  with OwnerView(fMainView) do begin
     if not Loading then begin
       rbByWidth.Enabled := cbApplyGraphics.Checked;
       rbByHeight.Enabled := cbApplyGraphics.Checked;

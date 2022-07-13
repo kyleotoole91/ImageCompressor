@@ -255,7 +255,7 @@ begin
   fFormCreating := true;
   fEvaluationMode := true;
   fLoading := false;
-  seTargetKBs.Value := 0;
+  seTargetKBs.Value := cDefaultTargetKB;
   tbQuality.Min := cMinQuality;
   tbQuality.Max := cMaxQuality;
   seQuality.MaxValue := cMaxQuality;
@@ -264,9 +264,10 @@ begin
   seMaxWidthPx.Value := cDefaultMaxWidth;
   seMaxHeightPx.Value := cDefaultMaxHeight;
   pcMain.ActivePage := tsHome;
-  ClientWidth := 1820;
-  ClientHeight := 950;
-  spOriginal.Left := 784;
+  pnlFiles.Width := cDefaultFilesWidth;
+  ClientWidth := cDefaultClientWidth;
+  ClientHeight := cDefaultClientHeight;
+  spOriginal.Left := cDefaultImageSplitPause;
   tmrOnShow.Enabled := false;
   fMainController := TMainController.Create(Self);
   ebOutputDir.Text := fMainController.OutputDir;
@@ -286,16 +287,17 @@ begin
   end;
 end;
 
-procedure TFrmMain.miFilesSizeFilterClick(Sender: TObject);
-begin
-  fMainController.ShowFileSizeFilter(Sender);
-end;
-
 procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   fFormOpenClose := true;
   DragAcceptFiles(Self.Handle, false);
   inherited;
+end;
+
+
+procedure TFrmMain.miFilesSizeFilterClick(Sender: TObject);
+begin
+  fMainController.ShowFileSizeFilter(Sender);
 end;
 
 procedure TFrmMain.FormShow(Sender: TObject);
