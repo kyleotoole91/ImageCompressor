@@ -1189,6 +1189,9 @@ end;
 procedure TMainController.ResizeEvent(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
+    if (Sender = spOriginal) and
+       (pnlOriginal.Width <= cMinOriginalWidth) then
+      pnlOriginal.Width := cMinOriginalWidth;
     if (fSelectedFilename <> '') then begin
       Screen.Cursor := crHourGlass;
       try

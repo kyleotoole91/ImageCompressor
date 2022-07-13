@@ -10,6 +10,7 @@ const
   cShellTestScript='test.bat';
   cShellTempScript='temp.bat';
   //frmMain
+  cMinOriginalWidth=1; //min width when using splitter
   cDefaultTargetKB=0;
   cDefaultClientWidth=1820;
   cDefaultClientHeight=950;
