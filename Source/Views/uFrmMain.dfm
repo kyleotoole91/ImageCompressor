@@ -134,9 +134,7 @@ object FrmMain: TFrmMain
               Top = 17
               Width = 65
               Height = 22
-              Hint = 
-                'Best quality for small file sizes (~300KB is ideal for websites)' +
-                '. Set to 0 to disable'
+              Hint = ' Set to 0 to disable (~250KB is ideal for websites).'
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -329,7 +327,6 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 0
             OnDblClick = ebStartPathDblClick
-            OnEnter = ebStartPathEnter
             OnKeyDown = ebStartPathKeyDown
           end
           object ebOutputDir: TEdit

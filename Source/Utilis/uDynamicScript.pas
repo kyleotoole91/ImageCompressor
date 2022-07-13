@@ -1,4 +1,4 @@
-unit uScriptVariables;
+unit uDynamicScript;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   SysUtils, System.IOUtils, Classes, uConstants, DosCommand, SuperObject;
 
 type
-  TScriptVariables = class(TObject)
+  TDynamicScript = class(TObject)
   private
     fFile: TStringList;
     fOutputPath,
@@ -34,18 +34,20 @@ type
 
 implementation
 
-{ TScriptVariables }
+{ TDynamicScript }
 
-constructor TScriptVariables.Create(const AOwner: TComponent);
+constructor TDynamicScript.Create(const AOwner: TComponent);
 begin
   inherited Create;
   fErrorMsg := '';
+  fOutputPath := '';
+  fSourcePrefix := '';
   fFile := TStringList.Create;
   fDosCommand := TDosCommand.Create(AOwner);
   fScriptFilename := cShellScript;
 end;
 
-destructor TScriptVariables.Destroy;
+destructor TDynamicScript.Destroy;
 begin
   try
     fDosCommand.Free;
@@ -55,7 +57,7 @@ begin
   end;
 end;
 
-function TScriptVariables.LoadSavedSettings: boolean;
+function TDynamicScript.LoadSavedSettings: boolean;
 var
   so: ISuperObject;
 begin
@@ -64,8 +66,6 @@ begin
     if result then begin
       try
         so := TSuperObject.ParseFile(cSettingsFilename, false);
-        if fOutputPath = '' then
-          fOutputPath := so.S[cOutputDir];
         if fSourcePrefix = '' then
           fSourcePrefix := so.S[cPrefix];
       except
@@ -77,16 +77,14 @@ begin
   end;
 end;
 
-function TScriptVariables.Parse: string;
+function TDynamicScript.Parse: string;
 begin
   fOutputFile := '';
   result := '';
   try
     if (fScriptFilename <> '') and
        (FileExists(fScriptFilename)) then begin
-      if (fOutputPath = '') or
-         (fSourcePrefix = '') then
-        LoadSavedSettings;
+      LoadSavedSettings;
       fFile.LoadFromFile(fScriptFilename);
       fOutputFile := fFile.Text.Replace(cShellOutputPathVar, fOutputPath)
                                .Replace(cShellPrefixVar, fSourcePrefix);
@@ -96,7 +94,7 @@ begin
   end;
 end;
 
-procedure TScriptVariables.RunScript;
+procedure TDynamicScript.RunScript;
 var
   scriptFile,
   original: TStringList;
@@ -121,7 +119,7 @@ begin
   end;
 end;
 
-procedure TScriptVariables.SetOutputLines(const Value: TStrings);
+procedure TDynamicScript.SetOutputLines(const Value: TStrings);
 begin
   fDosCommand.OutputLines := Value;
 end;

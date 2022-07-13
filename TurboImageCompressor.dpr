@@ -9,7 +9,7 @@ uses
   uFrmMain in 'Source\Views\uFrmMain.pas' {FrmMain},
   uFrmShellScript in 'Source\Views\uFrmShellScript.pas' {FrmShellScript},
   uFrmSplash in 'Source\Views\uFrmSplash.pas' {frmSplash},
-  uScriptVariables in 'Source\Utilis\uScriptVariables.pas',
+  uDynamicScript in 'Source\Utilis\uDynamicScript.pas',
   uFormData in 'Source\Serialized\uFormData.pas',
   uImageConfig in 'Source\Serialized\uImageConfig.pas',
   uMainController in 'Source\Controllers\uMainController.pas',

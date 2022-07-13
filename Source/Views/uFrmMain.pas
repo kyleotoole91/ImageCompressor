@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
   Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand, uFormData,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uScriptVariables, uMainController;
+  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uDynamicScript, uMainController;
 
 type
   TFrmMain = class(TForm)
@@ -202,7 +202,6 @@ type
     procedure miSaveSettingsClick(Sender: TObject);
     procedure miDeploymentScriptClick(Sender: TObject);
     procedure miSelectOutputDirClick(Sender: TObject);
-    procedure ebStartPathEnter(Sender: TObject);
     procedure tmrOnShowTimer(Sender: TObject);
     procedure ebOutputDirChange(Sender: TObject);
     procedure miAutoPrefixClick(Sender: TObject);
@@ -591,12 +590,6 @@ end;
 procedure TFrmMain.ebStartPathDblClick(Sender: TObject);
 begin
   fMainController.ShowFolderSelect(Sender);
-end;
-
-procedure TFrmMain.ebStartPathEnter(Sender: TObject);
-begin
-  if ebStartPath.Text = '' then
-    fMainController.ShowFolderSelect(Sender);
 end;
 
 procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

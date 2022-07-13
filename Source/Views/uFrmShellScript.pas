@@ -3,7 +3,7 @@ unit uFrmShellScript;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uScriptVariables,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, uDynamicScript,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, uConstants, DosCommand, System.UITypes, Vcl.Menus;
 
 type
@@ -34,7 +34,7 @@ type
     procedure cbInsertVarClick(Sender: TObject);
     procedure Sourceprefixsaved1Click(Sender: TObject);
   private
-    fScriptRunner: TScriptVariables;
+    fScriptRunner: TDynamicScript;
     fFile: TStringList;
     fRecordModified: boolean;
     fRunOnCompletion: boolean;
@@ -61,7 +61,7 @@ begin
   inherited;
   fAllowSave := false;
   fFile := TStringList.Create;
-  fScriptRunner := TScriptVariables.Create(Self);
+  fScriptRunner := TDynamicScript.Create(Self);
   fScriptRunner.OutputLines := mmOutput.Lines;
   fScriptRunner.DosCommand.OnTerminated := OnTerminated;
 end;

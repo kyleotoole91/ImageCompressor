@@ -111,9 +111,9 @@
         <UWP_DelphiLogo150>Assets\compressG150.png</UWP_DelphiLogo150>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.2.3;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.2.6;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Release>2</VerInfo_Release>
-        <VerInfo_Build>3</VerInfo_Build>
+        <VerInfo_Build>6</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -144,7 +144,7 @@
             <Form>frmSplash</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Source\Utilis\uScriptVariables.pas"/>
+        <DCCReference Include="Source\Utilis\uDynamicScript.pas"/>
         <DCCReference Include="Source\Serialized\uFormData.pas"/>
         <DCCReference Include="Source\Serialized\uImageConfig.pas"/>
         <DCCReference Include="Source\Controllers\uMainController.pas"/>

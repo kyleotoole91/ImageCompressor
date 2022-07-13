@@ -4,7 +4,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, SuperObject, uImageConfig, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Forms, Vcl.Dialogs, REST.JSON, Vcl.Controls,
-  Winapi.ShellAPI, WinApi.Windows, System.IOUtils, System.Types, uDlgProgress, uScriptVariables, System.Generics.Collections,
+  Winapi.ShellAPI, WinApi.Windows, System.IOUtils, System.Types, uDlgProgress, uDynamicScript, System.Generics.Collections,
   uMainModel, uFormData, uLicenseValidator, Vcl.StdCtrls, Vcl.ComCtrls, uJPEGCompressor;
 
 type
@@ -26,7 +26,7 @@ type
     fRunScript: boolean;
     fDragAndDropping: boolean;
     fFormData: TFormData;
-    fScriptVariables: TScriptVariables;
+    fDynamicScript: TDynamicScript;
     fImageConfig: TImageConfig;
     fImageConfigList: TDictionary<string, TImageConfig>;
     fJSON: ISuperObject;
@@ -125,7 +125,7 @@ begin
   else
     fMainView := AOwnerView;
   fMainModel := TMainModel.Create(Self);
-  fScriptVariables := TScriptVariables.Create(AOwnerView);
+  fDynamicScript := TDynamicScript.Create(AOwnerView);
   fMessages := TStringList.Create;
   fNumProcessed := 0;
   fTotalSavedKB := 0;
@@ -152,8 +152,8 @@ begin
       fMainModel.Free;
     if Assigned(fImageConfigList) then
       fImageConfigList.Free;
-    if Assigned(fScriptVariables) then
-      fScriptVariables.Free;
+    if Assigned(fDynamicScript) then
+      fDynamicScript.Free;
     if Assigned(fLicenseValidator) then
       fLicenseValidator.Free;
     if Assigned(fJPEGCompressor) then
@@ -427,7 +427,7 @@ begin
   with OwnerView(fMainView) do begin
     result := (FileIsSelected or fImageChanged) and
               (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
-              ((ExtractFilePath(ebStartPath.Text) <> '') and (ExtractFilePath(ebOutputDir.Text) <> ''));
+              (ExtractFilePath(ebOutputDir.Text) <> '');
   end;
 end;
 
@@ -1236,14 +1236,13 @@ procedure TMainController.RunDeploymentScript;
 begin
   if FileExists(cShellScript) then begin
     with OwnerView(fMainView) do begin
-      if not fScriptVariables.LoadSavedSettings then begin
-        if fScriptVariables.OutputPath = '' then
-          fScriptVariables.OutputPath := ebOutputDir.Text;
-        if fScriptVariables.SourcePrefix = '' then
-          fScriptVariables.SourcePrefix := ebPrefix.Text;
+      fDynamicScript.OutputPath := ebOutputDir.Text;
+      if not fDynamicScript.LoadSavedSettings then begin
+        if fDynamicScript.SourcePrefix = '' then
+          fDynamicScript.SourcePrefix := ebPrefix.Text;
       end;
-      fScriptVariables.OutputLines := mmScript.Lines;
-      fScriptVariables.RunScript;
+      fDynamicScript.OutputLines := mmScript.Lines;
+      fDynamicScript.RunScript;
     end;
   end;
 end;
