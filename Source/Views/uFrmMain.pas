@@ -138,6 +138,9 @@ type
     mmScript: TMemo;
     pmScriptLogs: TPopupMenu;
     miClearSciptLogs: TMenuItem;
+    N8: TMenuItem;
+    miShowInGallery: TMenuItem;
+    miShowInExplorer: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -211,6 +214,9 @@ type
     procedure ebOutputDirDblClick(Sender: TObject);
     procedure mmiOpenFolderClick(Sender: TObject);
     procedure mmiOpenClick(Sender: TObject);
+    procedure miShowInGalleryClick(Sender: TObject);
+    procedure miShowInExplorerClick(Sender: TObject);
+    procedure pmCheckBoxListPopup(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -549,6 +555,11 @@ begin
   fMainController.ToggleScriptLog;
 end;
 
+procedure TFrmMain.pmCheckBoxListPopup(Sender: TObject);
+begin
+  fMainController.CheckListPopup(Sender);
+end;
+
 procedure TFrmMain.pmViewsPopup(Sender: TObject);
 begin
   fMainController.ViewsPopup(Sender);
@@ -761,6 +772,16 @@ procedure TFrmMain.miSaveSettingsClick(Sender: TObject);
 begin
   fMainController.SaveFormSettings;
   MessageDlg(cMsgSaveSettings, mtInformation, [mbOK], 0);
+end;
+
+procedure TFrmMain.miShowInExplorerClick(Sender: TObject);
+begin
+  fMainController.OpenSelectedExplorer(Sender);
+end;
+
+procedure TFrmMain.miShowInGalleryClick(Sender: TObject);
+begin
+  fMainController.OpenSelectedImage(Sender);
 end;
 
 procedure TFrmMain.miShowOriginalClick(Sender: TObject);

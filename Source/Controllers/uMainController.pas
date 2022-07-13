@@ -40,6 +40,9 @@ type
     constructor Create(const AOwnerView: TComponent);
     destructor Destroy; override;
     procedure ScanDisk;
+    procedure CheckListPopup(Sender: TObject);
+    procedure OpenSelectedExplorer(Sender: TObject);
+    procedure OpenSelectedImage(Sender: TObject);
     procedure QualityChange(Sender: TObject);
     procedure ClearFilesClick(Sender: TObject);
     procedure ViewsPopup(Sender: TObject);
@@ -237,12 +240,13 @@ end;
 
 function TMainController.ShowFileSelect(Sender: TObject): string;
 begin
-  with TFileOpenDialog.Create(nil) do begin
+  with TFileOpenDialog.Create(fMainView) do begin
     try
       with OwnerView(fMainView) do begin
+        FileTypes.Add.FileMask := cJpgExt;
+        FileTypes.Add.FileMask := cJpegExt;
         DefaultFolder := ebStartPath.Text;
         Options := [fdoFileMustExist];
-        FileTypes.Add.FileMask := cJpgExt;
         if Execute then begin
           fWorkingDir := ExtractFilePath(FileName);
           fSelectedFilename := Filename;
@@ -287,9 +291,11 @@ end;
 function TMainController.ShowFolderSelect(Sender: TObject): string;
 begin
   result := '';
-  with TFileOpenDialog.Create(nil) do begin
+  with TFileOpenDialog.Create(fMainView) do begin
     try
       with OwnerView(fMainView) do begin
+        FileTypes.Add.FileMask := cJpgExt;
+        FileTypes.Add.FileMask := cJpegExt;
         DefaultFolder := ebOutputDir.Text;
         Options := [fdoPickFolders];
         if Execute then begin
@@ -520,6 +526,14 @@ begin
       if not cbStretchOriginal.Visible then
         cbStretchOriginal.Visible := true; //force update
     end;
+  end;
+end;
+
+procedure TMainController.CheckListPopup(Sender: TObject);
+begin
+  with OwnerView(fMainView) do begin
+    miShowInGallery.Enabled := cblFiles.Count > 0;
+    miShowInExplorer.Enabled := cblFiles.Count > 0;
   end;
 end;
 
@@ -1264,7 +1278,7 @@ begin
         if (EvaluationMode) and
            (MessageDlg(sl.Text, mtWarning, mbOKCancel, 0) = mrOk) then begin
           OpenURL(cGumRoadLink);
-          miEnterLicenseClick(nil);
+          miEnterLicenseClick(Sender);
         end;
       end;
     end;
@@ -1281,6 +1295,26 @@ begin
     miHideImageList.Checked := not pnlFiles.Visible;
     miImgFullscreen.Checked := miFullscreen.Checked;
   end;
+end;
+
+procedure TMainController.OpenSelectedExplorer(Sender: TObject);
+begin
+  if (fSelectedFilename = '') then
+    MessageDlg(cMsgPleaseSelect, mtWarning, mbOKCancel, 0)
+  else if not FileExists(fSelectedFilename) then
+    MessageDlg(cMsgUnableToFind, mtWarning, mbOKCancel, 0)
+  else
+    ShellExecute(Application.Handle, 'open', 'explorer.exe', PChar('/select, "' +fSelectedFilename+'"'), nil, SW_NORMAL);
+end;
+
+procedure TMainController.OpenSelectedImage(Sender: TObject);
+begin
+  if (fSelectedFilename = '') then
+    MessageDlg(cMsgPleaseSelect, mtWarning, mbOKCancel, 0)
+  else if not FileExists(fSelectedFilename) then
+    MessageDlg(cMsgUnableToFind, mtWarning, mbOKCancel, 0)
+  else
+    OpenURL(fSelectedFilename);
 end;
 
 procedure TMainController.OpenURL(const AURL: string);

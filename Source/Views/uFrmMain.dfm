@@ -892,14 +892,15 @@ object FrmMain: TFrmMain
     end
   end
   object pmCheckBoxList: TPopupMenu
+    OnPopup = pmCheckBoxListPopup
     Left = 122
     Top = 318
     object mniSelectAll: TMenuItem
-      Caption = 'Select All'
+      Caption = 'Select all'
       OnClick = mniSelectAllClick
     end
     object mniUnSelectAll: TMenuItem
-      Caption = 'Deselect All'
+      Caption = 'Deselect all'
       OnClick = mniUnSelectAllClick
     end
     object N1: TMenuItem
@@ -919,6 +920,17 @@ object FrmMain: TFrmMain
     object miClearFiles: TMenuItem
       Caption = 'Clear'
       OnClick = miClearFilesClick
+    end
+    object N8: TMenuItem
+      Caption = '-'
+    end
+    object miShowInGallery: TMenuItem
+      Caption = 'Open in Gallery'
+      OnClick = miShowInGalleryClick
+    end
+    object miShowInExplorer: TMenuItem
+      Caption = 'Show in Explorer'
+      OnClick = miShowInExplorerClick
     end
   end
   object pmLogs: TPopupMenu
@@ -981,7 +993,7 @@ object FrmMain: TFrmMain
         Caption = '-'
       end
       object miApplyBestFit: TMenuItem
-        Caption = 'Scale to fit (better quality)'
+        Caption = 'Scale (improves preview quality)'
         Checked = True
         Hint = 'Improves image preview quality for large images'
         ShortCut = 122
@@ -1017,7 +1029,7 @@ object FrmMain: TFrmMain
         OnClick = miReplaceOriginalsClick
       end
       object miAutoPrefix: TMenuItem
-        Caption = 'Auto compelte prefix (append output dir name)'
+        Caption = 'Auto complete prefix (append output dir name)'
         OnClick = miAutoPrefixClick
       end
       object N7: TMenuItem
