@@ -150,7 +150,7 @@ object FrmShellScript: TFrmShellScript
         OnClick = cbInsertVarClick
       end
       object Sourceprefixsaved1: TMenuItem
-        Caption = 'Source prefix (saved value)'
+        Caption = 'Source prefix'
         OnClick = Sourceprefixsaved1Click
       end
     end

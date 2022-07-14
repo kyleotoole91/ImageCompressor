@@ -13,7 +13,7 @@ type
     fStretch: boolean;
     fFilename: string;
     fAddToJSON: boolean;
-    fSourcePrefix: string;
+    fTitle: string;
     fDescription: string;
     fCompress: boolean;
     fApplyGraphics: boolean;
@@ -37,12 +37,12 @@ type
     procedure SetPreviewModified(const Value: boolean);
   public
     constructor Create;
-    procedure Reset;
+    procedure Reset; virtual;
     property Filename: string read fFilename write fFilename;
     property PreviewCompression: boolean read fPreviewCompression write fPreviewCompression;
     property Stretch: boolean read fStretch write fStretch;
     property AddToJSON: boolean read fAddToJSON write fAddToJSON;
-    property SourcePrefix: string read fSourcePrefix write fSourcePrefix;
+    property Title: string read fTitle write fTitle;
     property Description: string read fDescription write fDescription;
     property Compress: boolean read fCompress write SetCompress;
     property Quality: integer read fQuality write SetQuality;
@@ -73,14 +73,14 @@ begin
   fPreviewModified := false;
   fRecordModified := false;
   fAddToJSON := true;
-  fSourcePrefix := cDefaultSourcePrefix;
-  fDescription := '';
+  fTitle := cDefaultTitle;
+  fDescription := cDefaultDescription;
   fCompress := true;
   fApplyGraphics := false;
   fPreviewCompression := false;
   fStretch := false;
   fQuality := cDefaultQuality;
-  fTargetKB := 0;
+  fTargetKB := cDefaultTargetKB;
   fShrinkByWidth := true;
   fShrinkByValue := cDefaultMaxWidth;
 end;

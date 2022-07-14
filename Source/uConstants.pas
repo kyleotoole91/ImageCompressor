@@ -11,12 +11,15 @@ const
   cShellTempScript='temp.bat';
   //frmMain
   cMinOriginalWidth=1; //min width when using splitter
+  cMinFilesWidth=1;
+  cDefaultTitle='';
+  cDefaultDescription='';
   cDefaultTargetKB=0;
   cDefaultClientWidth=1820;
   cDefaultClientHeight=950;
   cDefaultFilesWidth=247;
   cDefaultImageSplitPause=784;
-  cDefaultOriginalWidth=439;
+  cDefaultOriginalWidth=370;
   cDefaultPnlScriptHeight=543;
   cDefaultPnlFilesWidth=247;
   cOutputDir='outputDir';

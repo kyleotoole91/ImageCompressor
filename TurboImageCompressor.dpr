@@ -3,7 +3,6 @@ program TurboImageCompressor;
 uses
   Vcl.Forms,
   uConstants in 'Source\uConstants.pas',
-  uDlgDefaults in 'Source\Views\uDlgDefaults.pas' {FrmDefaultConfig},
   uDlgFilter in 'Source\Views\uDlgFilter.pas' {DlgFilter},
   uDlgProgress in 'Source\Views\uDlgProgress.pas' {DlgProgress},
   uFrmMain in 'Source\Views\uFrmMain.pas' {FrmMain},

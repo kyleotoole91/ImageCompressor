@@ -365,7 +365,7 @@ begin
             seTargetKBs.Value := TargetKB;
             cbIncludeInJSONFile.Checked := AddToJSON;
             ebDescription.Text := Description;
-            ebPrefix.Text := SourcePrefix;
+            ebTitle.Text := Title;
             cbApplyGraphics.Checked := ApplyGraphics;
             fSelectedFilename := Filename;
             rbByWidth.Checked := ShrinkByWidth;
@@ -393,7 +393,7 @@ begin
               pnlOriginal.Width := PnlOriginalWidth;
               cbApplyToAll.Checked := ApplyToAll;
               ebFilename.Text := JsonFilename;
-              ebPrefix.Text := Prefix;
+              ebPrefix.Text := SourcePrefix;
               fRunScript := RunScript;
             end;
           end;
@@ -645,7 +645,7 @@ begin
         fImageConfig.RotateAmount := fFormData.RotateAmount;
         fImageConfig.AddToJSON := fFormData.AddToJSON;
         fImageConfig.Description := fFormData.Description;
-        fImageConfig.SourcePrefix := fFormData.SourcePrefix;
+        fImageConfig.Title := fFormData.Title;
         fImageConfigList.Add(fSelectedFilename, fImageConfig);
       end;
     end;
@@ -800,6 +800,11 @@ var
       end;
     end;
   end;
+  function JPEGLargerThanImageBox: boolean;
+  begin
+    result := ((jpeg.Width > (AImage.Width + oversizeAllowance)) or
+               (jpeg.Height > (AImage.Height + oversizeAllowance)));
+  end;
 begin
   with OwnerView(fMainView) do begin
     if ALoadCompressed then
@@ -811,13 +816,12 @@ begin
        (not FormCreating) then begin
       try
         try
-          jpeg.Scale := jsHalf; //switching scale forces update which shows the compressed version
-          if AApplyBestFit then begin  //Set scale (reduces shrink artifacting at a low cost)
+          if (AApplyBestFit) then begin  //Set scale (reduces shrink artifacting at a low cost)
+            jpeg.Scale := jsHalf; //switching scale forces update which shows the compressed version
             SetLabels;
             scale := integer(jpeg.Scale);
             while (scale <= 3) and
-                  ((jpeg.Width > (AImage.Width+oversizeAllowance)) or
-                   (jpeg.Height > (AImage.Height+oversizeAllowance))) do begin
+                  (JPEGLargerThanImageBox) do begin
               jsScale := TJPEGScale(scale);
               jpeg.Scale := jsScale;
               Inc(scale);
@@ -886,8 +890,8 @@ end;
 procedure TMainController.IncludeInFileClick(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
-    ebPrefix.Enabled := cbIncludeInJSONFile.Checked;
-    lbPrefix.Enabled := cbIncludeInJSONFile.Checked;
+    ebTitle.Enabled := cbIncludeInJSONFile.Checked;
+    lbTitle.Enabled := cbIncludeInJSONFile.Checked;
     lbDescription.Enabled := cbIncludeInJSONFile.Checked;
     ebDescription.Enabled := cbIncludeInJSONFile.Checked;
     btnApply.Enabled := true;
@@ -1004,8 +1008,13 @@ begin
   Screen.Cursor := crHourGlass;
   try
     with OwnerView(fMainView) do begin
-      imgHome.Stretch := cbStretch.Checked;
-      LoadImage(true, imgHome, miApplyBestFit.Checked);
+      if Sender = cbStretchOriginal then begin
+        imgOriginal.Stretch := cbStretch.Checked;
+        LoadImage(false, imgOriginal, miApplyBestFit.Checked);
+      end else begin
+        imgHome.Stretch := cbStretch.Checked;
+        LoadImage(cbCompressPreview.Checked, imgHome, miApplyBestFit.Checked);
+      end;
     end;
   finally
     Screen.Cursor := crDefault;
@@ -1042,7 +1051,7 @@ begin
   with OwnerView(fMainView) do begin
     with fJSON.AsArray do begin
       Add(NewJSONObject);
-      sourcePrefix := fImageConfig.SourcePrefix;
+      sourcePrefix := ebPrefix.Text;
       if sourcePrefix <> '' then begin
         if (sourcePrefix.Contains('/')) and
            (not sourcePrefix.EndsWith('/')) then
@@ -1054,6 +1063,7 @@ begin
       end;
       O[Count-1].S['original'] := sourcePrefix;
       O[Count-1].S['description'] := fImageConfig.Description;
+      O[Count-1].S['title'] := fImageConfig.Title;
       O[Count-1].I['fileSize'] := ACompressedFileSize;
       O[Count-1].I['originalFilesize'] := AOriginalFileSize;
     end;
@@ -1117,7 +1127,7 @@ begin
           TargetKB := seTargetKBs.Value;
           AddToJSON := cbIncludeInJSONFile.Checked;
           Description := ebDescription.Text;
-          SourcePrefix := ebPrefix.Text;
+          Title := ebTitle.Text;
           ApplyGraphics := cbApplyGraphics.Checked;
           Filename := fSelectedFilename;
           ShrinkByWidth := rbByWidth.Checked;
@@ -1142,7 +1152,7 @@ begin
               PnlOriginalWidth := pnlOriginal.Width;
               ApplyToAll := cbApplyToAll.Checked;
               JsonFilename := ebFilename.Text;
-              Prefix := ebPrefix.Text;
+              SourcePrefix := ebPrefix.Text;
               RunScript := fRunScript;
             end;
           end;
@@ -1215,7 +1225,10 @@ begin
   with OwnerView(fMainView) do begin
     if (Sender = spOriginal) and
        (pnlOriginal.Width <= cMinOriginalWidth) then
-      pnlOriginal.Width := cMinOriginalWidth;
+      pnlOriginal.Width := cMinOriginalWidth
+    else if (Sender = spFiles) and
+            (pnlFiles.Width <= cMinFilesWidth) then
+      pnlFiles.Width := cMinFilesWidth;
     CheckHideLabels;
     if (fSelectedFilename <> '') then begin
       Screen.Cursor := crHourGlass;
@@ -1248,6 +1261,7 @@ begin
       try
         LoadFormSettings(true);
       finally
+        ResizeEvent(Sender);
         if (oldStartPath <> ebStartPath.Text) or
            (oldDeepScan <> miDeepScan.Checked) then
           Scan(Sender);
@@ -1261,10 +1275,7 @@ begin
   if FileExists(cShellScript) then begin
     with OwnerView(fMainView) do begin
       fDynamicScript.OutputPath := ebOutputDir.Text;
-      if not fDynamicScript.LoadSavedSettings then begin
-        if fDynamicScript.SourcePrefix = '' then
-          fDynamicScript.SourcePrefix := ebPrefix.Text;
-      end;
+      fDynamicScript.SourcePrefix := ebPrefix.Text;
       fDynamicScript.OutputLines := mmScript.Lines;
       fDynamicScript.RunScript;
     end;

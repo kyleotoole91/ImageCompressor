@@ -22,7 +22,6 @@ type
     destructor Destroy; override;
     function Parse: string;
     procedure RunScript;
-    function LoadSavedSettings: boolean;
     property ErrorMsg: string read fErrorMsg write fErrorMsg;
     property OutputLines: TStrings read fOutputLines write SetOutputLines;
     property ScriptFilename: string read fScriptFilename write fScriptFilename;
@@ -57,38 +56,14 @@ begin
   end;
 end;
 
-function TDynamicScript.LoadSavedSettings: boolean;
-var
-  so: ISuperObject;
-begin
-  try
-    result := FileExists(cSettingsFilename);
-    if result then begin
-      try
-        so := TSuperObject.ParseFile(cSettingsFilename, false);
-        if fSourcePrefix = '' then
-          fSourcePrefix := so.S[cPrefix];
-      except
-        result := false;
-      end;
-    end;
-  finally
-    so := nil;
-  end;
-end;
-
 function TDynamicScript.Parse: string;
 begin
   fOutputFile := '';
   result := '';
   try
-    if (fScriptFilename <> '') and
-       (FileExists(fScriptFilename)) then begin
-      LoadSavedSettings;
-      fFile.LoadFromFile(fScriptFilename);
-      fOutputFile := fFile.Text.Replace(cShellOutputPathVar, fOutputPath)
-                               .Replace(cShellPrefixVar, fSourcePrefix);
-    end;
+    fFile.LoadFromFile(fScriptFilename);
+    fOutputFile := fFile.Text.Replace(cShellOutputPathVar, fOutputPath)
+                             .Replace(cShellPrefixVar, fSourcePrefix);
   finally
     result := fOutputFile;
   end;

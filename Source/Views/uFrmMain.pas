@@ -42,7 +42,7 @@ type
     cblFiles: TCheckListBox;
     pnlImage: TPanel;
     imgHome: TImage;
-    Splitter1: TSplitter;
+    spFiles: TSplitter;
     miClear: TMenuItem;
     pmLogs: TPopupMenu;
     lbTargetKB: TLabel;
@@ -67,9 +67,7 @@ type
     miHideFiles: TMenuItem;
     GroupBox4: TGroupBox;
     GroupBox2: TGroupBox;
-    lbPrefix: TLabel;
     lbDescription: TLabel;
-    ebPrefix: TEdit;
     ebDescription: TEdit;
     cbIncludeInJSONFile: TCheckBox;
     cbApplyToAll: TCheckBox;
@@ -141,6 +139,10 @@ type
     N8: TMenuItem;
     miShowInGallery: TMenuItem;
     miShowInExplorer: TMenuItem;
+    ebPrefix: TEdit;
+    lbPrefix: TLabel;
+    lbTitle: TLabel;
+    ebTitle: TEdit;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -216,6 +218,7 @@ type
     procedure miShowInGalleryClick(Sender: TObject);
     procedure miShowInExplorerClick(Sender: TObject);
     procedure pmCheckBoxListPopup(Sender: TObject);
+    procedure spFilesMoved(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -481,6 +484,8 @@ procedure TFrmMain.miAutoPrefixClick(Sender: TObject);
 begin
   miAutoPrefix.Checked := not miAutoPrefix.Checked;
   fMainController.FormData.AutoPrefix := miAutoPrefix.Checked;
+  if fMainController.FormData.AutoPrefix then
+    SetPrefixDir(ebOutputDir.Text);
 end;
 
 procedure TFrmMain.btnApplyClick(Sender: TObject);
@@ -571,10 +576,8 @@ end;
 
 procedure TFrmMain.ebOutputDirChange(Sender: TObject);
 begin
-  if Assigned(fMainController) then begin
-    if fMainController.FormData.AutoPrefix then
-      SetPrefixDir(ebOutputDir.Text);
-  end;
+  if fMainController.FormData.AutoPrefix then
+    SetPrefixDir(ebOutputDir.Text);
 end;
 
 procedure TFrmMain.ebOutputDirDblClick(Sender: TObject);
@@ -634,18 +637,18 @@ begin
 end;
 
 procedure TFrmMain.SetPrefixDir(const AOutputPath: string);
-var
-  prefix,
-  topDir: string;
 begin
-  topDir := ExtractFilename(AOutputPath);
-  prefix := ebPrefix.Text;
-  ebPrefix.Text := Copy(prefix, 0, prefix.LastIndexOf('/')+1) + topDir;
+  ebPrefix.Text := Copy(ebPrefix.Text, 0, String(ebPrefix.Text).LastIndexOf('/')+1) + ExtractFilename(AOutputPath);
 end;
 
 procedure TFrmMain.SetShrinkState(Sender: TObject);
 begin
   fMainController.SetShrinkState(Sender);
+end;
+
+procedure TFrmMain.spFilesMoved(Sender: TObject);
+begin
+  fMainController.ResizeEvent(Sender);
 end;
 
 procedure TFrmMain.miHideFilesClick(Sender: TObject);
@@ -811,13 +814,7 @@ end;
 
 procedure TFrmMain.cbStretchOriginalClick(Sender: TObject);
 begin
-  Screen.Cursor := crHourGlass;
-  try
-    imgOriginal.Stretch := cbStretchOriginal.Checked;
-    fMainController.LoadImage(false, imgHome, miApplyBestFit.Checked);
-  finally
-    Screen.Cursor := crDefault;
-  end
+  fMainController.StretchClick(Sender);
 end;
 
 procedure TFrmMain.seMaxHeightPxKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
