@@ -36,10 +36,12 @@ type
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
     procedure LoadCompressedPreview(Sender: TObject);
+    procedure ClearImagePreviewLabels;
   public
     constructor Create(const AOwnerView: TComponent);
     destructor Destroy; override;
     procedure ScanDisk;
+    procedure Scan(Sender: TObject);
     procedure CheckListPopup(Sender: TObject);
     procedure OpenSelectedExplorer(Sender: TObject);
     procedure OpenSelectedImage(Sender: TObject);
@@ -58,7 +60,6 @@ type
     procedure ShowFileSizeFilter(Sender: TObject);
     procedure SetShrinkState(Sender: TObject);
     procedure FilesClick(Sender: TObject);
-    procedure Scan(Sender: TObject);
     procedure StretchClick(Sender: TObject);
     procedure StartClick(Sender: TObject);
     procedure ApplyClick(Sender: TObject);
@@ -240,33 +241,45 @@ end;
 
 function TMainController.ShowFileSelect(Sender: TObject): string;
 begin
+  result := '';
   with TFileOpenDialog.Create(fMainView) do begin
     try
-      with OwnerView(fMainView) do begin
-        FileTypes.Add.FileMask := cJpgExt;
-        FileTypes.Add.FileMask := cJpegExt;
-        DefaultFolder := ebStartPath.Text;
-        Options := [fdoFileMustExist];
-        if Execute then begin
-          fWorkingDir := ExtractFilePath(FileName);
-          fSelectedFilename := Filename;
-          ebStartPath.Text := fWorkingDir;
-          cblFiles.Clear;
-          cblFiles.Items.Add(ExtractFileName(fSelectedFilename));
-          if cblFiles.Items.Count > 0 then begin
-            cblFiles.Checked[0] := true;
-            btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
-            if btnStart.Enabled and
-               cbCompressPreview.Checked then
-              LoadCompressedPreview(Sender)
-            else
-              LoadImagePreview(fSelectedFilename);
-          end else
-            LoadImagePreview(fSelectedFilename);
-          SetControlState(FileExists(fSelectedFilename));
+      try
+        with OwnerView(fMainView) do begin
+          FileTypes.Add.FileMask := cJpgExt;
+          FileTypes.Add.FileMask := cJpegExt;
+          DefaultFolder := ebStartPath.Text;
+          Options := [fdoFileMustExist];
+          if Execute then begin
+            cbCompressPreview.Checked := false;
+            fWorkingDir := ExtractFilePath(FileName);
+            result := Filename;
+            ebStartPath.Text := fWorkingDir;
+            cblFiles.Clear;
+            OwnerView(fMainView).imgHome.Picture.Assign(nil);
+            OwnerView(fMainView).imgOriginal.Picture.Assign(nil);
+            ClearImagePreviewLabels;
+            SetControlState(false);
+            if FileExists(result) then begin
+              btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
+              LoadImagePreview(result);
+              cblFiles.Items.Add(ExtractFileName(result));
+              cblFiles.Checked[0] := true;
+              SetControlState(true);
+            end else begin
+              result := '';
+              SetControlState(false);
+            end;
+          end;
+        end;
+      except
+        on e: exception do begin
+          result := '';
+          MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
         end;
       end;
     finally
+      fSelectedFilename := result;
       Free;
     end;
   end;
@@ -416,7 +429,6 @@ begin
   except
     on e: exception do begin
       MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
-      OwnerView(fMainView).Enabled := false;
       result := false;
     end;
   end;
@@ -554,6 +566,18 @@ begin
     ebStartPath.Text := '';
     FilenameList.Clear;
     Scan(Sender);
+  end;
+end;
+
+procedure TMainController.ClearImagePreviewLabels;
+begin
+  with OwnerView(fMainView) do begin
+    lbImgOrigWidthVal.Caption := '0';
+    lbImgOrigHeightVal.Caption := '0';
+    lbImgOrigSizeKBVal.Caption := '0';
+    lbImgWidthVal.Caption := '0';
+    lbImgHeightVal.Caption := '0';
+    lbImgSizeKBVal.Caption := '0';
   end;
 end;
 
@@ -1378,12 +1402,7 @@ begin
       if cblFiles.Items.Count = 0 then begin
         imgHome.Picture.Assign(nil);
         imgOriginal.Picture.Assign(nil);
-        lbImgOrigWidthVal.Caption := '0';
-        lbImgOrigHeightVal.Caption := '0';
-        lbImgOrigSizeKBVal.Caption := '0';
-        lbImgWidthVal.Caption := '0';
-        lbImgHeightVal.Caption := '0';
-        lbImgSizeKBVal.Caption := '0';
+        ClearImagePreviewLabels;
       end else begin
         if DirectoryScanned then
           cblFiles.Selected[0] := true
@@ -1448,10 +1467,6 @@ begin
   end;
   if (AParentControl is TLabel) then
     TLabel(AParentControl).Enabled := AEnabled
-  else if (AParentControl is TListView) then
-    TListView(AParentControl).RowSelect := AEnabled
-  else if not TListView(AParentControl).ReadOnly then
-    TListView(AParentControl).ReadOnly := true
   else if (AParentControl is TWinControl) then
     AParentControl.Enabled := AEnabled;
 end;
@@ -1461,6 +1476,7 @@ begin
   with OwnerView(fMainView) do begin
     SetChildControlES(pnlImage, AEnabled);
     SetChildControlES(pnlOriginal, AEnabled);
+    lbFiles.Enabled := AEnabled;
     cbCompressPreview.Enabled := AEnabled;
     cbStretch.Enabled := AEnabled;
     cbStretchOriginal.Enabled := AEnabled;
