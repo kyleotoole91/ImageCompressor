@@ -551,15 +551,14 @@ object FrmMain: TFrmMain
             ExplicitLeft = 654
           end
           object lbImgSizeKBVal: TLabel
-            Left = 680
+            Left = 720
             Top = 4
-            Width = 46
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'Size (KB):'
+            Caption = '0'
             Enabled = False
-            ExplicitLeft = 690
           end
           object lbImgWidth: TLabel
             Left = 732
@@ -572,15 +571,14 @@ object FrmMain: TFrmMain
             ExplicitLeft = 742
           end
           object lbImgWidthVal: TLabel
-            Left = 770
+            Left = 818
             Top = 4
-            Width = 54
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'lbImgWidth'
+            Caption = '0'
             Enabled = False
-            ExplicitLeft = 780
           end
           object lbImgHeight: TLabel
             Left = 830
@@ -593,15 +591,14 @@ object FrmMain: TFrmMain
             ExplicitLeft = 840
           end
           object lbImgHeightVal: TLabel
-            Left = 870
+            Left = 918
             Top = 4
-            Width = 54
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'lbImgWidth'
+            Caption = '0'
             Enabled = False
-            ExplicitLeft = 880
           end
           object cbCompressPreview: TCheckBox
             Left = 117
@@ -654,14 +651,13 @@ object FrmMain: TFrmMain
             ExplicitLeft = 144
           end
           object lbImgOrigSizeKBVal: TLabel
-            Left = 204
+            Left = 229
             Top = 4
-            Width = 31
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'SizeKB'
-            ExplicitLeft = 194
+            Caption = '0'
           end
           object lbImgOrigWidth: TLabel
             Left = 241
@@ -673,14 +669,13 @@ object FrmMain: TFrmMain
             ExplicitLeft = 231
           end
           object lbImgOrigWidthVal: TLabel
-            Left = 276
+            Left = 324
             Top = 4
-            Width = 54
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'lbImgWidth'
-            ExplicitLeft = 266
+            Caption = '0'
           end
           object lbImgOrigHeight: TLabel
             Left = 335
@@ -692,14 +687,13 @@ object FrmMain: TFrmMain
             ExplicitLeft = 325
           end
           object lbImgOrigHeightVal: TLabel
-            Left = 374
+            Left = 422
             Top = 4
-            Width = 54
+            Width = 6
             Height = 13
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
-            Caption = 'lbImgWidth'
-            ExplicitLeft = 560
+            Caption = '0'
           end
           object imgOriginal: TImage
             AlignWithMargins = True

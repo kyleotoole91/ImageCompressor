@@ -1192,10 +1192,10 @@ begin
     if (Sender = spOriginal) and
        (pnlOriginal.Width <= cMinOriginalWidth) then
       pnlOriginal.Width := cMinOriginalWidth;
+    CheckHideLabels;
     if (fSelectedFilename <> '') then begin
       Screen.Cursor := crHourGlass;
       try
-        CheckHideLabels;
         if not cbStretch.Checked then
           LoadImage(true, imgHome, miApplyBestFit.Checked);
         if not cbStretchOriginal.Checked then
@@ -1378,6 +1378,12 @@ begin
       if cblFiles.Items.Count = 0 then begin
         imgHome.Picture.Assign(nil);
         imgOriginal.Picture.Assign(nil);
+        lbImgOrigWidthVal.Caption := '0';
+        lbImgOrigHeightVal.Caption := '0';
+        lbImgOrigSizeKBVal.Caption := '0';
+        lbImgWidthVal.Caption := '0';
+        lbImgHeightVal.Caption := '0';
+        lbImgSizeKBVal.Caption := '0';
       end else begin
         if DirectoryScanned then
           cblFiles.Selected[0] := true
@@ -1454,8 +1460,10 @@ procedure TMainController.SetControlState(const AEnabled: boolean);
 begin
   with OwnerView(fMainView) do begin
     SetChildControlES(pnlImage, AEnabled);
+    SetChildControlES(pnlOriginal, AEnabled);
     cbCompressPreview.Enabled := AEnabled;
     cbStretch.Enabled := AEnabled;
+    cbStretchOriginal.Enabled := AEnabled;
     imgHome.Enabled := AEnabled;
   end;
 end;

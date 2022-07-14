@@ -11,3 +11,7 @@ Dependancies/image32_4.1/Installation.txt
 Dependancies/image32_4.1/ReadMe.txt
 Source/uSecrets.pas
 
+*.bat
+*.exe
+*.rsm
+Win64/Debug/settings.json
