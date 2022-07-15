@@ -4,7 +4,7 @@ object FrmMain: TFrmMain
   Anchors = [akLeft, akTop, akRight]
   Caption = 'Turbo Image Compressor - Pro'
   ClientHeight = 950
-  ClientWidth = 1644
+  ClientWidth = 1522
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -34,460 +34,57 @@ object FrmMain: TFrmMain
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1638
+    Width = 1516
     Height = 909
     ActivePage = tsHome
     Align = alClient
     TabOrder = 0
     OnChange = pcMainChange
+    ExplicitWidth = 1638
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
         AlignWithMargins = True
         Left = 3
-        Top = 3
-        Width = 1624
-        Height = 875
+        Top = 156
+        Width = 1502
+        Height = 722
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitTop = 504
+        ExplicitWidth = 1624
+        ExplicitHeight = 374
         object spFiles: TSplitter
           Left = 247
-          Top = 154
-          Height = 721
+          Top = 0
+          Height = 722
           OnMoved = spFilesMoved
           ExplicitLeft = 121
+          ExplicitTop = 154
           ExplicitHeight = 443
         end
         object spOriginal: TSplitter
-          Left = 1251
-          Top = 154
-          Height = 721
+          Left = 1124
+          Top = 0
+          Height = 722
           Align = alRight
           OnMoved = spOriginalMoved
           ExplicitLeft = 121
+          ExplicitTop = 154
           ExplicitHeight = 443
-        end
-        object pnlConfig: TPanel
-          Left = 0
-          Top = 0
-          Width = 1624
-          Height = 154
-          Align = alTop
-          BevelOuter = bvNone
-          Color = clBtnHighlight
-          ParentBackground = False
-          TabOrder = 0
-          DesignSize = (
-            1624
-            154)
-          object Label2: TLabel
-            Left = 13
-            Top = 15
-            Width = 84
-            Height = 13
-            Caption = 'Source Directory:'
-          end
-          object Label1: TLabel
-            Left = 13
-            Top = 42
-            Width = 85
-            Height = 13
-            Caption = 'Output Directory:'
-          end
-          object GroupBox4: TGroupBox
-            Left = 1256
-            Top = 67
-            Width = 367
-            Height = 81
-            Anchors = [akTop, akRight, akBottom]
-            Caption = ' Globals '
-            TabOrder = 7
-            DesignSize = (
-              367
-              81)
-            object lbFilename: TLabel
-              Left = 215
-              Top = 25
-              Width = 46
-              Height = 13
-              Hint = '.json'
-              Caption = 'Filename:'
-              ParentShowHint = False
-              ShowHint = True
-            end
-            object lbPrefix: TLabel
-              AlignWithMargins = True
-              Left = 30
-              Top = 52
-              Width = 68
-              Height = 13
-              Caption = 'Source Prefix:'
-            end
-            object cbApplyToAll: TCheckBox
-              Left = 105
-              Top = 24
-              Width = 80
-              Height = 17
-              Hint = 'Apply the current settings displayed when you click Start'
-              Caption = 'Apply to all '
-              Checked = True
-              ParentShowHint = False
-              ShowHint = True
-              State = cbChecked
-              TabOrder = 0
-              OnClick = cbIncludeInJSONFileClick
-            end
-            object ebFilename: TEdit
-              Left = 267
-              Top = 22
-              Width = 92
-              Height = 21
-              Hint = 'Leaving blank will not create a JSON file.'
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 1
-              Text = 'images.json'
-            end
-            object ebPrefix: TEdit
-              Left = 104
-              Top = 49
-              Width = 255
-              Height = 21
-              Anchors = [akLeft, akTop, akRight]
-              TabOrder = 2
-              Text = 'images/Compressed'
-              OnChange = ebPrefixChange
-            end
-          end
-          object GroupBox3: TGroupBox
-            Left = 251
-            Top = 73
-            Width = 361
-            Height = 75
-            TabOrder = 5
-            object lbMaxHeightPx: TLabel
-              Left = 87
-              Top = 49
-              Width = 27
-              Height = 13
-              Caption = ' (px):'
-              Enabled = False
-            end
-            object lbMaxWidthPx: TLabel
-              Left = 87
-              Top = 22
-              Width = 27
-              Height = 13
-              Caption = ' (px):'
-              Enabled = False
-            end
-            object lbResampling: TLabel
-              Left = 183
-              Top = 21
-              Width = 58
-              Height = 13
-              Caption = 'Resampling:'
-              Enabled = False
-            end
-            object lbRotation: TLabel
-              Left = 196
-              Top = 48
-              Width = 45
-              Height = 13
-              Caption = 'Rotation:'
-              Enabled = False
-            end
-            object rbByHeight: TRadioButton
-              Left = 17
-              Top = 47
-              Width = 70
-              Height = 17
-              Hint = 'Maintains aspect ratio'
-              Caption = 'Max Height'
-              Enabled = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 2
-              OnClick = SetShrinkState
-            end
-            object rbByWidth: TRadioButton
-              Left = 17
-              Top = 20
-              Width = 70
-              Height = 17
-              Hint = 'Maintains aspect ratio'
-              Caption = 'Max Width'
-              Checked = True
-              Enabled = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 0
-              TabStop = True
-              OnClick = SetShrinkState
-            end
-            object seMaxWidthPx: TSpinEdit
-              Left = 120
-              Top = 18
-              Width = 57
-              Height = 22
-              Hint = 'Press Enter or leave field to Apply. Set to 0 to disable'
-              Enabled = False
-              MaxValue = 0
-              MinValue = 0
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 1
-              Value = 1920
-              OnExit = CheckCompressPreviewLoad
-              OnKeyDown = seMaxWidthPxKeyDown
-            end
-            object seMaxHeightPx: TSpinEdit
-              Left = 120
-              Top = 45
-              Width = 57
-              Height = 22
-              Hint = 'Press Enter or leave field to Apply. Set to 0 to disable.'
-              Enabled = False
-              MaxValue = 0
-              MinValue = 0
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 3
-              Value = 1080
-              OnExit = CheckCompressPreviewLoad
-              OnKeyDown = seMaxHeightPxKeyDown
-            end
-            object cbResampleMode: TComboBox
-              Left = 247
-              Top = 19
-              Width = 106
-              Height = 21
-              Hint = 
-                'Higher values result in improved quality when resizing and/or ro' +
-                'tating'
-              Enabled = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 4
-              Text = 'Recommened '
-              OnChange = cbResampleModeChange
-              OnExit = cbResampleModeExit
-              OnKeyDown = cbResampleModeKeyDown
-              Items.Strings = (
-                'None'
-                'Fastest'
-                'Recommended '
-                'Best')
-            end
-            object cbRotateAmount: TComboBox
-              Left = 247
-              Top = 46
-              Width = 106
-              Height = 21
-              Enabled = False
-              ItemIndex = 0
-              TabOrder = 5
-              Text = 'None'
-              OnChange = CheckCompressPreviewLoad
-              OnExit = cbRotateAmountExit
-              OnKeyDown = cbRotateAmountKeyDown
-              Items.Strings = (
-                'None'
-                '90'#176
-                '180'#176
-                '270'#176)
-            end
-          end
-          object ebStartPath: TEdit
-            Left = 103
-            Top = 12
-            Width = 1520
-            Height = 21
-            Hint = 'Double click to show select dialog. Press Enter to apply'
-            Anchors = [akLeft, akTop, akRight]
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 0
-            OnDblClick = ebStartPathDblClick
-            OnKeyDown = ebStartPathKeyDown
-          end
-          object ebOutputDir: TEdit
-            Left = 103
-            Top = 39
-            Width = 1520
-            Height = 21
-            Hint = 'Double click to show select dialog'
-            Anchors = [akLeft, akTop, akRight]
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 1
-            OnChange = ebOutputDirChange
-            OnDblClick = ebOutputDirDblClick
-          end
-          object cbApplyGraphics: TCheckBox
-            Left = 262
-            Top = 66
-            Width = 61
-            Height = 17
-            Hint = 'Reduce size, rotate and resample for improved image quality'
-            Caption = 'Graphics'
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 4
-            OnClick = cbApplyGraphicsClick
-          end
-          object GroupBox2: TGroupBox
-            Left = 618
-            Top = 73
-            Width = 632
-            Height = 75
-            Anchors = [akLeft, akTop, akRight]
-            TabOrder = 8
-            DesignSize = (
-              632
-              75)
-            object lbDescription: TLabel
-              Left = 11
-              Top = 48
-              Width = 57
-              Height = 13
-              Caption = 'Description:'
-              Enabled = False
-            end
-            object lbTitle: TLabel
-              Left = 44
-              Top = 21
-              Width = 24
-              Height = 13
-              Caption = 'Title:'
-              Enabled = False
-            end
-            object ebDescription: TEdit
-              Left = 74
-              Top = 45
-              Width = 550
-              Height = 21
-              Anchors = [akLeft, akTop, akRight]
-              Enabled = False
-              TabOrder = 1
-              OnChange = ebDescriptionChange
-              ExplicitWidth = 479
-            end
-            object ebTitle: TEdit
-              Left = 74
-              Top = 18
-              Width = 550
-              Height = 21
-              Anchors = [akLeft, akTop, akRight]
-              Enabled = False
-              TabOrder = 0
-              OnChange = ebDescriptionChange
-              ExplicitWidth = 479
-            end
-          end
-          object cbIncludeInJSONFile: TCheckBox
-            Left = 628
-            Top = 66
-            Width = 110
-            Height = 17
-            Caption = 'Include in JSON file'
-            TabOrder = 6
-            OnClick = cbIncludeInJSONFileClick
-          end
-          object GroupBox1: TGroupBox
-            Left = 0
-            Top = 73
-            Width = 245
-            Height = 75
-            TabOrder = 3
-            object lbQuality: TLabel
-              Left = 11
-              Top = 21
-              Width = 38
-              Height = 13
-              Caption = 'Quality:'
-            end
-            object lbTargetKB: TLabel
-              Left = 103
-              Top = 20
-              Width = 59
-              Height = 13
-              Caption = 'Target (KB):'
-            end
-            object seQuality: TSpinEdit
-              Left = 55
-              Top = 17
-              Width = 42
-              Height = 22
-              Hint = 'Press Enter key or leave field to set the value'
-              MaxValue = 100
-              MinValue = 10
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 0
-              Value = 90
-              OnExit = seQualityExit
-              OnKeyDown = seQualityKeyDown
-            end
-            object seTargetKBs: TSpinEdit
-              Left = 168
-              Top = 17
-              Width = 65
-              Height = 22
-              Hint = ' Set to 0 to disable (~250KB is ideal for websites).'
-              MaxValue = 0
-              MinValue = 0
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 1
-              Value = 0
-              OnChange = seTargetKBsChange
-              OnExit = CheckCompressPreviewLoad
-              OnKeyDown = seTargetKBsKeyDown
-            end
-            object tbQuality: TTrackBar
-              Left = 3
-              Top = 45
-              Width = 238
-              Height = 20
-              Hint = 'Quality'
-              DoubleBuffered = True
-              Max = 100
-              Min = 10
-              ParentDoubleBuffered = False
-              ParentShowHint = False
-              PageSize = 1
-              Position = 90
-              ShowHint = True
-              TabOrder = 2
-              TickStyle = tsNone
-              OnChange = tbQualityChange
-              OnKeyDown = tbQualityKeyDown
-            end
-          end
-          object cbCompress: TCheckBox
-            Left = 11
-            Top = 66
-            Width = 80
-            Height = 17
-            Hint = 'Maintaines aspect ratio'
-            Caption = 'Compression'
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 2
-            OnClick = cbCompressClick
-          end
         end
         object pnlFiles: TPanel
           Left = 0
-          Top = 154
+          Top = 0
           Width = 247
-          Height = 721
+          Height = 722
           Align = alLeft
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          TabOrder = 1
+          TabOrder = 0
+          ExplicitTop = 154
+          ExplicitHeight = 721
           object lbFiles: TLabel
             Left = 3
             Top = 4
@@ -500,7 +97,7 @@ object FrmMain: TFrmMain
             Left = 0
             Top = 26
             Width = 243
-            Height = 691
+            Height = 692
             Hint = 'Drag and drop images and directories'
             Margins.Left = 0
             Margins.Top = 26
@@ -515,27 +112,31 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 0
             OnClick = cblFilesClick
+            ExplicitLeft = -1
+            ExplicitHeight = 845
           end
         end
         object pnlImage: TPanel
           Left = 250
-          Top = 154
-          Width = 1001
-          Height = 721
+          Top = 0
+          Width = 874
+          Height = 722
           Align = alClient
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          TabOrder = 2
-          ExplicitWidth = 930
+          TabOrder = 1
+          ExplicitTop = 154
+          ExplicitWidth = 1001
+          ExplicitHeight = 721
           DesignSize = (
-            997
-            717)
+            870
+            718)
           object imgHome: TImage
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 991
-            Height = 691
+            Width = 864
+            Height = 692
             Hint = 'Drag and drop images and directories'
             Margins.Top = 26
             Margins.Bottom = 0
@@ -548,6 +149,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 5
             ExplicitTop = 27
             ExplicitWidth = 908
+            ExplicitHeight = 691
           end
           object lbImage: TLabel
             Left = 3
@@ -558,7 +160,7 @@ object FrmMain: TFrmMain
             Enabled = False
           end
           object lbImgSizeKB: TLabel
-            Left = 713
+            Left = 586
             Top = 4
             Width = 46
             Height = 13
@@ -574,7 +176,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 654
           end
           object lbImgSizeKBVal: TLabel
-            Left = 789
+            Left = 662
             Top = 4
             Width = 6
             Height = 13
@@ -585,7 +187,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 720
           end
           object lbImgWidth: TLabel
-            Left = 801
+            Left = 674
             Top = 4
             Width = 55
             Height = 13
@@ -595,7 +197,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 742
           end
           object lbImgWidthVal: TLabel
-            Left = 887
+            Left = 760
             Top = 4
             Width = 6
             Height = 13
@@ -606,7 +208,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 818
           end
           object lbImgHeight: TLabel
-            Left = 899
+            Left = 772
             Top = 4
             Width = 58
             Height = 13
@@ -616,7 +218,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 840
           end
           object lbImgHeightVal: TLabel
-            Left = 987
+            Left = 860
             Top = 4
             Width = 6
             Height = 13
@@ -656,19 +258,19 @@ object FrmMain: TFrmMain
           end
         end
         object pnlOriginal: TPanel
-          Left = 1254
-          Top = 154
-          Width = 370
-          Height = 721
+          Left = 1127
+          Top = 0
+          Width = 375
+          Height = 722
           Align = alRight
           BevelOuter = bvNone
           BorderStyle = bsSingle
-          TabOrder = 3
+          TabOrder = 2
           DesignSize = (
-            366
-            717)
+            371
+            718)
           object lbImgOrigSize: TLabel
-            Left = 85
+            Left = 90
             Top = 4
             Width = 46
             Height = 13
@@ -677,7 +279,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 144
           end
           object lbImgOrigSizeKBVal: TLabel
-            Left = 160
+            Left = 165
             Top = 4
             Width = 6
             Height = 13
@@ -687,7 +289,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 229
           end
           object lbImgOrigWidth: TLabel
-            Left = 172
+            Left = 177
             Top = 4
             Width = 55
             Height = 13
@@ -696,7 +298,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 231
           end
           object lbImgOrigWidthVal: TLabel
-            Left = 255
+            Left = 260
             Top = 4
             Width = 6
             Height = 13
@@ -706,7 +308,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 324
           end
           object lbImgOrigHeight: TLabel
-            Left = 266
+            Left = 271
             Top = 4
             Width = 58
             Height = 13
@@ -715,7 +317,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 325
           end
           object lbImgOrigHeightVal: TLabel
-            Left = 353
+            Left = 358
             Top = 4
             Width = 6
             Height = 13
@@ -728,8 +330,8 @@ object FrmMain: TFrmMain
             AlignWithMargins = True
             Left = 3
             Top = 26
-            Width = 360
-            Height = 691
+            Width = 365
+            Height = 692
             Margins.Top = 26
             Margins.Bottom = 0
             Align = alClient
@@ -739,6 +341,7 @@ object FrmMain: TFrmMain
             ExplicitLeft = 1
             ExplicitTop = 27
             ExplicitWidth = 419
+            ExplicitHeight = 691
           end
           object Label4: TLabel
             Left = 3
@@ -762,6 +365,532 @@ object FrmMain: TFrmMain
           end
         end
       end
+      object pnlConfig: TPanel
+        Left = 0
+        Top = 0
+        Width = 1508
+        Height = 65
+        Align = alTop
+        BevelOuter = bvNone
+        Color = clBtnHighlight
+        ParentBackground = False
+        TabOrder = 1
+        ExplicitWidth = 1630
+        object Panel5: TPanel
+          Left = 0
+          Top = 0
+          Width = 1508
+          Height = 60
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 0
+          ExplicitWidth = 1630
+          DesignSize = (
+            1508
+            60)
+          object Label1: TLabel
+            Left = 13
+            Top = 42
+            Width = 85
+            Height = 13
+            Caption = 'Output Directory:'
+          end
+          object Label2: TLabel
+            Left = 14
+            Top = 15
+            Width = 84
+            Height = 13
+            Caption = 'Source Directory:'
+          end
+          object ebStartPath: TEdit
+            Left = 104
+            Top = 12
+            Width = 1398
+            Height = 21
+            Hint = 'Double click to show select dialog. Press Enter to apply'
+            Anchors = [akLeft, akTop, akRight]
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 0
+            OnDblClick = ebStartPathDblClick
+            OnKeyDown = ebStartPathKeyDown
+            ExplicitWidth = 1522
+          end
+          object ebOutputDir: TEdit
+            Left = 104
+            Top = 39
+            Width = 1398
+            Height = 21
+            Hint = 'Double click to show select dialog'
+            Anchors = [akLeft, akTop, akRight]
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 1
+            OnChange = ebOutputDirChange
+            OnDblClick = ebOutputDirDblClick
+            ExplicitWidth = 1522
+          end
+        end
+      end
+      object pnlConfigFlow: TFlowPanel
+        AlignWithMargins = True
+        Left = 0
+        Top = 65
+        Width = 1508
+        Height = 85
+        Margins.Left = 0
+        Margins.Top = 0
+        Margins.Right = 0
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 2
+        ExplicitWidth = 1552
+        object pnlCompression: TPanel
+          AlignWithMargins = True
+          Left = 3
+          Top = 0
+          Width = 370
+          Height = 85
+          Margins.Top = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          BevelOuter = bvNone
+          TabOrder = 0
+          object GroupBox1: TGroupBox
+            AlignWithMargins = True
+            Left = 0
+            Top = 6
+            Width = 370
+            Height = 79
+            Margins.Left = 0
+            Margins.Top = 6
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            TabOrder = 1
+            ExplicitWidth = 245
+            DesignSize = (
+              370
+              79)
+            object lbQuality: TLabel
+              Left = 11
+              Top = 21
+              Width = 38
+              Height = 13
+              Caption = 'Quality:'
+            end
+            object lbTargetKB: TLabel
+              Left = 215
+              Top = 22
+              Width = 59
+              Height = 13
+              Caption = 'Target (KB):'
+            end
+            object seQuality: TSpinEdit
+              Left = 55
+              Top = 17
+              Width = 50
+              Height = 22
+              Hint = 'Press Enter key or leave field to set the value'
+              MaxValue = 100
+              MinValue = 10
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              Value = 90
+              OnExit = seQualityExit
+              OnKeyDown = seQualityKeyDown
+            end
+            object seTargetKBs: TSpinEdit
+              Left = 280
+              Top = 19
+              Width = 82
+              Height = 22
+              Hint = ' Set to 0 to disable (~250KB is ideal for websites).'
+              MaxValue = 0
+              MinValue = 0
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              Value = 0
+              OnChange = seTargetKBsChange
+              OnExit = CheckCompressPreviewLoad
+              OnKeyDown = seTargetKBsKeyDown
+            end
+            object tbQuality: TTrackBar
+              Left = 1
+              Top = 47
+              Width = 368
+              Height = 20
+              Hint = 'Quality'
+              Anchors = [akLeft, akTop, akRight]
+              DoubleBuffered = True
+              Max = 100
+              Min = 10
+              ParentDoubleBuffered = False
+              ParentShowHint = False
+              PageSize = 1
+              Position = 90
+              ShowHint = True
+              TabOrder = 2
+              TickStyle = tsNone
+              OnChange = tbQualityChange
+              OnKeyDown = tbQualityKeyDown
+              ExplicitWidth = 258
+            end
+          end
+          object cbCompress: TCheckBox
+            Left = 9
+            Top = -2
+            Width = 80
+            Height = 17
+            Hint = 'Maintaines aspect ratio'
+            Caption = 'Compression'
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 0
+            OnClick = cbCompressClick
+          end
+        end
+        object pnlGraphics: TPanel
+          AlignWithMargins = True
+          Left = 379
+          Top = 0
+          Width = 370
+          Height = 85
+          Margins.Top = 0
+          Margins.Bottom = 0
+          BevelOuter = bvNone
+          TabOrder = 1
+          object GroupBox3: TGroupBox
+            AlignWithMargins = True
+            Left = 0
+            Top = 6
+            Width = 370
+            Height = 79
+            Margins.Left = 0
+            Margins.Top = 6
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            TabOrder = 1
+            ExplicitLeft = 1
+            ExplicitTop = 7
+            ExplicitWidth = 364
+            ExplicitHeight = 75
+            object lbMaxHeightPx: TLabel
+              Left = 87
+              Top = 49
+              Width = 27
+              Height = 13
+              Caption = ' (px):'
+              Enabled = False
+            end
+            object lbMaxWidthPx: TLabel
+              Left = 87
+              Top = 22
+              Width = 27
+              Height = 13
+              Caption = ' (px):'
+              Enabled = False
+            end
+            object lbResampling: TLabel
+              Left = 190
+              Top = 21
+              Width = 58
+              Height = 13
+              Caption = 'Resampling:'
+              Enabled = False
+            end
+            object lbRotation: TLabel
+              Left = 203
+              Top = 48
+              Width = 45
+              Height = 13
+              Caption = 'Rotation:'
+              Enabled = False
+            end
+            object rbByHeight: TRadioButton
+              Left = 17
+              Top = 47
+              Width = 70
+              Height = 17
+              Hint = 'Maintains aspect ratio'
+              Caption = 'Max Height'
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 2
+              OnClick = SetShrinkState
+            end
+            object rbByWidth: TRadioButton
+              Left = 17
+              Top = 20
+              Width = 70
+              Height = 17
+              Hint = 'Maintains aspect ratio'
+              Caption = 'Max Width'
+              Checked = True
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              TabStop = True
+              OnClick = SetShrinkState
+            end
+            object seMaxWidthPx: TSpinEdit
+              Left = 120
+              Top = 17
+              Width = 57
+              Height = 22
+              Hint = 'Press Enter or leave field to Apply. Set to 0 to disable'
+              Enabled = False
+              MaxValue = 0
+              MinValue = 0
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              Value = 1920
+              OnExit = CheckCompressPreviewLoad
+              OnKeyDown = seMaxWidthPxKeyDown
+            end
+            object seMaxHeightPx: TSpinEdit
+              Left = 120
+              Top = 45
+              Width = 57
+              Height = 22
+              Hint = 'Press Enter or leave field to Apply. Set to 0 to disable.'
+              Enabled = False
+              MaxValue = 0
+              MinValue = 0
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              Value = 1080
+              OnExit = CheckCompressPreviewLoad
+              OnKeyDown = seMaxHeightPxKeyDown
+            end
+            object cbResampleMode: TComboBox
+              Left = 254
+              Top = 19
+              Width = 106
+              Height = 21
+              Hint = 
+                'Higher values result in improved quality when resizing and/or ro' +
+                'tating'
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 4
+              Text = 'Recommened '
+              OnChange = cbResampleModeChange
+              OnExit = cbResampleModeExit
+              OnKeyDown = cbResampleModeKeyDown
+              Items.Strings = (
+                'None'
+                'Fastest'
+                'Recommended '
+                'Best')
+            end
+            object cbRotateAmount: TComboBox
+              Left = 254
+              Top = 46
+              Width = 106
+              Height = 21
+              Enabled = False
+              ItemIndex = 0
+              TabOrder = 5
+              Text = 'None'
+              OnChange = CheckCompressPreviewLoad
+              OnExit = cbRotateAmountExit
+              OnKeyDown = cbRotateAmountKeyDown
+              Items.Strings = (
+                'None'
+                '90'#176
+                '180'#176
+                '270'#176)
+            end
+          end
+          object cbApplyGraphics: TCheckBox
+            Left = 9
+            Top = -1
+            Width = 61
+            Height = 17
+            Hint = 'Reduce size, rotate and resample for improved image quality'
+            Caption = 'Graphics'
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 0
+            OnClick = cbApplyGraphicsClick
+          end
+        end
+        object pnlIncludeInFile: TPanel
+          AlignWithMargins = True
+          Left = 755
+          Top = 0
+          Width = 370
+          Height = 85
+          Margins.Top = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          BevelOuter = bvNone
+          TabOrder = 2
+          object GroupBox2: TGroupBox
+            AlignWithMargins = True
+            Left = 0
+            Top = 6
+            Width = 370
+            Height = 79
+            Margins.Left = 0
+            Margins.Top = 6
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            TabOrder = 1
+            ExplicitLeft = 3
+            ExplicitTop = 4
+            ExplicitWidth = 619
+            DesignSize = (
+              370
+              79)
+            object lbDescription: TLabel
+              Left = 11
+              Top = 48
+              Width = 57
+              Height = 13
+              Caption = 'Description:'
+              Enabled = False
+            end
+            object lbTitle: TLabel
+              Left = 44
+              Top = 21
+              Width = 24
+              Height = 13
+              Caption = 'Title:'
+              Enabled = False
+            end
+            object ebDescription: TEdit
+              Left = 74
+              Top = 45
+              Width = 288
+              Height = 21
+              Anchors = [akLeft, akTop, akRight]
+              Enabled = False
+              TabOrder = 1
+              OnChange = ebDescriptionChange
+              ExplicitWidth = 537
+            end
+            object ebTitle: TEdit
+              Left = 74
+              Top = 18
+              Width = 288
+              Height = 21
+              Anchors = [akLeft, akTop, akRight]
+              Enabled = False
+              TabOrder = 0
+              OnChange = ebDescriptionChange
+              ExplicitWidth = 537
+            end
+          end
+          object cbIncludeInJSONFile: TCheckBox
+            Left = 11
+            Top = -1
+            Width = 110
+            Height = 17
+            Caption = 'Include in JSON file'
+            TabOrder = 0
+            OnClick = cbIncludeInJSONFileClick
+          end
+        end
+        object pnlGlobals: TPanel
+          AlignWithMargins = True
+          Left = 1131
+          Top = 0
+          Width = 370
+          Height = 85
+          Margins.Top = 0
+          Margins.Bottom = 0
+          Align = alLeft
+          BevelOuter = bvNone
+          TabOrder = 3
+          object GroupBox4: TGroupBox
+            AlignWithMargins = True
+            Left = 0
+            Top = 0
+            Width = 370
+            Height = 85
+            Margins.Left = 0
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            Caption = ' Globals '
+            TabOrder = 0
+            ExplicitLeft = -3
+            ExplicitTop = -2
+            ExplicitWidth = 367
+            DesignSize = (
+              370
+              85)
+            object lbFilename: TLabel
+              Left = 117
+              Top = 25
+              Width = 46
+              Height = 13
+              Hint = '.json'
+              Caption = 'Filename:'
+              ParentShowHint = False
+              ShowHint = True
+            end
+            object lbPrefix: TLabel
+              AlignWithMargins = True
+              Left = 14
+              Top = 52
+              Width = 68
+              Height = 13
+              Caption = 'Source Prefix:'
+            end
+            object cbApplyToAll: TCheckBox
+              Left = 14
+              Top = 24
+              Width = 80
+              Height = 17
+              Hint = 'Apply the current settings displayed when you click Start'
+              Caption = 'Apply to all '
+              Checked = True
+              ParentShowHint = False
+              ShowHint = True
+              State = cbChecked
+              TabOrder = 0
+              OnClick = cbIncludeInJSONFileClick
+            end
+            object ebFilename: TEdit
+              Left = 169
+              Top = 22
+              Width = 191
+              Height = 21
+              Hint = 'Leaving blank will not create a JSON file.'
+              Anchors = [akLeft, akTop, akRight]
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              Text = 'images.json'
+              ExplicitWidth = 81
+            end
+            object ebPrefix: TEdit
+              Left = 88
+              Top = 49
+              Width = 272
+              Height = 21
+              Anchors = [akLeft, akTop, akRight]
+              TabOrder = 2
+              Text = 'images/Compressed'
+              OnChange = ebPrefixChange
+              ExplicitWidth = 162
+            end
+          end
+        end
+      end
     end
     object tsLogs: TTabSheet
       Caption = 'Logs'
@@ -770,44 +899,48 @@ object FrmMain: TFrmMain
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 1624
+        Width = 1502
         Height = 875
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 1624
         object spScript: TSplitter
           Left = 0
           Top = 416
-          Width = 1624
+          Width = 1502
           Height = 6
           Cursor = crVSplit
           Align = alBottom
           ExplicitLeft = 16
           ExplicitTop = 589
+          ExplicitWidth = 1624
         end
         object pnlLogs: TPanel
           Left = 0
           Top = 0
-          Width = 1624
+          Width = 1502
           Height = 416
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0
+          ExplicitWidth = 1624
           object Panel1: TPanel
             Left = 0
             Top = 0
-            Width = 1624
+            Width = 1502
             Height = 19
             Align = alTop
             Alignment = taLeftJustify
             BevelOuter = bvNone
             Caption = ' Compression logs:'
             TabOrder = 0
+            ExplicitWidth = 1624
           end
           object mmMessages: TMemo
             Left = 0
             Top = 19
-            Width = 1624
+            Width = 1502
             Height = 397
             Align = alClient
             Lines.Strings = (
@@ -816,31 +949,34 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
+            ExplicitWidth = 1624
           end
         end
         object pnlScript: TPanel
           Left = 0
           Top = 422
-          Width = 1624
+          Width = 1502
           Height = 453
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 1
+          ExplicitWidth = 1624
           object Panel4: TPanel
             Left = 0
             Top = 0
-            Width = 1624
+            Width = 1502
             Height = 17
             Align = alTop
             Alignment = taLeftJustify
             BevelOuter = bvNone
             Caption = 'Script logs:'
             TabOrder = 0
+            ExplicitWidth = 1624
           end
           object mmScript: TMemo
             Left = 0
             Top = 17
-            Width = 1624
+            Width = 1502
             Height = 436
             Align = alClient
             Color = clNone
@@ -856,6 +992,7 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
+            ExplicitWidth = 1624
           end
         end
       end
@@ -864,16 +1001,33 @@ object FrmMain: TFrmMain
   object Panel3: TPanel
     Left = 0
     Top = 915
-    Width = 1644
+    Width = 1522
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 1644
     DesignSize = (
-      1644
+      1522
       35)
+    object lbClientWidth: TLabel
+      Left = 7
+      Top = 16
+      Width = 63
+      Height = 13
+      Caption = 'lbClientWidth'
+      Visible = False
+    end
+    object lbClientHeight: TLabel
+      Left = 111
+      Top = 14
+      Width = 66
+      Height = 13
+      Caption = 'lbClientHeight'
+      Visible = False
+    end
     object btnStart: TButton
-      Left = 1559
+      Left = 1437
       Top = 3
       Width = 80
       Height = 25
@@ -885,9 +1039,10 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 1
       OnClick = btnStartClick
+      ExplicitLeft = 1559
     end
     object btnScan: TButton
-      Left = 1297
+      Left = 1175
       Top = 3
       Width = 80
       Height = 25
@@ -896,9 +1051,10 @@ object FrmMain: TFrmMain
       TabOrder = 2
       Visible = False
       OnClick = btnScanClick
+      ExplicitLeft = 1297
     end
     object btnApply: TButton
-      Left = 1473
+      Left = 1351
       Top = 3
       Width = 80
       Height = 25
@@ -909,12 +1065,13 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 0
       OnClick = btnApplyClick
+      ExplicitLeft = 1473
     end
   end
   object pmCheckBoxList: TPopupMenu
     OnPopup = pmCheckBoxListPopup
-    Left = 122
-    Top = 318
+    Left = 50
+    Top = 446
     object mniSelectAll: TMenuItem
       Caption = 'Select all'
       OnClick = mniSelectAllClick
@@ -954,8 +1111,8 @@ object FrmMain: TFrmMain
     end
   end
   object pmLogs: TPopupMenu
-    Left = 186
-    Top = 278
+    Left = 106
+    Top = 446
     object miClear: TMenuItem
       Caption = 'Clear'
       OnClick = miClearClick
@@ -1097,8 +1254,8 @@ object FrmMain: TFrmMain
   end
   object pmViews: TPopupMenu
     OnPopup = pmViewsPopup
-    Left = 512
-    Top = 296
+    Left = 232
+    Top = 448
     object miSplit: TMenuItem
       Caption = 'Split'
       OnClick = miSplitClick
@@ -1123,12 +1280,12 @@ object FrmMain: TFrmMain
     Enabled = False
     Interval = 500
     OnTimer = tmrOnShowTimer
-    Left = 364
-    Top = 352
+    Left = 188
+    Top = 448
   end
   object pmScriptLogs: TPopupMenu
-    Left = 282
-    Top = 318
+    Left = 146
+    Top = 446
     object miClearSciptLogs: TMenuItem
       Caption = 'Clear'
       OnClick = miClearSciptLogsClick

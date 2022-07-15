@@ -15,13 +15,18 @@ const
   cDefaultTitle='';
   cDefaultDescription='';
   cDefaultTargetKB=0;
-  cDefaultClientWidth=1820;
-  cDefaultClientHeight=950;
+  cDefaultClientWidth=1522;
+  cDefaultClientHeight=800;
   cDefaultFilesWidth=247;
   cDefaultImageSplitPause=784;
-  cDefaultOriginalWidth=370;
+  cDefaultOriginalWidth=375;
   cDefaultPnlScriptHeight=543;
   cDefaultPnlFilesWidth=247;
+  //Responsiveness
+  cFirstFlowChangePx=(cDefaultClientWidth-1);
+  cSecondFlowChangePx=1142;
+  cThirdFlowChangePx=766;
+  //json tags
   cOutputDir='outputDir';
   cPrefix='prefix';
   cDefaultOutDir='Compressed';

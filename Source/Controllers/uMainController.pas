@@ -32,10 +32,14 @@ type
     fJSON: ISuperObject;
     fSelectedFilename: string;
     fJPEGCompressor: TJPEGCompressor;
+    fOrigPnlGlobalsWidth,
+    fOrigPnlIncludeFileWidth,
+    fOrigPnlCompressionWidth: integer;
     procedure LoadImageConfig(const AFilename: string);
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
     procedure LoadCompressedPreview(Sender: TObject);
+    procedure ApplyResponsiveLogic(Sender: TObject);
     procedure ClearImagePreviewLabels;
   public
     constructor Create(const AOwnerView: TComponent);
@@ -126,6 +130,9 @@ begin
   else
     fMainView := AOwnerView;
   fMainModel := TMainModel.Create(Self);
+  fOrigPnlGlobalsWidth := TFrmMain(fMainView).pnlGlobals.Width;
+  fOrigPnlIncludeFileWidth := TFrmMain(fMainView).pnlIncludeInFile.Width;
+  fOrigPnlCompressionWidth := TFrmMain(fMainView).pnlCompression.Width;
   fDynamicScript := TDynamicScript.Create(AOwnerView);
   fMessages := TStringList.Create;
   fNumProcessed := 0;
@@ -142,6 +149,10 @@ begin
   fFormData := TFormData.Create;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   ToggleScriptLog(true);
+  {$IFDEF DEBUG}
+  TFrmMain(fMainView).lbClientWidth.Visible := true;
+  TFrmMain(fMainView).lbClientHeight.Visible := true;
+  {$ENDIF}
 end;
 
 destructor TMainController.Destroy;
@@ -1220,15 +1231,42 @@ begin
   end;
 end;
 
-procedure TMainController.ResizeEvent(Sender: TObject);
+procedure TMainController.ApplyResponsiveLogic(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
+    //Labels display width/height in px in debug mode
+    if lbClientWidth.Visible then
+      lbClientWidth.Caption := ClientWidth.ToString;
+    if lbClientHeight.Visible then
+      lbClientHeight.Caption := ClientHeight.ToString;
+
+    if ClientWidth <= cThirdFlowChangePx then
+      pnlConfigFlow.Height := pnlGraphics.Height * 4
+    else if (ClientWidth <= cSecondFlowChangePx) or 
+            (ClientWidth <= cFirstFlowChangePx) then 
+      pnlConfigFlow.Height := pnlGraphics.Height * 2
+    else if ClientWidth >= cFirstFlowChangePx then
+      pnlConfigFlow.Height := pnlGraphics.Height * 1;
+
+    if ClientWidth > cDefaultClientWidth then
+      pnlIncludeInFile.Width := fOrigPnlIncludeFileWidth + (ClientWidth - cDefaultClientWidth)
+    else if (pnlIncludeInFile.Width <> pnlGraphics.Width) and
+            (pnlIncludeInFile.Width <> fOrigPnlIncludeFileWidth) then
+      pnlIncludeInFile.Width := fOrigPnlIncludeFileWidth;
+
     if (Sender = spOriginal) and
        (pnlOriginal.Width <= cMinOriginalWidth) then
       pnlOriginal.Width := cMinOriginalWidth
     else if (Sender = spFiles) and
             (pnlFiles.Width <= cMinFilesWidth) then
       pnlFiles.Width := cMinFilesWidth;
+  end;
+end;
+
+procedure TMainController.ResizeEvent(Sender: TObject);
+begin
+  with OwnerView(fMainView) do begin
+    ApplyResponsiveLogic(Sender);  
     CheckHideLabels;
     if (fSelectedFilename <> '') then begin
       Screen.Cursor := crHourGlass;
