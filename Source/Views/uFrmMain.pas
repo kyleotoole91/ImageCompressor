@@ -354,7 +354,8 @@ end;
 procedure TFrmMain.miHideConfigClick(Sender: TObject);
 begin
   pnlConfig.Visible := not pnlConfig.Visible;
-  miHideConfig.Checked := not pnlConfig.Visible;
+  pnlConfigFlow.Visible := pnlConfig.Visible;
+  miHideConfig.Checked := pnlConfig.Visible;
 end;
 
 procedure TFrmMain.miClearClick(Sender: TObject);

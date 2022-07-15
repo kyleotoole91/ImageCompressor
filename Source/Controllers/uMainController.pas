@@ -1186,6 +1186,7 @@ begin
     pnlOriginal.Visible := not miFullscreen.Checked;
     spOriginal.Visible := not miFullscreen.Checked;
     pnlConfig.Visible := not miFullscreen.Checked;
+    pnlConfigFlow.Visible := not miFullscreen.Checked;
   end;
   ResizeEvent(Sender);
 end;

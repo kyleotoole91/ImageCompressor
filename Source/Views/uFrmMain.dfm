@@ -40,7 +40,6 @@ object FrmMain: TFrmMain
     Align = alClient
     TabOrder = 0
     OnChange = pcMainChange
-    ExplicitWidth = 1638
     object tsHome: TTabSheet
       Caption = 'Home'
       object pnlMain: TPanel
@@ -52,9 +51,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 504
-        ExplicitWidth = 1624
-        ExplicitHeight = 374
         object spFiles: TSplitter
           Left = 247
           Top = 0
@@ -83,8 +79,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 0
-          ExplicitTop = 154
-          ExplicitHeight = 721
           object lbFiles: TLabel
             Left = 3
             Top = 4
@@ -123,9 +117,6 @@ object FrmMain: TFrmMain
           BevelOuter = bvNone
           BorderStyle = bsSingle
           TabOrder = 1
-          ExplicitTop = 154
-          ExplicitWidth = 1001
-          ExplicitHeight = 721
           DesignSize = (
             870
             718)
@@ -373,7 +364,6 @@ object FrmMain: TFrmMain
         Color = clBtnHighlight
         ParentBackground = False
         TabOrder = 1
-        ExplicitWidth = 1630
         object Panel5: TPanel
           Left = 0
           Top = 0
@@ -382,7 +372,6 @@ object FrmMain: TFrmMain
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 1630
           DesignSize = (
             1508
             60)
@@ -412,7 +401,6 @@ object FrmMain: TFrmMain
             TabOrder = 0
             OnDblClick = ebStartPathDblClick
             OnKeyDown = ebStartPathKeyDown
-            ExplicitWidth = 1522
           end
           object ebOutputDir: TEdit
             Left = 104
@@ -426,7 +414,6 @@ object FrmMain: TFrmMain
             TabOrder = 1
             OnChange = ebOutputDirChange
             OnDblClick = ebOutputDirDblClick
-            ExplicitWidth = 1522
           end
         end
       end
@@ -442,7 +429,6 @@ object FrmMain: TFrmMain
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitWidth = 1552
         object pnlCompression: TPanel
           AlignWithMargins = True
           Left = 3
@@ -466,7 +452,6 @@ object FrmMain: TFrmMain
             Margins.Bottom = 0
             Align = alClient
             TabOrder = 1
-            ExplicitWidth = 245
             DesignSize = (
               370
               79)
@@ -534,7 +519,6 @@ object FrmMain: TFrmMain
               TickStyle = tsNone
               OnChange = tbQualityChange
               OnKeyDown = tbQualityKeyDown
-              ExplicitWidth = 258
             end
           end
           object cbCompress: TCheckBox
@@ -572,10 +556,6 @@ object FrmMain: TFrmMain
             Margins.Bottom = 0
             Align = alClient
             TabOrder = 1
-            ExplicitLeft = 1
-            ExplicitTop = 7
-            ExplicitWidth = 364
-            ExplicitHeight = 75
             object lbMaxHeightPx: TLabel
               Left = 87
               Top = 49
@@ -745,9 +725,6 @@ object FrmMain: TFrmMain
             Margins.Bottom = 0
             Align = alClient
             TabOrder = 1
-            ExplicitLeft = 3
-            ExplicitTop = 4
-            ExplicitWidth = 619
             DesignSize = (
               370
               79)
@@ -776,7 +753,6 @@ object FrmMain: TFrmMain
               Enabled = False
               TabOrder = 1
               OnChange = ebDescriptionChange
-              ExplicitWidth = 537
             end
             object ebTitle: TEdit
               Left = 74
@@ -787,7 +763,6 @@ object FrmMain: TFrmMain
               Enabled = False
               TabOrder = 0
               OnChange = ebDescriptionChange
-              ExplicitWidth = 537
             end
           end
           object cbIncludeInJSONFile: TCheckBox
@@ -824,9 +799,6 @@ object FrmMain: TFrmMain
             Align = alClient
             Caption = ' Globals '
             TabOrder = 0
-            ExplicitLeft = -3
-            ExplicitTop = -2
-            ExplicitWidth = 367
             DesignSize = (
               370
               85)
@@ -873,7 +845,6 @@ object FrmMain: TFrmMain
               ShowHint = True
               TabOrder = 1
               Text = 'images.json'
-              ExplicitWidth = 81
             end
             object ebPrefix: TEdit
               Left = 88
@@ -884,7 +855,6 @@ object FrmMain: TFrmMain
               TabOrder = 2
               Text = 'images/Compressed'
               OnChange = ebPrefixChange
-              ExplicitWidth = 162
             end
           end
         end
@@ -902,7 +872,6 @@ object FrmMain: TFrmMain
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 1624
         object spScript: TSplitter
           Left = 0
           Top = 416
@@ -922,7 +891,6 @@ object FrmMain: TFrmMain
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 1624
           object Panel1: TPanel
             Left = 0
             Top = 0
@@ -933,7 +901,6 @@ object FrmMain: TFrmMain
             BevelOuter = bvNone
             Caption = ' Compression logs:'
             TabOrder = 0
-            ExplicitWidth = 1624
           end
           object mmMessages: TMemo
             Left = 0
@@ -957,7 +924,6 @@ object FrmMain: TFrmMain
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitWidth = 1624
           object Panel4: TPanel
             Left = 0
             Top = 0
@@ -968,7 +934,6 @@ object FrmMain: TFrmMain
             BevelOuter = bvNone
             Caption = 'Script logs:'
             TabOrder = 0
-            ExplicitWidth = 1624
           end
           object mmScript: TMemo
             Left = 0
@@ -1002,7 +967,6 @@ object FrmMain: TFrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 1644
     DesignSize = (
       1522
       35)
@@ -1035,7 +999,6 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 1
       OnClick = btnStartClick
-      ExplicitLeft = 1559
     end
     object btnScan: TButton
       Left = 1175
@@ -1047,7 +1010,6 @@ object FrmMain: TFrmMain
       TabOrder = 2
       Visible = False
       OnClick = btnScanClick
-      ExplicitLeft = 1297
     end
     object btnApply: TButton
       Left = 1351
@@ -1061,7 +1023,6 @@ object FrmMain: TFrmMain
       ShowHint = True
       TabOrder = 0
       OnClick = btnApplyClick
-      ExplicitLeft = 1473
     end
   end
   object pmCheckBoxList: TPopupMenu
