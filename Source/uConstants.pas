@@ -43,7 +43,7 @@ const
   cSplashBGColor = 5209163;
   //uJPEGCompressor
   cScaleBelowQuality = 25;
-  cMinQuality = 1;  //allow user pick 1
+  cMinQuality = 1;
   cMaxQuality = 100;
   cDefaultQuality = 80;
   cTargetInterval = 5;

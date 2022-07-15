@@ -112,8 +112,6 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 0
             OnClick = cblFilesClick
-            ExplicitLeft = -1
-            ExplicitHeight = 845
           end
         end
         object pnlImage: TPanel
@@ -949,7 +947,6 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
-            ExplicitWidth = 1624
           end
         end
         object pnlScript: TPanel
@@ -992,7 +989,6 @@ object FrmMain: TFrmMain
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 1
-            ExplicitWidth = 1624
           end
         end
       end

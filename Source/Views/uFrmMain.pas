@@ -3,10 +3,9 @@ unit uFrmMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.jpeg, Vcl.Samples.Spin, SuperObject, Vcl.ComCtrls, Vcl.Menus,
-  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, DateUtils, ShellApi, DosCommand, uFormData,
-  Vcl.Buttons, Generics.Collections, Img32.Panels, uImageConfig, uLicenseValidator, uConstants, uDynamicScript, uMainController;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, Vcl.Graphics, Vcl.Samples.Spin,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Menus,
+  Vcl.CheckLst, System.IOUtils, System.Types, System.UITypes, ShellApi, Vcl.Buttons, System.Classes, uConstants, uMainController;
 
 type
   TFrmMain = class(TForm)
@@ -255,9 +254,6 @@ var
   FrmMain: TFrmMain;
 
 implementation
-
-uses
-  uDlgFilter, uDlgProgress, REST.JSON, uFrmShellScript;
 
 {$R *.dfm}
 
