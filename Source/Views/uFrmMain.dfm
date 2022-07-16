@@ -489,7 +489,7 @@ object FrmMain: TFrmMain
               Top = 19
               Width = 82
               Height = 22
-              Hint = ' Set to 0 to disable (~250KB is ideal for websites).'
+              Hint = ' Set to 0 to disable'
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -1027,8 +1027,8 @@ object FrmMain: TFrmMain
   end
   object pmCheckBoxList: TPopupMenu
     OnPopup = pmCheckBoxListPopup
-    Left = 50
-    Top = 446
+    Left = 194
+    Top = 198
     object mniSelectAll: TMenuItem
       Caption = 'Select all'
       OnClick = mniSelectAllClick
@@ -1059,8 +1059,15 @@ object FrmMain: TFrmMain
       Caption = '-'
     end
     object miShowInGallery: TMenuItem
-      Caption = 'Open in gallery'
+      Caption = 'Open in Gallery'
       OnClick = miShowInGalleryClick
+    end
+    object miOpenWith: TMenuItem
+      Caption = 'Open in Paint'
+      OnClick = miOpenWithClick
+    end
+    object N9: TMenuItem
+      Caption = '-'
     end
     object miShowInExplorer: TMenuItem
       Caption = 'Show in folder'
@@ -1068,8 +1075,8 @@ object FrmMain: TFrmMain
     end
   end
   object pmLogs: TPopupMenu
-    Left = 106
-    Top = 446
+    Left = 306
+    Top = 262
     object miClear: TMenuItem
       Caption = 'Clear'
       OnClick = miClearClick
@@ -1085,7 +1092,7 @@ object FrmMain: TFrmMain
         OnClick = mmiOpenFolderClick
       end
       object mmiOpen: TMenuItem
-        Caption = 'Open JPG'
+        Caption = 'Add JPGs'
         ShortCut = 114
         OnClick = mmiOpenClick
       end
@@ -1122,6 +1129,13 @@ object FrmMain: TFrmMain
         Caption = 'Fullscreen'
         ShortCut = 123
         OnClick = miFullscreenClick
+      end
+      object N10: TMenuItem
+        Caption = '-'
+      end
+      object ClearImageList1: TMenuItem
+        Caption = 'Clear Image List'
+        OnClick = ClearImageList1Click
       end
       object N2: TMenuItem
         Caption = '-'
@@ -1211,11 +1225,15 @@ object FrmMain: TFrmMain
   end
   object pmViews: TPopupMenu
     OnPopup = pmViewsPopup
-    Left = 232
-    Top = 448
+    Left = 408
+    Top = 320
     object miSplit: TMenuItem
       Caption = 'Split'
       OnClick = miSplitClick
+    end
+    object StretchandSplit1: TMenuItem
+      Caption = 'Stretch and Split'
+      OnClick = StretchandSplit1Click
     end
     object N4: TMenuItem
       Caption = '-'
@@ -1237,12 +1255,12 @@ object FrmMain: TFrmMain
     Enabled = False
     Interval = 500
     OnTimer = tmrOnShowTimer
-    Left = 188
-    Top = 448
+    Left = 388
+    Top = 248
   end
   object pmScriptLogs: TPopupMenu
-    Left = 146
-    Top = 446
+    Left = 306
+    Top = 342
     object miClearSciptLogs: TMenuItem
       Caption = 'Clear'
       OnClick = miClearSciptLogsClick

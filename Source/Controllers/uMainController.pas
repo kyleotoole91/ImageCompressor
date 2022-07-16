@@ -35,6 +35,7 @@ type
     fOrigPnlGlobalsWidth,
     fOrigPnlIncludeFileWidth,
     fOrigPnlCompressionWidth: integer;
+    fPersistFilename: string;
     procedure LoadImageConfig(const AFilename: string);
     procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
@@ -45,7 +46,10 @@ type
     constructor Create(const AOwnerView: TComponent);
     destructor Destroy; override;
     procedure ScanDisk;
+    procedure CheckAddPath;
     procedure Scan(Sender: TObject);
+    procedure Refresh(Sender: TObject);
+    procedure OpenWith(Sender: TObject);
     procedure CheckListPopup(Sender: TObject);
     procedure OpenSelectedExplorer(Sender: TObject);
     procedure OpenSelectedImage(Sender: TObject);
@@ -139,6 +143,7 @@ begin
   fTotalSavedKB := 0;
   fFilterSizeKB := 0;
   fSelectedFilename := '';
+  fPersistFilename := '';
   fWorkingDir := TPath.GetPicturesPath;
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+cDefaultOutDir;
   fJPEGCompressor := TJPEGCompressor.Create;
@@ -251,46 +256,75 @@ begin
 end;
 
 function TMainController.ShowFileSelect(Sender: TObject): string;
+var
+  a: integer;
+  fileOpenDlg: TFileOpenDialog;
+begin
+  result := '';
+  fileOpenDlg := TFileOpenDialog.Create(fMainView);
+  try
+    try
+      with fileOpenDlg, OwnerView(fMainView) do begin
+        FileTypes.Add.FileMask := cJpgExt;
+        FileTypes.Add.FileMask := cJpegExt;
+        DefaultFolder := ebStartPath.Text;
+        Options := [fdoFileMustExist, fdoAllowMultiSelect];
+        if Execute then begin
+          cbCompressPreview.Checked := false;
+          fWorkingDir := ExtractFilePath(FileName);
+          result := Filename;
+          CheckAddPath;
+          OwnerView(fMainView).imgHome.Picture.Assign(nil);
+          OwnerView(fMainView).imgOriginal.Picture.Assign(nil);
+          ClearImagePreviewLabels;
+          SetControlState(false);
+          if FileExists(result) then begin
+            btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
+            LoadImagePreview(result);
+            for a := 0 to Files.Count-1 do
+              cblFiles.Items.Insert(0, (Files.Strings[a]));
+            cblFiles.Checked[0] := true;
+            SetControlState(true);
+          end else begin
+            result := '';
+            SetControlState(false);
+          end;
+        end;
+      end;
+    except
+      on e: exception do begin
+        result := '';
+        MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
+      end;
+    end;
+  finally
+    fSelectedFilename := result;
+    fileOpenDlg.Free;
+  end;
+end;
+
+function TMainController.ShowFolderSelect(Sender: TObject): string;
 begin
   result := '';
   with TFileOpenDialog.Create(fMainView) do begin
     try
-      try
-        with OwnerView(fMainView) do begin
-          FileTypes.Add.FileMask := cJpgExt;
-          FileTypes.Add.FileMask := cJpegExt;
-          DefaultFolder := ebStartPath.Text;
-          Options := [fdoFileMustExist];
-          if Execute then begin
-            cbCompressPreview.Checked := false;
-            fWorkingDir := ExtractFilePath(FileName);
-            result := Filename;
-            ebStartPath.Text := fWorkingDir;
-            cblFiles.Clear;
-            OwnerView(fMainView).imgHome.Picture.Assign(nil);
-            OwnerView(fMainView).imgOriginal.Picture.Assign(nil);
-            ClearImagePreviewLabels;
-            SetControlState(false);
-            if FileExists(result) then begin
-              btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
-              LoadImagePreview(result);
-              cblFiles.Items.Add(ExtractFileName(result));
-              cblFiles.Checked[0] := true;
-              SetControlState(true);
-            end else begin
-              result := '';
-              SetControlState(false);
-            end;
+      with OwnerView(fMainView) do begin
+        FileTypes.Add.FileMask := cJpgExt;
+        FileTypes.Add.FileMask := cJpegExt;
+        DefaultFolder := ebStartPath.Text;
+        Options := [fdoPickFolders];
+        if Execute then begin
+          result := FileName;
+          if (Sender = ebOutputDir) or
+             (Sender = miSelectOutputDir) then
+            ebOutputDir.Text := result
+          else begin
+            ebStartPath.Text := result;
+            Scan(Sender);
           end;
-        end;
-      except
-        on e: exception do begin
-          result := '';
-          MessageDlg(e.Classname+' '+e.message, mtError, [mbOK], 0);
         end;
       end;
     finally
-      fSelectedFilename := result;
       Free;
     end;
   end;
@@ -305,33 +339,6 @@ begin
       if RecordModified then begin
         fFilterSizeKB := Size;
         Scan(Sender);
-      end;
-    finally
-      Free;
-    end;
-  end;
-end;
-
-function TMainController.ShowFolderSelect(Sender: TObject): string;
-begin
-  result := '';
-  with TFileOpenDialog.Create(fMainView) do begin
-    try
-      with OwnerView(fMainView) do begin
-        FileTypes.Add.FileMask := cJpgExt;
-        FileTypes.Add.FileMask := cJpegExt;
-        DefaultFolder := ebOutputDir.Text;
-        Options := [fdoPickFolders];
-        if Execute then begin
-          result := FileName;
-          if (Sender = ebOutputDir) or
-             (Sender = miSelectOutputDir) then
-            ebOutputDir.Text := result
-          else begin
-            ebStartPath.Text := result;
-            Scan(Sender);
-          end;
-        end;
       end;
     finally
       Free;
@@ -496,6 +503,21 @@ begin
     cbRotateAmount.Enabled := cbApplyGraphics.Checked;
     lbResampling.Enabled := cbApplyGraphics.Checked;
     lbRotation.Enabled := cbApplyGraphics.Checked;
+  end;
+end;
+
+procedure TMainController.CheckAddPath;
+var
+  a: integer;
+begin
+  with OwnerView(fMainView) do begin
+    if (cblFiles.Items.Count >= 1) and
+       (ExtractFilePath(cblFiles.Items[0]) = '') then begin
+      for a := 0 to cblFiles.Items.Count-1 do begin
+        if ExtractFilePath(cblFiles.Items[a]) = '' then
+          cblFiles.Items[a] := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
+      end;
+    end;
   end;
 end;
 
@@ -946,8 +968,7 @@ begin
         ok := true;
       if ok and ValidSelection(Sender) then begin
         if runScript and
-          (mrYes <> MessageDlg('You are configured to run the deployment script after the compression queue has finished.'+sLineBreak+sLineBreak+
-                               'Are you sure you want to run the deployment script? ', mtWarning, [mbYes, mbNo], 0)) then
+          (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
           runScript := false;
         Screen.Cursor := crHourGlass;
         dlgProgrss := TDlgProgress.Create(fMainView);
@@ -1264,6 +1285,37 @@ begin
   end;
 end;
 
+procedure TMainController.Refresh(Sender: TObject);
+var
+  a: integer;
+  function FileMatch: boolean;
+  begin
+    with OwnerView(fMainView) do begin
+      if ExtractFilePath(cblFiles.Items[a]) = '' then
+        result := cblFiles.Items[a] = ExtractFilename(fPersistFilename)
+      else
+        result := cblFiles.Items[a] = fPersistFilename;
+    end;
+  end;
+begin
+  if fSelectedFilename <> '' then begin
+    Scan(Sender);
+    if fPersistFilename <> '' then begin
+      with OwnerView(fMainView) do begin
+        for a := 0 to cblFiles.Count-1 do begin
+          if FileMatch then begin
+            cblFiles.Selected[a] := true;
+            fSelectedFilename := fpersistFilename;
+            break;
+          end;
+        end;
+      end;
+    end;
+    LoadSelectedFromFile(false)
+  end else
+    Scan(Sender);
+end;
+
 procedure TMainController.ResizeEvent(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
@@ -1401,6 +1453,11 @@ begin
   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOWNORMAL);
 end;
 
+procedure TMainController.OpenWith(Sender: TObject);
+begin
+  ShellExecute(OwnerView(fMainView).Handle, 'open', PChar('mspaint'), PChar(fSelectedFilename), nil, SW_SHOW);
+end;
+
 procedure TMainController.SaveFormSettings;
 begin
   fMainModel.SaveFormSettings;
@@ -1417,6 +1474,7 @@ begin
     if (not fDragAndDropping) and
        (Sender <> miClearFiles) then
       ScanDisk;
+    fPersistFilename := fSelectedFilename;
     Screen.Cursor := crHourGlass;
     cblFiles.Items.BeginUpdate;
     badFilenames := TStringList.Create;
@@ -1448,19 +1506,14 @@ begin
         SetControlState(imageLoaded);
       end;
     finally
-      badFilenames.Free;
       if cblFiles.Items.Count = 0 then begin
         imgHome.Picture.Assign(nil);
         imgOriginal.Picture.Assign(nil);
         ClearImagePreviewLabels;
-      end else begin
-        if DirectoryScanned then
-          cblFiles.Selected[0] := true
-        else
-          cblFiles.Selected[cblFiles.Count-1] := true;
       end;
       mmMessages.Lines.Add(fMessages.Text);
       fMessages.Clear;
+      badFilenames.Free;
       cblFiles.Items.EndUpdate;
       Screen.Cursor := crDefault;
     end;
@@ -1491,9 +1544,6 @@ begin
           for filename in filenames do
             FilenameList.Add(filename);
         end;
-        if (not FormOpenClose) and
-           (FilenameList.Count = 0) then
-          MessageDlg('No images found.', mtWarning, mbOKCancel, 0);
         DirectoryScanned := true;
       except
         on e: exception do

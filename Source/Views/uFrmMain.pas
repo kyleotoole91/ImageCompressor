@@ -150,6 +150,11 @@ type
     ebPrefix: TEdit;
     lbClientWidth: TLabel;
     lbClientHeight: TLabel;
+    miOpenWith: TMenuItem;
+    N9: TMenuItem;
+    ClearImageList1: TMenuItem;
+    N10: TMenuItem;
+    StretchandSplit1: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -226,6 +231,9 @@ type
     procedure miShowInExplorerClick(Sender: TObject);
     procedure pmCheckBoxListPopup(Sender: TObject);
     procedure spFilesMoved(Sender: TObject);
+    procedure miOpenWithClick(Sender: TObject);
+    procedure ClearImageList1Click(Sender: TObject);
+    procedure StretchandSplit1Click(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -427,7 +435,7 @@ var
   begin
     if AFilename <> '' then begin
       if fFilenameList.IndexOf(AFilename) = -1 then
-        fFilenameList.Add(AFilename)
+        fFilenameList.Insert(0, AFilename)
       else
         selectedIndex := fFilenameList.IndexOf(AFilename);
     end;
@@ -439,7 +447,7 @@ begin
   try
     fileCount := DragQueryFile(AMsg.WParam, $FFFFFFFF, caFilename, cnMaxCharArrayLen);
     if fDirectoryScanned then begin
-      fFilenameList.Clear;
+      fMainController.CheckAddPath;
       ebStartPath.Text := '';
       fDirectoryScanned := false;
     end;
@@ -461,11 +469,18 @@ begin
     if errCount > 0 then
       MessageDlg(IntToStr(errCount)+ ' unsupported files were not added' , TMsgDlgType.mtError, [mbOk], 0);
     fMainController.Scan(nil);
-    if selectedIndex > -1 then begin
+    fMainController.LoadSelectedFromFile;
+    if (selectedIndex > -1) then begin
       cblFiles.Selected[selectedIndex] := true;
       fMainController.SelectedFilename := cblFiles.Items[selectedIndex];
+    end else if (fileCount > 0) then begin
+      for a := 0 to cblFiles.Count-1 do begin
+        if cblFiles.Items[a] = fMainController.SelectedFilename then begin
+          cblFiles.Selected[a] := true;
+          break;
+        end;
+      end;
     end;
-    fMainController.LoadSelectedFromFile;
   finally
     fMainController.DragAndDropping := false;
     DragFinish(AMsg.WParam);
@@ -527,6 +542,11 @@ begin
   end;
 end;
 
+procedure TFrmMain.ClearImageList1Click(Sender: TObject);
+begin
+  fMainController.ClearFilesClick(Sender);
+end;
+
 procedure TFrmMain.CloseApplication1Click(Sender: TObject);
 begin
   if MessageDlg(cMsgClosingApp, TMsgDlgType.mtConfirmation, mbOKCancel, 0) = mrOK then
@@ -545,7 +565,7 @@ end;
 
 procedure TFrmMain.miRefreshClick(Sender: TObject);
 begin
-  fMainController.Scan(Sender);
+  fMainController.Refresh(Sender);
 end;
 
 procedure TFrmMain.miReplaceOriginalsClick(Sender: TObject);
@@ -677,6 +697,11 @@ begin
   fMainController.ResizeEvent(Sender);
 end;
 
+procedure TFrmMain.miOpenWithClick(Sender: TObject);
+begin
+  fMainController.OpenWith(Sender);
+end;
+
 procedure TFrmMain.cbCompressClick(Sender: TObject);
 begin
   if not fLoading then
@@ -691,6 +716,16 @@ end;
 procedure TFrmMain.spOriginalMoved(Sender: TObject);
 begin
   fMainController.ResizeEvent(Sender);
+end;
+
+procedure TFrmMain.StretchandSplit1Click(Sender: TObject);
+begin
+  cbStretchOriginal.Checked := true;
+  cbStretch.Checked := true;
+  fMainController.StretchClick(cbStretch);
+  fMainController.StretchClick(cbStretchOriginal);
+  miSplitClick(miSplit);
+  //TODO: Force the scale of the smaller scale previewed jpeg to that of the large one, this will improve image quality
 end;
 
 procedure TFrmMain.FormResize(Sender: TObject);

@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Imaging.jpeg, Winapi.ShellAPI,
-  Vcl.ExtCtrls, Vcl.Imaging.pngimage, uLicenseValidator, uConstants, SuperObject;
+  Vcl.ExtCtrls, Vcl.Imaging.pngimage, uLicenseValidator, uConstants, SuperObject, System.StrUtils;
 
 type
   TfrmSplash = class(TForm)
@@ -112,26 +112,22 @@ begin
     Timer1.Enabled := false;
     Screen.Cursor := crHourGlass;
     licenseKey := fLicenseValidator.GetLicenseKey;
-    lbMessage.Caption := 'Checking license, please wait...';
+    lbMessage.Caption := cMsgCheckingLicense;
     Application.ProcessMessages;
     fHasValidLicense := fLicenseValidator.LicenseIsValid(false);
     if not fHasValidLicense then begin
       Screen.Cursor := crDefault;
       if licenseKey <> '' then begin
-        lbMessage.Caption := 'Your license key could not be validated.';
-        MessageDlg('Your license key could not be validated.'+sLineBreak+
-                   'The free version of the application will now launch. '+sLineBreak+sLineBreak+
-                   'Error returned:'+sLineBreak+
-                    fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
+        lbMessage.Caption := cMsgLicenseNotValid;
+        MessageDlg(cMsgLicenseCouldNotValidate+fLicenseValidator.Message, TMsgDlgType.mtError, [mbOk], 0);
       end;
-      lbMessage.Caption := 'Starting Free version..';
+      lbMessage.Caption := cStartingFreeVersion;
     end else
-      lbMessage.Caption := 'Starting Pro version...';
+      lbMessage.Caption := cStartingProVersion;
     if UpdateAvailable and
        (not AlreadyAskedVersion) then begin
       if (fLatestVersion <> fVersion) and
-         (MessageDlg('There is a newer version of this software ('+fLatestVersion+').'+sLineBreak+sLineBreak+
-                     'Would you like to download it now? '+sLineBreak, TMsgDlgType.mtError, [mbYes, mbNo], 0) = mrYes) then begin
+         (MessageDlg(Format(cMsgNewerVersionAvailble, [fLatestVersion]), TMsgDlgType.mtError, [mbYes, mbNo], 0) = mrYes) then begin
         fStartApp := false;
         ShellExecute(0, 'open', PChar(cLatestVersionURL), nil, nil, SW_SHOWNORMAL);
       end;
