@@ -36,8 +36,9 @@ type
     fOrigPnlIncludeFileWidth,
     fOrigPnlCompressionWidth: integer;
     fPersistFilename: string;
+    function ValidFormSelection: boolean;
     procedure LoadImageConfig(const AFilename: string);
-    procedure HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
+    procedure HasPayWallConfig(out AHasRotation, AHasResampling, AHasMultipleImages, AHasReplaceOriginals, AHasScript: boolean);
     procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
     procedure LoadCompressedPreview(Sender: TObject);
     procedure ApplyResponsiveLogic(Sender: TObject);
@@ -48,6 +49,7 @@ type
     procedure ScanDisk;
     procedure CheckAddPath;
     procedure Scan(Sender: TObject);
+    procedure QualityRadioClick(Sender: TObject);
     procedure Refresh(Sender: TObject);
     procedure OpenWith(Sender: TObject);
     procedure CheckListPopup(Sender: TObject);
@@ -134,9 +136,12 @@ begin
   else
     fMainView := AOwnerView;
   fMainModel := TMainModel.Create(Self);
-  fOrigPnlGlobalsWidth := TFrmMain(fMainView).pnlGlobals.Width;
-  fOrigPnlIncludeFileWidth := TFrmMain(fMainView).pnlIncludeInFile.Width;
-  fOrigPnlCompressionWidth := TFrmMain(fMainView).pnlCompression.Width;
+  with OwnerView(fMainView) do begin
+    fOrigPnlGlobalsWidth := pnlGlobals.Width;
+    fOrigPnlIncludeFileWidth := pnlIncludeInFile.Width;
+    fOrigPnlCompressionWidth := pnlCompression.Width;
+    seTargetKBs.Enabled := false;
+  end;
   fDynamicScript := TDynamicScript.Create(AOwnerView);
   fMessages := TStringList.Create;
   fNumProcessed := 0;
@@ -203,7 +208,7 @@ begin
       with OwnerView(fMainView) do begin
         OutputPath := ebOutputDir.Text;
         SourcePrefix := ebPrefix.Text;
-        AllowSave := not EvaluationMode;
+        EvaluationMode := OwnerView(fMainView).EvaluationMode;
         RunOnCompletion := fRunScript;
       end;
       ShowModal;
@@ -390,6 +395,9 @@ begin
             rbByHeight.Checked := not ShrinkByWidth;
             cbCompressPreview.Checked := false;
             cbStretch.Checked := Stretch;
+            rbTarget.Checked := TargetKB > 0;
+            seTargetKBs.Enabled := rbTarget.Checked;
+            seQuality.Enabled := not rbTarget.Checked;
             cbRotateAmount.ItemIndex := integer(RotateAmount);
             cbResampleMode.ItemIndex := integer(ResampleMode);
             if rbByWidth.Checked then
@@ -741,6 +749,16 @@ begin
   end;
 end;
 
+procedure TMainController.QualityRadioClick(Sender: TObject);
+begin
+  with OwnerView(fMainView) do begin
+    seTargetKBs.Enabled := rbTarget.Checked;
+    seQuality.Enabled := rbQuality.Checked;
+    if not seTargetKBs.Enabled then
+      seTargetKBs.Value := 0;
+  end;
+end;
+
 procedure TMainController.LoadCompressedPreview(Sender: TObject);
 var
   stretch,
@@ -873,7 +891,7 @@ begin
   end;
 end;
 
-procedure TMainController.HasPayWallConfig(out AHasTargetKB, AHasResampling, AHasMultipleImages, AHasReplaceOriginals: boolean);
+procedure TMainController.HasPayWallConfig(out AHasRotation, AHasResampling, AHasMultipleImages, AHasReplaceOriginals, AHasScript: boolean);
 var
   key: string;
   imgConfig: TImageConfig;
@@ -881,18 +899,17 @@ begin
   with OwnerView(fMainView) do begin
     AHasMultipleImages := SelectedFileCount > 1;
     AHasReplaceOriginals := fFormData.ReplaceOriginals;
+    AHasScript := fRunScript;
     if cbApplyToAll.Checked then begin
-      AHasTargetKB := cbCompress.Checked and (seTargetKBs.Value > 0);
       AHasResampling := cbApplyGraphics.Checked and (cbResampleMode.ItemIndex > integer(rmRecommended)); //allow rmRecommended in demo
+      AHasRotation := cbRotateAmount.ItemIndex > integer(raNone);
     end else begin
-      AHasTargetKB := false;
       AHasResampling := false;
       for key in fImageConfigList.Keys do begin
         if fImageConfigList.TryGetValue(key, imgConfig) then begin
-          //allow target file size in evaluation
-          //AHasTargetKB := AHasTargetKB or (imgConfig.Compress and (imgConfig.TagetKB > 0));
           AHasResampling := AHasResampling or (imgConfig.ApplyGraphics and (imgConfig.ResampleMode <> rmNone));
-          if AHasTargetKB and AHasResampling then
+          AHasRotation := AHasRotation or (imgConfig.ApplyGraphics and (imgConfig.RotateAmount <> raNone));
+          if AHasRotation or AHasResampling then
             Break;
         end;
       end;
@@ -959,73 +976,75 @@ begin
     startTime := Now;
     runScript := fRunScript;
     try
-      replacingOriginals := (FormData.ReplaceOriginals) or
-                            (IncludeTrailingPathDelimiter(ebStartPath.Text) = IncludeTrailingPathDelimiter(ebOutputDir.Text));
-      if replacingOriginals then begin
-        ok := mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                                 'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
-      end else
-        ok := true;
-      if ok and ValidSelection(Sender) then begin
-        if runScript and
-          (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
-          runScript := false;
-        Screen.Cursor := crHourGlass;
-        dlgProgrss := TDlgProgress.Create(fMainView);
-        try
-          dlgProgrss.Show;
-          Application.ProcessMessages;
-          fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
-          fTotalSavedKB := 0;
-          fNumProcessed := 0;
-          mmMessages.Lines.BeginUpdate;
-          fMessages.Add('--------------------- Start ---------------------------');
-          filename := ebStartPath.Text;
-          if LowerCase(ExtractFileExt(filename)) = '.jpg' then
-            ProcessFile(filename)
-          else begin
-            for filename in FilenameList do begin
-              if FormData.DeepScan or (not DirectoryScanned) then begin
-                if (cblFiles.Items.IndexOf(filename) >= 0) and
-                   (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
-                  ProcessFile(filename);
-              end else begin
-                if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
-                   (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then
-                  ProcessFile(filename);
+      if ValidFormSelection then begin
+        replacingOriginals := (FormData.ReplaceOriginals) or
+                              (IncludeTrailingPathDelimiter(ebStartPath.Text) = IncludeTrailingPathDelimiter(ebOutputDir.Text));
+        if replacingOriginals then begin
+          ok := mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
+                                   'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
+        end else
+          ok := true;
+        if ok and ValidSelection(Sender) then begin
+          if runScript and
+            (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
+            runScript := false;
+          Screen.Cursor := crHourGlass;
+          dlgProgrss := TDlgProgress.Create(fMainView);
+          try
+            dlgProgrss.Show;
+            Application.ProcessMessages;
+            fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
+            fTotalSavedKB := 0;
+            fNumProcessed := 0;
+            mmMessages.Lines.BeginUpdate;
+            fMessages.Add('--------------------- Start ---------------------------');
+            filename := ebStartPath.Text;
+            if LowerCase(ExtractFileExt(filename)) = '.jpg' then
+              ProcessFile(filename)
+            else begin
+              for filename in FilenameList do begin
+                if FormData.DeepScan or (not DirectoryScanned) then begin
+                  if (cblFiles.Items.IndexOf(filename) >= 0) and
+                     (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
+                    ProcessFile(filename);
+                end else begin
+                  if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
+                     (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then
+                    ProcessFile(filename);
+                end;
               end;
             end;
+            if cbIncludeInJSONFile.Checked then
+              CreateJSONFile(fJSON);
+            if runScript then
+              RunDeploymentScript;
+          finally
+            dlgProgrss.Free;
+            if fNumProcessed = 0 then
+              MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
+            else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
+              fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
+              fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
+              MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
+                         'Total saved (KB): '+fTotalSavedKB.ToString+sLineBreak+
+                         'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
+            end else begin
+              fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
+              MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
+                         'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
+            end;
+            fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
+            fMessages.Add('--------------------- End -------------------------');
+            mmMessages.Lines.Add(fMessages.Text);
+            mmMessages.Lines.EndUpdate;
+            if FormData.ReplaceOriginals then
+              LoadImagePreview(fSelectedFilename);
+            if runScript then begin
+              ToggleScriptLog;
+              pcMain.ActivePage := tsLogs;
+            end;
+            Screen.Cursor := crDefault;
           end;
-          if cbIncludeInJSONFile.Checked then
-            CreateJSONFile(fJSON);
-          if runScript then
-            RunDeploymentScript;
-        finally
-          dlgProgrss.Free;
-          if fNumProcessed = 0 then
-            MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
-          else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
-            fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
-            fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
-            MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
-                       'Total saved (KB): '+fTotalSavedKB.ToString+sLineBreak+
-                       'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
-          end else begin
-            fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
-            MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
-                       'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
-          end;
-          fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
-          fMessages.Add('--------------------- End -------------------------');
-          mmMessages.Lines.Add(fMessages.Text);
-          mmMessages.Lines.EndUpdate;
-          if FormData.ReplaceOriginals then
-            LoadImagePreview(fSelectedFilename);
-          if runScript then begin
-            ToggleScriptLog;
-            pcMain.ActivePage := tsLogs;
-          end;
-          Screen.Cursor := crDefault;
         end;
       end;
     finally
@@ -1373,10 +1392,28 @@ begin
   end;
 end;
 
+function TMainController.ValidFormSelection: boolean;
+begin
+  with TStringList.Create do begin;
+    try
+      with OwnerView(fMainView) do begin
+        if (rbTarget.Checked) and
+           (seTargetKBs.Value = 0) then
+          Add('Please enter a target file size in kilobytes');
+      end;
+    if Count > 0 then
+      MessageDlg(Text, mtWarning, mbOKCancel, 0);
+    finally
+      result := Count = 0;
+      Free
+    end;
+  end;
+end;
+
 function TMainController.ValidSelection(Sender: TObject): boolean;
 var
   sl: TStringList;
-  hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals: boolean;
+  hasRotation, hasResampling, hasMultipleImages, hasReplaceOriginals, hasScript: boolean;
 begin
   sl := TStringList.Create;
   try
@@ -1385,15 +1422,17 @@ begin
          (not FileIsSelected) then
         MessageDlg(cBatchProcessEvaluation, mtError, mbOKCancel, 0)
       else if EvaluationMode then begin
-        HasPayWallConfig(hasTargetKB, hasResampling, hasMultipleImages, hasReplaceOriginals);
+        HasPayWallConfig(hasRotation, hasResampling, hasMultipleImages, hasReplaceOriginals, hasScript);
         if hasReplaceOriginals then
           sl.Add(cReplaceOrigEval);
         if hasMultipleImages then
           sl.Add(cBatchProcessingEval);
-        if hasTargetKB then
-          sl.Add(cTargetEval);
+        if hasRotation then
+          sl.Add(cRotationEval);
         if hasResampling then
           sl.Add(cResamplingEval);
+        if hasScript then
+          sl.Add(cScriptEval);
         if sl.Count = 1 then
           sl.CommaText := sl.CommaText.Replace('• ', '');
         if sl.Count > 0 then begin

@@ -38,14 +38,14 @@ type
     fFile: TStringList;
     fRecordModified: boolean;
     fRunOnCompletion: boolean;
-    fAllowSave: boolean;
+    fEvaluationMode: boolean;
     procedure SetRunOnCompletion(const Value: boolean);
     procedure SetOutputPath(const Value: string);
     procedure SetSourcePrefix(const Value: string);
   public
     property RecordModified: boolean read fRecordModified;
     property RunOnCompletion: boolean read fRunOnCompletion write SetRunOnCompletion;
-    property AllowSave: boolean read fAllowSave write fAllowSave;
+    property EvaluationMode: boolean read fEvaluationMode write fEvaluationMode;
     property OutputPath: string write SetOutputPath;
     property SourcePrefix: string write SetSourcePrefix;
   end;
@@ -59,7 +59,7 @@ uses
 procedure TFrmShellScript.FormCreate(Sender: TObject);
 begin
   inherited;
-  fAllowSave := false;
+  fEvaluationMode := false;
   fFile := TStringList.Create;
   fScriptRunner := TDynamicScript.Create(Self);
   fScriptRunner.OutputLines := mmOutput.Lines;
@@ -127,7 +127,8 @@ end;
 procedure TFrmShellScript.btnOKClick(Sender: TObject);
 begin
   inherited;
-  if not fAllowSave then begin
+  if fEvaluationMode and
+     cbRunOnCompletion.Checked then begin
     if MessageDlg(cDeployScriptEval+sLineBreak+sLineBreak+cLinkToBuyMessage, mtWarning, mbOKCancel, 0) = mrOk then
       ShellExecute(0, 'open', PChar(cGumRoadLink), nil, nil, SW_SHOWNORMAL);
   end else begin

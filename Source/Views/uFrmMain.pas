@@ -155,6 +155,8 @@ type
     ClearImageList1: TMenuItem;
     N10: TMenuItem;
     StretchandSplit1: TMenuItem;
+    rbQuality: TRadioButton;
+    rbTarget: TRadioButton;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -234,6 +236,8 @@ type
     procedure miOpenWithClick(Sender: TObject);
     procedure ClearImageList1Click(Sender: TObject);
     procedure StretchandSplit1Click(Sender: TObject);
+    procedure rbTargetClick(Sender: TObject);
+    procedure rbQualityClick(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -591,6 +595,16 @@ end;
 procedure TFrmMain.pmViewsPopup(Sender: TObject);
 begin
   fMainController.ViewsPopup(Sender);
+end;
+
+procedure TFrmMain.rbQualityClick(Sender: TObject);
+begin
+  fMainController.QualityRadioClick(Sender);
+end;
+
+procedure TFrmMain.rbTargetClick(Sender: TObject);
+begin
+ fMainController.QualityRadioClick(Sender);
 end;
 
 procedure TFrmMain.ebDescriptionChange(Sender: TObject);

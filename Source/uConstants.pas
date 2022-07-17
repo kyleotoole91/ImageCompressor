@@ -107,7 +107,11 @@ const
 
   cTargetEval='• Target file size is only available in the Pro version.';
 
-  cResamplingEval='• Best resampling is only available in the Pro version';
+  cResamplingEval='• Best resampling is only available in the Pro version.';
+
+  cScriptEval = 'Deployment scripts are only available in the Pro version.';
+
+  cRotationEval='Rotation is only available in the Pro version.';
 
   cMsgShellScriptWelcome = 'Use this feature to create and run .bat file. '+sLineBreak+sLineBreak+
                            'This script can be set to run after the compression queue has completed. '+sLineBreak+sLineBreak+

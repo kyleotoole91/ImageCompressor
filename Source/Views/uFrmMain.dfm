@@ -452,26 +452,26 @@ object FrmMain: TFrmMain
             Margins.Bottom = 0
             Align = alClient
             TabOrder = 1
+            ExplicitLeft = 3
+            ExplicitTop = 4
             DesignSize = (
               370
               79)
             object lbQuality: TLabel
-              Left = 11
-              Top = 21
-              Width = 38
+              Left = 27
+              Top = 23
+              Width = 3
               Height = 13
-              Caption = 'Quality:'
             end
             object lbTargetKB: TLabel
               Left = 215
               Top = 22
-              Width = 59
+              Width = 3
               Height = 13
-              Caption = 'Target (KB):'
             end
             object seQuality: TSpinEdit
-              Left = 55
-              Top = 17
+              Left = 69
+              Top = 19
               Width = 50
               Height = 22
               Hint = 'Press Enter key or leave field to set the value'
@@ -479,7 +479,7 @@ object FrmMain: TFrmMain
               MinValue = 10
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 0
+              TabOrder = 1
               Value = 90
               OnExit = seQualityExit
               OnKeyDown = seQualityKeyDown
@@ -494,7 +494,7 @@ object FrmMain: TFrmMain
               MinValue = 0
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 1
+              TabOrder = 3
               Value = 0
               OnChange = seTargetKBsChange
               OnExit = CheckCompressPreviewLoad
@@ -515,10 +515,30 @@ object FrmMain: TFrmMain
               PageSize = 1
               Position = 90
               ShowHint = True
-              TabOrder = 2
+              TabOrder = 4
               TickStyle = tsNone
               OnChange = tbQualityChange
               OnKeyDown = tbQualityKeyDown
+            end
+            object rbQuality: TRadioButton
+              Left = 9
+              Top = 17
+              Width = 54
+              Height = 25
+              Caption = 'Quality:'
+              Checked = True
+              TabOrder = 0
+              TabStop = True
+              OnClick = rbQualityClick
+            end
+            object rbTarget: TRadioButton
+              Left = 200
+              Top = 16
+              Width = 74
+              Height = 25
+              Caption = 'Target (KB):'
+              TabOrder = 2
+              OnClick = rbTargetClick
             end
           end
           object cbCompress: TCheckBox
@@ -825,7 +845,7 @@ object FrmMain: TFrmMain
               Top = 24
               Width = 80
               Height = 17
-              Hint = 'Apply the current settings displayed when you click Start'
+              Hint = 'Use the same settings for all the selected images'
               Caption = 'Apply to all '
               Checked = True
               ParentShowHint = False
