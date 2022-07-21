@@ -402,7 +402,8 @@ begin
             cbCompressPreview.Checked := false;
             cbStretch.Checked := Stretch;
             rbTarget.Checked := TargetKB > 0;
-            seTargetKBs.Enabled := rbTarget.Checked;
+            rbQuality.Checked := not rbTarget.Checked;
+            seTargetKBs.Enabled := rbTarget.Checked and not rbQuality.Checked;
             seQuality.Enabled := not rbTarget.Checked;
             cbRotateAmount.ItemIndex := integer(RotateAmount);
             cbResampleMode.ItemIndex := integer(ResampleMode);
@@ -639,7 +640,7 @@ begin
   with OwnerView(fMainView) do begin
     seQuality.Enabled := cbCompress.Checked and (seTargetKBs.Value = 0);
     tbQuality.Enabled := seQuality.Enabled;
-    seTargetKBs.Enabled := cbCompress.Checked;
+    seTargetKBs.Enabled := cbCompress.Checked and not rbQuality.Checked;
     lbQuality.Enabled := cbCompress.Checked;
     lbTargetKB.Enabled := cbCompress.Checked;
     CheckCompressPreviewLoad(Sender);

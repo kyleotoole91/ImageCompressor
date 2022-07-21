@@ -489,6 +489,7 @@ object FrmMain: TFrmMain
               Width = 82
               Height = 22
               Hint = ' Set to 0 to disable'
+              Enabled = False
               MaxValue = 0
               MinValue = 0
               ParentShowHint = False
@@ -1134,6 +1135,13 @@ object FrmMain: TFrmMain
         OnClick = miSelectOutputDirClick
       end
       object N6: TMenuItem
+        Caption = '-'
+      end
+      object miFileSaveSettings: TMenuItem
+        Caption = 'Save current settings'
+        OnClick = miFileSaveSettingsClick
+      end
+      object N12: TMenuItem
         Caption = '-'
       end
       object CloseApplication1: TMenuItem

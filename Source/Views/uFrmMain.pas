@@ -160,6 +160,8 @@ type
     rbByHeight: TRadioButton;
     cbSetThumbnailSize: TMenuItem;
     N11: TMenuItem;
+    N12: TMenuItem;
+    miFileSaveSettings: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -242,6 +244,7 @@ type
     procedure rbTargetClick(Sender: TObject);
     procedure rbQualityClick(Sender: TObject);
     procedure cbSetThumbnailSizeClick(Sender: TObject);
+    procedure miFileSaveSettingsClick(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -646,6 +649,11 @@ end;
 procedure TFrmMain.Refresh1Click(Sender: TObject);
 begin
   fMainController.Scan(Sender);
+end;
+
+procedure TFrmMain.miFileSaveSettingsClick(Sender: TObject);
+begin
+  miSaveSettings.Click;
 end;
 
 function TFrmMain.SelectedFileCount: integer;

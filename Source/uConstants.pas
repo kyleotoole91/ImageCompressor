@@ -19,7 +19,7 @@ const
   cDefaultTargetKB=0;
   cDefaultClientWidth=1522;
   cDefaultClientHeight=800;
-  cDefaultFilesWidth=247;
+  cDefaultFilesWidth=185;
   cDefaultImageSplitPause=784;
   cDefaultOriginalWidth=375;
   cDefaultPnlScriptHeight=543;

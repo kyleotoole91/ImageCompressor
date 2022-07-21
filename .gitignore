@@ -16,3 +16,4 @@ Source/uSecrets.pas
 *.rsm
 Win64/Debug/settings.json
 Win64/Release/settings.json
+Win64/Debug/settingsDel.json
