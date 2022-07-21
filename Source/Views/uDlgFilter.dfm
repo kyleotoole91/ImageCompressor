@@ -4,7 +4,7 @@ object DlgFilter: TDlgFilter
   BorderStyle = bsDialog
   Caption = 'Filter'
   ClientHeight = 80
-  ClientWidth = 272
+  ClientWidth = 312
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,15 +19,15 @@ object DlgFilter: TDlgFilter
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 8
-    Top = 19
-    Width = 83
+    Left = 25
+    Top = 17
+    Width = 118
     Height = 13
-    Caption = 'Larger than (KB):'
+    Caption = 'Images larger than (KB):'
   end
   object SpinEdit1: TSpinEdit
-    Left = 101
-    Top = 16
+    Left = 149
+    Top = 14
     Width = 156
     Height = 22
     MaxValue = 0
@@ -36,8 +36,8 @@ object DlgFilter: TDlgFilter
     Value = 0
   end
   object Button1: TButton
-    Left = 182
-    Top = 44
+    Left = 230
+    Top = 42
     Width = 75
     Height = 25
     Caption = 'Cancel'
@@ -45,8 +45,8 @@ object DlgFilter: TDlgFilter
     OnClick = Button1Click
   end
   object Button2: TButton
-    Left = 101
-    Top = 44
+    Left = 149
+    Top = 42
     Width = 75
     Height = 25
     Caption = 'OK'

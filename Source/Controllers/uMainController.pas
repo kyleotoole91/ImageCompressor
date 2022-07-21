@@ -448,6 +448,10 @@ begin
       with OwnerView(fMainView) do begin
         fImageChanged := true;
         fSelectedFilename := GetSelectedFileName;
+        if fSelectedFilename <> '' then
+          lbFiles.Caption := 'Selected Images: ('+ExtractFileName(fSelectedFilename)+')'
+        else
+          lbFiles.Caption := 'Selected Images: ';
         result := (fSelectedFilename <> '') and FileExists(fSelectedFilename);
         if (fImageChanged) or
            (not result) then //to the image

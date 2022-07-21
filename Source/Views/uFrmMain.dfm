@@ -83,7 +83,7 @@ object FrmMain: TFrmMain
           object lbFiles: TLabel
             Left = 3
             Top = 4
-            Width = 83
+            Width = 236
             Height = 13
             Caption = 'Selected Images:'
           end
@@ -1200,7 +1200,7 @@ object FrmMain: TFrmMain
     object Filter1: TMenuItem
       Caption = 'Filter'
       object miFilesSizeFilter: TMenuItem
-        Caption = 'Files larger than (KB)'
+        Caption = 'By image file size'
         ShortCut = 115
         OnClick = miFilesSizeFilterClick
       end
@@ -1240,7 +1240,7 @@ object FrmMain: TFrmMain
     object miAdvanced: TMenuItem
       Caption = 'Advanced'
       object miDeploymentScript: TMenuItem
-        Caption = 'Deployment script'
+        Caption = 'Deployment Script Editor'
         OnClick = miDeploymentScriptClick
       end
     end

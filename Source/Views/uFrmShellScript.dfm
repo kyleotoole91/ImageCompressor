@@ -1,9 +1,9 @@
 object FrmShellScript: TFrmShellScript
   Left = 0
   Top = 0
-  Caption = 'Deployment Script (.bat)'
-  ClientHeight = 429
-  ClientWidth = 1070
+  Caption = 'Deployment Script Editor (.bat)'
+  ClientHeight = 548
+  ClientWidth = 1308
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,20 +19,23 @@ object FrmShellScript: TFrmShellScript
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 388
-    Width = 1070
+    Top = 507
+    Width = 1308
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 388
+    ExplicitWidth = 1070
     object Panel2: TPanel
-      Left = 640
+      Left = 878
       Top = 0
       Width = 430
       Height = 41
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitLeft = 640
       object btnOK: TButton
         Left = 269
         Top = 8
@@ -79,15 +82,17 @@ object FrmShellScript: TFrmShellScript
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1064
-    Height = 382
+    Width = 1302
+    Height = 501
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 1064
+    ExplicitHeight = 382
     object Splitter1: TSplitter
-      Left = 640
+      Left = 845
       Top = 0
-      Height = 382
+      Height = 501
       Align = alRight
       ExplicitLeft = 424
       ExplicitTop = -3
@@ -96,8 +101,8 @@ object FrmShellScript: TFrmShellScript
     object mmInput: TMemo
       Left = 0
       Top = 0
-      Width = 640
-      Height = 382
+      Width = 845
+      Height = 501
       Hint = 
         'Eg: Execute commands to transfer images via SCP and import the .' +
         'json into database'
@@ -116,12 +121,14 @@ object FrmShellScript: TFrmShellScript
       ShowHint = True
       TabOrder = 0
       OnChange = mmInputChange
+      ExplicitWidth = 640
+      ExplicitHeight = 382
     end
     object mmOutput: TMemo
-      Left = 643
+      Left = 848
       Top = 0
-      Width = 421
-      Height = 382
+      Width = 454
+      Height = 501
       Hint = 'Output'
       Align = alRight
       Color = clDefault
