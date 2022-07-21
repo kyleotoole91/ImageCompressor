@@ -245,6 +245,7 @@ type
     procedure rbQualityClick(Sender: TObject);
     procedure cbSetThumbnailSizeClick(Sender: TObject);
     procedure miFileSaveSettingsClick(Sender: TObject);
+    procedure cbApplyToAllClick(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -870,6 +871,11 @@ end;
 procedure TFrmMain.cbApplyGraphicsClick(Sender: TObject);
 begin
   fMainController.ApplyGraphicsClick(Sender);
+end;
+
+procedure TFrmMain.cbApplyToAllClick(Sender: TObject);
+begin
+  btnApply.Enabled := not cbApplyToAll.Checked;
 end;
 
 procedure TFrmMain.cbSetThumbnailSizeClick(Sender: TObject);

@@ -449,9 +449,9 @@ begin
         fImageChanged := true;
         fSelectedFilename := GetSelectedFileName;
         if fSelectedFilename <> '' then
-          lbFiles.Caption := 'Selected Images: ('+ExtractFileName(fSelectedFilename)+')'
+          lbFiles.Caption := 'Selected: '+ExtractFileName(fSelectedFilename)
         else
-          lbFiles.Caption := 'Selected Images: ';
+          lbFiles.Caption := 'Selected: ';
         result := (fSelectedFilename <> '') and FileExists(fSelectedFilename);
         if (fImageChanged) or
            (not result) then //to the image
@@ -751,7 +751,8 @@ begin
             if fImageConfig.AddToJSON and
                FileExists(AFilename) then
               AddToJSONFile(OriginalFileSize, CompressedFileSize, ThumbnailFilename);
-            fMessages.Add(Messages.Text);
+            if Messages.Text <> '' then
+              fMessages.Add(Messages.Text);
           finally
             Free;
           end;
@@ -998,7 +999,8 @@ end;
 
 procedure TMainController.StartClick(Sender: TObject);
 var
-  filename: string;
+  filename,
+  durationMsg: string;
   startTime: TDateTime;
   dlgProgrss: TDlgProgress;
   runScript: boolean;
@@ -1054,22 +1056,28 @@ begin
               RunDeploymentScript;
           finally
             dlgProgrss.Free;
+            if SecondsBetween(startTime, Now) = 0 then
+              durationMsg := 'Total duration (ms): '+MilliSecondsBetween(startTime, Now).ToString
+            else
+              durationMsg := 'Total duration (s): '+SecondsBetween(startTime, Now).ToString;
             if fNumProcessed = 0 then
               MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
             else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
+
               fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
               fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
               MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
                          'Total saved (KB): '+fTotalSavedKB.ToString+sLineBreak+
-                         'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
+                         durationMsg, mtInformation, [mbOK], 0);
             end else begin
               fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
               MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
-                         'Total duration (s): '+SecondsBetween(startTime, Now).ToString, mtInformation, [mbOK], 0);
+                         durationMsg, mtInformation, [mbOK], 0);
             end;
-            fMessages.Add('Total duration (s) '+SecondsBetween(startTime, Now).ToString);
+            fMessages.Add(durationMsg);
             fMessages.Add('--------------------- End -------------------------');
-            mmMessages.Lines.Add(fMessages.Text);
+            if Trim(fMessages.Text) <> '' then
+              mmMessages.Lines.Add(fMessages.Text);
             mmMessages.Lines.EndUpdate;
             if FormData.ReplaceOriginals then
               LoadImagePreview(fSelectedFilename);
@@ -1596,7 +1604,8 @@ begin
         imgOriginal.Picture.Assign(nil);
         ClearImagePreviewLabels;
       end;
-      mmMessages.Lines.Add(fMessages.Text);
+      if Trim(fMessages.Text) <> '' then
+        mmMessages.Lines.Add(fMessages.Text);
       fMessages.Clear;
       badFilenames.Free;
       cblFiles.Items.EndUpdate;

@@ -83,9 +83,9 @@ object FrmMain: TFrmMain
           object lbFiles: TLabel
             Left = 3
             Top = 4
-            Width = 236
+            Width = 45
             Height = 13
-            Caption = 'Selected Images:'
+            Caption = 'Selected:'
           end
           object cblFiles: TCheckListBox
             AlignWithMargins = True
@@ -841,18 +841,18 @@ object FrmMain: TFrmMain
               Caption = 'Source Prefix:'
             end
             object cbApplyToAll: TCheckBox
-              Left = 15
+              Left = 22
               Top = 23
-              Width = 75
+              Width = 58
               Height = 17
               Hint = 'Use the same settings for all the selected images'
-              Caption = 'Apply to all '
+              Caption = 'Global'
               Checked = True
               ParentShowHint = False
               ShowHint = True
               State = cbChecked
               TabOrder = 0
-              OnClick = cbIncludeInJSONFileClick
+              OnClick = cbApplyToAllClick
             end
             object ebFilename: TEdit
               Left = 263
@@ -871,7 +871,10 @@ object FrmMain: TFrmMain
               Top = 49
               Width = 264
               Height = 21
+              Hint = 'The directory name on the remote server '
               Anchors = [akLeft, akTop, akRight]
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 3
               Text = 'images/Compressed'
               OnChange = ebPrefixChange

@@ -115,10 +115,10 @@ const
 
   cRotationEval='Rotation is only available in the Pro version.';
 
-  cMsgShellScriptWelcome = 'Use this feature to create and run .bat file. '+sLineBreak+sLineBreak+
+  cMsgShellScriptWelcome = 'Use this feature to create a deployment script (.bat). '+sLineBreak+sLineBreak+
                            'This script can be set to run after the compression queue has completed. '+sLineBreak+sLineBreak+
                            'This is usefull for deploying the compressed images to a website (eg FTP/SCP/SSH).'+sLineBreak+sLineBreak+
-                           'Tip: Use SHH Keys so you can connect to your server without needing to enter a password.';
+                           'Tip: Use SHH Keys so you can connect to your server(s) without needing to enter a password.';
 
   cMsgScanningDisk = 'Scanning disk, please wait...';
 
