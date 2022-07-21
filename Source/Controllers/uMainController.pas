@@ -1090,7 +1090,7 @@ begin
     with OwnerView(fMainView) do begin
       if not FormOpenClose then begin
         if Sender = cbStretchOriginal then begin
-          imgOriginal.Stretch := cbStretch.Checked;
+          imgOriginal.Stretch := cbStretchOriginal.Checked;
           LoadImage(false, imgOriginal, miApplyBestFit.Checked);
         end else begin
           imgHome.Stretch := cbStretch.Checked;
