@@ -120,7 +120,7 @@ uses
 
   function OwnerView(const AOwner: TComponent): TFrmMain;
   begin
-    if AOwner is TFrmMain then
+    if Assigned(AOwner) and (AOwner is TFrmMain) then
       result := TFrmMain(AOwner)
     else
       raise Exception.Create(cUnSupportedClassType);
@@ -159,7 +159,7 @@ begin
   fFormData := TFormData.Create;
   fImageConfigList := TDictionary<string, TImageConfig>.Create;
   ToggleScriptLog(true);
-  {$IFDEF DEBUG}
+  {$IFDEF DEBUG} //Show window size in realtime
   TFrmMain(fMainView).lbClientWidth.Visible := true;
   TFrmMain(fMainView).lbClientHeight.Visible := true;
   {$ENDIF}
@@ -361,7 +361,7 @@ begin
       if FileExists(newfilename) then
         System.SysUtils.DeleteFile(newfilename);
       ForceDirectories(ExtractFilePath(newfilename));
-      if cbIncludeInJSONFile.Checked and
+      if (cbIncludeInJSONFile.Checked) and
          (AJSON.AsArray.Count > 0) then
         AJSON.SaveTo(newfilename, true);
     end;
@@ -754,6 +754,7 @@ begin
   with OwnerView(fMainView) do begin
     seTargetKBs.Enabled := rbTarget.Checked;
     seQuality.Enabled := rbQuality.Checked;
+    tbQuality.Enabled := rbQuality.Checked;
     if not seTargetKBs.Enabled then
       seTargetKBs.Value := 0;
   end;

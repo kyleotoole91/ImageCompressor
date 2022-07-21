@@ -119,7 +119,6 @@ type
     lbTargetKB: TLabel;
     seQuality: TSpinEdit;
     seTargetKBs: TSpinEdit;
-    tbQuality: TTrackBar;
     cbCompress: TCheckBox;
     pnlGraphics: TPanel;
     GroupBox3: TGroupBox;
@@ -157,6 +156,7 @@ type
     StretchandSplit1: TMenuItem;
     rbQuality: TRadioButton;
     rbTarget: TRadioButton;
+    tbQuality: TTrackBar;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);

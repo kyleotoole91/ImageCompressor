@@ -11,6 +11,7 @@ object FrmMain: TFrmMain
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   Menu = mmMenu
   OldCreateOrder = False
   Position = poScreenCenter
@@ -452,8 +453,6 @@ object FrmMain: TFrmMain
             Margins.Bottom = 0
             Align = alClient
             TabOrder = 1
-            ExplicitLeft = 3
-            ExplicitTop = 4
             DesignSize = (
               370
               79)
@@ -479,7 +478,7 @@ object FrmMain: TFrmMain
               MinValue = 10
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 1
+              TabOrder = 0
               Value = 90
               OnExit = seQualityExit
               OnKeyDown = seQualityKeyDown
@@ -494,11 +493,31 @@ object FrmMain: TFrmMain
               MinValue = 0
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 3
+              TabOrder = 1
               Value = 0
               OnChange = seTargetKBsChange
               OnExit = CheckCompressPreviewLoad
               OnKeyDown = seTargetKBsKeyDown
+            end
+            object rbQuality: TRadioButton
+              Left = 9
+              Top = 17
+              Width = 54
+              Height = 25
+              Caption = 'Quality:'
+              Checked = True
+              TabOrder = 2
+              TabStop = True
+              OnClick = rbQualityClick
+            end
+            object rbTarget: TRadioButton
+              Left = 200
+              Top = 16
+              Width = 74
+              Height = 25
+              Caption = 'Target (KB):'
+              TabOrder = 3
+              OnClick = rbTargetClick
             end
             object tbQuality: TTrackBar
               Left = 1
@@ -519,26 +538,6 @@ object FrmMain: TFrmMain
               TickStyle = tsNone
               OnChange = tbQualityChange
               OnKeyDown = tbQualityKeyDown
-            end
-            object rbQuality: TRadioButton
-              Left = 9
-              Top = 17
-              Width = 54
-              Height = 25
-              Caption = 'Quality:'
-              Checked = True
-              TabOrder = 0
-              TabStop = True
-              OnClick = rbQualityClick
-            end
-            object rbTarget: TRadioButton
-              Left = 200
-              Top = 16
-              Width = 74
-              Height = 25
-              Caption = 'Target (KB):'
-              TabOrder = 2
-              OnClick = rbTargetClick
             end
           end
           object cbCompress: TCheckBox
