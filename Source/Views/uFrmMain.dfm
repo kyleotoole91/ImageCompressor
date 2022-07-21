@@ -51,7 +51,7 @@ object FrmMain: TFrmMain
         Height = 722
         Align = alClient
         BevelOuter = bvNone
-        TabOrder = 0
+        TabOrder = 2
         object spFiles: TSplitter
           Left = 247
           Top = 0
@@ -364,7 +364,7 @@ object FrmMain: TFrmMain
         BevelOuter = bvNone
         Color = clBtnHighlight
         ParentBackground = False
-        TabOrder = 1
+        TabOrder = 0
         object Panel5: TPanel
           Left = 0
           Top = 0
@@ -429,7 +429,7 @@ object FrmMain: TFrmMain
         Margins.Right = 0
         Align = alTop
         BevelOuter = bvNone
-        TabOrder = 2
+        TabOrder = 1
         object pnlCompression: TPanel
           AlignWithMargins = True
           Left = 3
@@ -501,7 +501,7 @@ object FrmMain: TFrmMain
             end
             object rbQuality: TRadioButton
               Left = 9
-              Top = 17
+              Top = 16
               Width = 54
               Height = 25
               Caption = 'Quality:'
@@ -607,34 +607,6 @@ object FrmMain: TFrmMain
               Caption = 'Rotation:'
               Enabled = False
             end
-            object rbByHeight: TRadioButton
-              Left = 17
-              Top = 47
-              Width = 70
-              Height = 17
-              Hint = 'Maintains aspect ratio'
-              Caption = 'Max Height'
-              Enabled = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 2
-              OnClick = SetShrinkState
-            end
-            object rbByWidth: TRadioButton
-              Left = 17
-              Top = 20
-              Width = 70
-              Height = 17
-              Hint = 'Maintains aspect ratio'
-              Caption = 'Max Width'
-              Checked = True
-              Enabled = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 0
-              TabStop = True
-              OnClick = SetShrinkState
-            end
             object seMaxWidthPx: TSpinEdit
               Left = 120
               Top = 17
@@ -646,7 +618,7 @@ object FrmMain: TFrmMain
               MinValue = 0
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 1
+              TabOrder = 2
               Value = 1920
               OnExit = CheckCompressPreviewLoad
               OnKeyDown = seMaxWidthPxKeyDown
@@ -707,6 +679,34 @@ object FrmMain: TFrmMain
                 '180'#176
                 '270'#176)
             end
+            object rbByWidth: TRadioButton
+              Left = 17
+              Top = 20
+              Width = 70
+              Height = 17
+              Hint = 'Maintains aspect ratio'
+              Caption = 'Max Width'
+              Checked = True
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              TabStop = True
+              OnClick = SetShrinkState
+            end
+            object rbByHeight: TRadioButton
+              Left = 17
+              Top = 47
+              Width = 70
+              Height = 17
+              Hint = 'Maintains aspect ratio'
+              Caption = 'Max Height'
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              OnClick = SetShrinkState
+            end
           end
           object cbApplyGraphics: TCheckBox
             Left = 9
@@ -757,7 +757,7 @@ object FrmMain: TFrmMain
             end
             object lbTitle: TLabel
               Left = 44
-              Top = 21
+              Top = 22
               Width = 24
               Height = 13
               Caption = 'Title:'
@@ -765,7 +765,7 @@ object FrmMain: TFrmMain
             end
             object ebDescription: TEdit
               Left = 74
-              Top = 45
+              Top = 46
               Width = 288
               Height = 21
               Anchors = [akLeft, akTop, akRight]
@@ -775,7 +775,7 @@ object FrmMain: TFrmMain
             end
             object ebTitle: TEdit
               Left = 74
-              Top = 18
+              Top = 19
               Width = 288
               Height = 21
               Anchors = [akLeft, akTop, akRight]
@@ -822,7 +822,7 @@ object FrmMain: TFrmMain
               370
               85)
             object lbFilename: TLabel
-              Left = 117
+              Left = 211
               Top = 25
               Width = 46
               Height = 13
@@ -833,16 +833,16 @@ object FrmMain: TFrmMain
             end
             object lbPrefix: TLabel
               AlignWithMargins = True
-              Left = 14
+              Left = 22
               Top = 52
               Width = 68
               Height = 13
               Caption = 'Source Prefix:'
             end
             object cbApplyToAll: TCheckBox
-              Left = 14
-              Top = 24
-              Width = 80
+              Left = 15
+              Top = 23
+              Width = 75
               Height = 17
               Hint = 'Use the same settings for all the selected images'
               Caption = 'Apply to all '
@@ -854,26 +854,40 @@ object FrmMain: TFrmMain
               OnClick = cbIncludeInJSONFileClick
             end
             object ebFilename: TEdit
-              Left = 169
+              Left = 263
               Top = 22
-              Width = 191
+              Width = 97
               Height = 21
               Hint = 'Leaving blank will not create a JSON file.'
               Anchors = [akLeft, akTop, akRight]
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 1
+              TabOrder = 2
               Text = 'images.json'
             end
             object ebPrefix: TEdit
-              Left = 88
+              Left = 96
               Top = 49
-              Width = 272
+              Width = 264
               Height = 21
               Anchors = [akLeft, akTop, akRight]
-              TabOrder = 2
+              TabOrder = 3
               Text = 'images/Compressed'
               OnChange = ebPrefixChange
+            end
+            object cbCreateThumbnails: TCheckBox
+              Left = 96
+              Top = 23
+              Width = 109
+              Height = 17
+              Hint = 'Use the same settings for all the selected images'
+              Caption = 'Create thumbnails'
+              Checked = True
+              ParentShowHint = False
+              ShowHint = True
+              State = cbChecked
+              TabOrder = 1
+              OnClick = cbIncludeInJSONFileClick
             end
           end
         end

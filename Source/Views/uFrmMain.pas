@@ -126,8 +126,6 @@ type
     lbMaxWidthPx: TLabel;
     lbResampling: TLabel;
     lbRotation: TLabel;
-    rbByHeight: TRadioButton;
-    rbByWidth: TRadioButton;
     seMaxWidthPx: TSpinEdit;
     seMaxHeightPx: TSpinEdit;
     cbResampleMode: TComboBox;
@@ -157,6 +155,9 @@ type
     rbQuality: TRadioButton;
     rbTarget: TRadioButton;
     tbQuality: TTrackBar;
+    cbCreateThumbnails: TCheckBox;
+    rbByWidth: TRadioButton;
+    rbByHeight: TRadioButton;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);

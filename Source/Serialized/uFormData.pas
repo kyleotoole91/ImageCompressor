@@ -8,6 +8,7 @@ uses
 type
   TFormData = class(TImageConfig)
   strict private
+    fCreateThumbnails: boolean;
     fSourceDir: string;
     fOutputDir: string;
     fFilterSizeKB: Int64;
@@ -35,6 +36,7 @@ type
     property SourcePrefix: string read fSourcePrefix write fSourcePrefix;
     property RunScript: boolean read fRunScript write fRunScript;
     property AutoPrefix: boolean read fAutoPrefix write fAutoPrefix;
+    property CreateThumbnails: boolean read fCreateThumbnails write fCreateThumbnails;
   end;
 
 implementation
@@ -51,6 +53,7 @@ procedure TFormData.Reset;
 begin
   inherited;
   fApplyToAll := true;
+  fCreateThumbnails := false;
   fJSONFilename := cJSONFilename;
   fSourceDir := TPath.GetPicturesPath;
   fOutputDir := IncludeTrailingPathDelimiter(fSourceDir) + cDefaultOutDir;

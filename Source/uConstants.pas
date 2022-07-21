@@ -3,6 +3,8 @@ unit uConstants;
 interface
 
 const
+  cThumnailMaxSizePx=160;
+  cThumbnailSuffix='_Thumbnail';
   //uFrmShellScript
   cShellOutputPathVar='[OUTPUT_DIR]';
   cShellPrefixVar='[SOURCE_PREFIX]';

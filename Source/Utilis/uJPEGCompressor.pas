@@ -10,6 +10,7 @@ type
   TRotateAmount = (raNone=0, ra90=1, ra180=2, ra270=3);
   TJPEGCompressor = class(TObject)
   strict private
+    fCreateThumbnail: boolean;
     fResampleMode: TResampleMode;
     fRotateAmount: TRotateAmount;
     fOriginalFilesize,
@@ -35,6 +36,10 @@ type
     fImageHeight,
     fMinQuality: integer;
     fReplaceOriginal: boolean;
+    fThumbnailFilename,
+    fOutputFilename: string;
+    fShrinkByBoth: boolean;
+    function DoCreateThumbnail: boolean;
     procedure CompressJPG(const AJPEG: TJPEGImage; const ACompressionQuality: integer);
     function SizeOfJPEG(const AJPEG: TJPEGImage): Int64;
     procedure TryCompression(const AQuality: integer=cMinQuality);
@@ -69,6 +74,10 @@ type
     property ResampleMode: TResampleMode read fResampleMode write fResampleMode;
     property JPEGOriginal: TJPEGImage read fJPEGOriginal write fJPEGOriginal;
     property ReplaceOriginal: boolean read fReplaceOriginal write fReplaceOriginal;
+    property CreateThumbnail: boolean read fCreateThumbnail write fCreateThumbnail;
+    property ThumbnailFilename: string read fThumbnailFilename write fThumbnailFilename;
+    property OutputFilename: string read fOutputFilename write fOutputFilename;
+    property ShrinkByBoth: boolean read fShrinkByBoth write fShrinkByBoth;
   end;
 
 implementation
@@ -78,6 +87,10 @@ implementation
 constructor TJPEGCompressor.Create;
 begin
   inherited;
+  fShrinkByBoth := false;
+  fOutputFilename := '';
+  fThumbnailFilename := '';
+  fCreateThumbnail := false;
   fReplaceOriginal := false;
   fCompress := true;
   fCompressionQuality := cMaxQuality;
@@ -113,6 +126,29 @@ begin
   end;
 end;
 
+function TJPEGCompressor.DoCreateThumbnail: boolean;
+var
+  compressor: TJPEGCompressor;
+begin
+  if (fCreateThumbnail) and
+     (fThumbnailFilename = '') then
+    fThumbnailFilename := ChangeFileExt((ChangeFileExt(fOutputFilename, ''))+cThumbnailSuffix, ExtractFileExt(fOutputFilename));
+  result := fCreateThumbnail and (fThumbnailfilename <> '');
+  if result then begin
+    compressor := TJPEGCompressor.Create;
+    try
+      compressor.Compress := false;
+      compressor.ApplyGraphics := true;
+      compressor.ShrinkByMaxPx := cThumnailMaxSizePx;
+      compressor.ShrinkByBoth := true;
+      compressor.OutputFilename := fThumbnailfilename;
+      result := compressor.Process(fOutputFilename);
+    finally
+      compressor.Free;
+    end;
+  end;
+end;
+
 function TJPEGCompressor.Process(const AFilename: string=''; const ASaveToDisk: boolean=true): boolean;
 begin
   try
@@ -133,16 +169,19 @@ begin
         fJPEG.SaveToStream(fMemoryStreamOrig);
         fMemoryStreamOrig.Position := 0;
         fJPEGOriginal.LoadFromStream(fMemoryStreamOrig);
-        fOriginalFilesize := Round(fMemoryStreamOrig.Size / cBytesToKB);
       end else begin
         fMemoryStreamOrig.Position := 0;
         fJPEG.LoadFromStream(fMemoryStreamOrig);
       end;
+      fOriginalFilesize := Round(fMemoryStreamOrig.Size / cBytesToKB);
       ShrinkAndRotate;
       if fCompress then begin
-        if fTargetKB > 0 then
-          CompressToTarget
-        else
+        if fTargetKB > 0 then begin
+          if fTargetKB < fOriginalFilesize then
+            CompressToTarget
+          else
+            fJPEG.CompressionQuality := 100;
+        end else
           TryCompression(fCompressionQuality);
       end else if fAlreadyCompressed then begin
         CompressJPG(fJPEG, cMaxQuality);
@@ -153,11 +192,18 @@ begin
       fCompressedFilesize := Round(SizeOfJPEG(fJPEG) / cBytesToKB);
       fEndTime := Now;
       if ASaveToDisk then begin
-        SaveToDisk;
-        fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+SecondsBetween(fStartTime, fEndTime).ToString+'ms');
-        fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
-        fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
-        fMessages.Add('JPEG Saved to: '+fOutputDir+ExtractFileName(fSourceFilename));
+        if fCompressedFilesize >= fOriginalFilesize then begin
+          result := false;
+          fMessages.Add('File not compressed: '+fSourceFilename);
+        end else begin
+          result := SaveToDisk;
+          fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+SecondsBetween(fStartTime, fEndTime).ToString+'ms');
+          fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
+          fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
+          fMessages.Add('JPEG saved to: '+fOutputFilename);
+          if DoCreateThumbnail then
+            fMessages.Add('JPEG thumbnail saved to: '+fThumbnailFilename);
+        end;
       end else
         SaveToStream;
     end else
@@ -237,13 +283,19 @@ begin
     img32 := TImage32.Create;
     shrinked := false;
     try
-      if fShrinkByHeight then
+      if fShrinkByBoth then begin
+        if fJPEG.Height >= fJPEG.Width then
+          reducePC := fShrinkByMaxPx / fJPEG.Height
+        else
+          reducePC := fShrinkByMaxPx / fJPEG.Width;
+      end else if fShrinkByHeight then
         reducePC := fShrinkByMaxPx / fJPEG.Height
       else
         reducePC := fShrinkByMaxPx / fJPEG.Width;
       case fResampleMode of
         rmNone: begin
-          if (fShrinkByMaxPx > 0) and (fShrinkByMaxPx < size) then begin
+          if (fShrinkByMaxPx > 0) and
+             (fShrinkByMaxPx < size) then begin
             fBitmap.Height := Round(fJPEG.Height * reducePC);
             fBitmap.Width := Round(fJPEG.Width * reducePC);
             fBitmap.Canvas.StretchDraw(Rect(0, 0, fBitmap.Width, fBitmap.Height), fJPEG);
@@ -307,25 +359,26 @@ begin
 end;
 
 function TJPEGCompressor.SaveToDisk: boolean;
-var
-  outputFilename: string;
 begin
   try
     if fReplaceOriginal then
       fJPEG.SaveToFile(fSourceFilename)
     else begin
-      outputFilename := ExtractFileName(fSourceFilename);
-      if FileExists(fOutputDir+outputFilename) then
-        DeleteFile(fOutputDir+outputFilename)
+      if fOutputFilename = '' then
+        fOutputFilename := fOutputDir + ExtractFileName(fSourceFilename)
+      else if ExtractFilePath(fOutputFilename) <> '' then
+        fOutputDir := ExtractFilePath(fOutputFilename);
+      if FileExists(fOutputFilename) then
+        DeleteFile(fOutputFilename)
       else
         ForceDirectories(fOutputDir);
-      fJPEG.SaveToFile(fOutputDir+outputFilename);
+      fJPEG.SaveToFile(fOutputFilename);
     end;
-    result := FileExists(fOutputDir+outputFilename);
+    result := FileExists(fOutputFilename);
   except
     on e: exception do begin
       result := false;
-      fMessages.Add('Error saving JPEG to '+fOutputDir+outputFilename)
+      fMessages.Add('Error saving JPEG to '+fOutputDir+fOutputFilename)
     end;
   end;
 end;

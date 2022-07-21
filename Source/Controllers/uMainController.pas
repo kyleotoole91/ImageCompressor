@@ -39,7 +39,7 @@ type
     function ValidFormSelection: boolean;
     procedure LoadImageConfig(const AFilename: string);
     procedure HasPayWallConfig(out AHasRotation, AHasResampling, AHasMultipleImages, AHasReplaceOriginals, AHasScript: boolean);
-    procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
+    procedure AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64; const AThumbnailFilename: string='');
     procedure LoadCompressedPreview(Sender: TObject);
     procedure ApplyResponsiveLogic(Sender: TObject);
     procedure ClearImagePreviewLabels;
@@ -90,8 +90,9 @@ type
     procedure ProcessFile(const AFilename: string);
     procedure LoadFormSettings(const ARestoreDefaults: boolean=false);
     procedure LoadImage(const ALoadCompressed: boolean; const AImage: TImage; const AApplyBestFit: boolean);
-    procedure ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
     procedure CheckHideLabels;
+    procedure ObjToForm(AImageConfig: TImageConfig=nil; const AOnlyFormData: boolean=false);
+    function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     function ShowFolderSelect(Sender: TObject): string;
     function GetSelectedFilename: string;
     function ShowFileSelect(Sender: TObject): string;
@@ -100,7 +101,6 @@ type
     function FileIsSelected: boolean;
     function LoadSelectedFromFile(const ALoadForm: boolean=true): boolean;
     function SizeOfFileKB(const AFilename: string): uInt64;
-    function FormToObj(const AImageConfig: TImageConfig=nil): TImageConfig;
     property DragAndDropping: boolean read fDragAndDropping write fDragAndDropping;
     property MainView: TComponent read fMainView write fMainView;
     property FormData: TFormData read fFormData write fFormData;
@@ -421,6 +421,7 @@ begin
               ebFilename.Text := JsonFilename;
               ebPrefix.Text := SourcePrefix;
               fRunScript := RunScript;
+              cbCreateThumbnails.Checked := CreateThumbnails;
             end;
           end;
         end;
@@ -710,6 +711,7 @@ begin
           fImageConfig.ApplyGraphics) then begin
         with TJPEGCompressor.Create do begin
           try
+            CreateThumbnail := cbCreateThumbnails.Checked;
             Compress := fImageConfig.Compress;
             ApplyGraphics := fImageConfig.ApplyGraphics;
             CompressionQuality := fImageConfig.Quality;
@@ -724,15 +726,15 @@ begin
             fTotalSavedKB := fTotalSavedKB + (OriginalFileSize - CompressedFileSize);
             if fImageConfig.AddToJSON and
                FileExists(AFilename) then
-              AddToJSONFile(OriginalFileSize, CompressedFileSize);
+              AddToJSONFile(OriginalFileSize, CompressedFileSize, ThumbnailFilename);
             fMessages.Add(Messages.Text);
           finally
             Free;
           end;
         end;
         fEndTime := Now;
+        Inc(fNumProcessed);
       end;
-      Inc(fNumProcessed);
     except
       on e: Exception do
         fMessages.Add(e.Classname+': '+e.Message);
@@ -1096,7 +1098,7 @@ begin
   end;
 end;
 
-procedure TMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64);
+procedure TMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64; const AThumbnailFilename: string='');
 var
   sourcePrefix: string;
 begin
@@ -1111,13 +1113,17 @@ begin
         else if (sourcePrefix.Contains('\')) and
                 (not sourcePrefix.EndsWith('\')) then
           sourcePrefix := sourcePrefix + '\';
-        sourcePrefix := sourcePrefix + ExtractFileName(fImageConfig.Filename);
+        sourcePrefix := sourcePrefix;
       end;
-      O[Count-1].S['original'] := sourcePrefix;
-      O[Count-1].S['description'] := fImageConfig.Description;
-      O[Count-1].S['title'] := fImageConfig.Title;
-      O[Count-1].I['fileSize'] := ACompressedFileSize;
-      O[Count-1].I['originalFilesize'] := AOriginalFileSize;
+      if fImageConfig.Title <> '' then
+        O[Count-1].S['title'] := fImageConfig.Title;
+      if fImageConfig.Description <> '' then
+        O[Count-1].S['description'] := fImageConfig.Description;
+      if (AThumbnailFilename <> '') and FileExists(AThumbnailFilename) then
+        O[Count-1].S['thumbnail'] := sourcePrefix + ExtractFileName(AThumbnailFilename);
+      O[Count-1].S['original'] := sourcePrefix + ExtractFileName(fImageConfig.Filename);
+      O[Count-1].I['uncompressedFileSizeKB'] := AOriginalFileSize;
+      O[Count-1].I['fileSizeKB'] := ACompressedFileSize;
     end;
     fMessages.Add('Added '+fImageConfig.Filename+' to JSON file')
   end;
@@ -1206,6 +1212,7 @@ begin
               JsonFilename := ebFilename.Text;
               SourcePrefix := ebPrefix.Text;
               RunScript := fRunScript;
+              CreateThumbnails := cbCreateThumbnails.Checked;
             end;
           end;
         end;
