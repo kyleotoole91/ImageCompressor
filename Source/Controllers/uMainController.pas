@@ -880,34 +880,36 @@ var
   end;
 begin
   with OwnerView(fMainView) do begin
-    if ALoadCompressed then
-      jpeg := fJPEGCompressor.JPEG
-    else
-      jpeg := fJPEGCompressor.JPEGOriginal;
-    if Assigned(jpeg) and
-       Assigned(AImage) and
-       (not FormCreating) then begin
-      try
+    if not FormOpenClose then begin
+      if ALoadCompressed then
+        jpeg := fJPEGCompressor.JPEG
+      else
+        jpeg := fJPEGCompressor.JPEGOriginal;
+      if Assigned(jpeg) and
+         Assigned(AImage) and
+         (not FormCreating) then begin
         try
-          if (AApplyBestFit) then begin  //Set scale (reduces shrink artifacting at a low cost)
-            jpeg.Scale := jsHalf; //switching scale forces update which shows the compressed version
-            SetLabels;
-            scale := integer(jpeg.Scale);
-            while (scale <= 3) and
-                  (JPEGLargerThanImageBox) do begin
-              jsScale := TJPEGScale(scale);
-              jpeg.Scale := jsScale;
-              Inc(scale);
-            end;
-          end else
-            SetLabels;
-        finally
-          if Assigned(jpeg) then
-            AImage.Picture.Assign(jpeg);
+          try
+            if (AApplyBestFit) then begin  //Set scale (reduces shrink artifacting at a low cost)
+              jpeg.Scale := jsHalf; //switching scale forces update which shows the compressed version
+              SetLabels;
+              scale := integer(jpeg.Scale);
+              while (scale <= 3) and
+                    (JPEGLargerThanImageBox) do begin
+                jsScale := TJPEGScale(scale);
+                jpeg.Scale := jsScale;
+                Inc(scale);
+              end;
+            end else
+              SetLabels;
+          finally
+            if Assigned(jpeg) then
+              AImage.Picture.Assign(jpeg);
+          end;
+        except
+          on e: exception do
+            MessageDlg(e.Message, mtError, mbOKCancel, 0)
         end;
-      except
-        on e: exception do
-          MessageDlg(e.Message, mtError, mbOKCancel, 0)
       end;
     end;
   end;
@@ -1081,12 +1083,14 @@ begin
   Screen.Cursor := crHourGlass;
   try
     with OwnerView(fMainView) do begin
-      if Sender = cbStretchOriginal then begin
-        imgOriginal.Stretch := cbStretch.Checked;
-        LoadImage(false, imgOriginal, miApplyBestFit.Checked);
-      end else begin
-        imgHome.Stretch := cbStretch.Checked;
-        LoadImage(cbCompressPreview.Checked, imgHome, miApplyBestFit.Checked);
+      if not FormOpenClose then begin
+        if Sender = cbStretchOriginal then begin
+          imgOriginal.Stretch := cbStretch.Checked;
+          LoadImage(false, imgOriginal, miApplyBestFit.Checked);
+        end else begin
+          imgHome.Stretch := cbStretch.Checked;
+          LoadImage(cbCompressPreview.Checked, imgHome, miApplyBestFit.Checked);
+        end;
       end;
     end;
   finally
