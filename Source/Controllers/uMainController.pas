@@ -793,6 +793,11 @@ begin
       fLoadingPreview := true;
       stretch := cbStretch.Checked;
       try
+        if not Assigned(fImageConfig) then begin
+          fImageConfig := TImageConfig.Create;
+          fImageConfigList.Add(fSelectedFilename, fImageConfig);
+          FormToObj(fImageConfig);
+        end;
         if Assigned(fImageConfig) then begin
           compressionChanged := fImageConfig.PreviewModified;
           FormToObj(fImageConfig);
@@ -813,9 +818,9 @@ begin
             fJPEGCompressor.MemoryStream.Position := 0;
             fJPEGCompressor.JPEG.LoadFromStream(fJPEGCompressor.MemoryStream);
           end;
+          fImageConfig.PreviewModified := false;
         end;
       finally
-        fImageConfig.PreviewModified := false;
         cbStretch.Checked := false;
         LoadImage(true, imgHome, miApplyBestFit.Checked);
         lbImgSizeKBVal.Caption := fJPEGCompressor.CompressedFilesize.ToString;
