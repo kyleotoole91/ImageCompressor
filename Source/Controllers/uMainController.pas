@@ -22,6 +22,7 @@ type
     fWorkingDir: string;
     fLicenseValidator: TLicenseValidator;
     fFilterSizeKB: uInt64;
+    fThumbnailSizePx: integer;
     fImageChanged: boolean;
     fRunScript: boolean;
     fDragAndDropping: boolean;
@@ -49,6 +50,7 @@ type
     procedure ScanDisk;
     procedure CheckAddPath;
     procedure Scan(Sender: TObject);
+    procedure ShowDlgThumbnailSize(Sender: TObject);
     procedure QualityRadioClick(Sender: TObject);
     procedure Refresh(Sender: TObject);
     procedure OpenWith(Sender: TObject);
@@ -116,7 +118,7 @@ type
 implementation
 
 uses
-  System.UITypes, uFrmMain, uConstants, uFrmShellScript, DateUtils, uDlgFilter;
+  System.UITypes, uFrmMain, uConstants, uFrmShellScript, DateUtils, uDlgFilter, uDlgThumbnailSize;
 
   function OwnerView(const AOwner: TComponent): TFrmMain;
   begin
@@ -150,6 +152,7 @@ begin
   fSelectedFilename := '';
   fPersistFilename := '';
   fWorkingDir := TPath.GetPicturesPath;
+  fThumbnailSizePx := cDefaultThumbnailMaxSizePx;
   fOutputDir := IncludeTrailingPathDelimiter(fWorkingDir)+cDefaultOutDir;
   fJPEGCompressor := TJPEGCompressor.Create;
   fLicenseValidator := TLicenseValidator.Create;
@@ -213,6 +216,9 @@ begin
       end;
       ShowModal;
       if RecordModified then begin
+        if fFormData.ReplaceOriginals and
+           RunOnCompletion then
+          MessageDlg(cMsgScriptWillNotRun, mtWarning, mbOKCancel, 0);
         fRunScript := RunOnCompletion;
         ToggleScriptLog;
       end;
@@ -415,6 +421,7 @@ begin
               ebStartPath.Text := SourceDir;
               ebOutputDir.Text := OutputDir;
               fFilterSizeKB := FilterSizeKB;
+              fThumbnailSizePx := ThumbnailSizePx;
               pnlFiles.Width := PnlFilesWidth;
               pnlOriginal.Width := PnlOriginalWidth;
               cbApplyToAll.Checked := ApplyToAll;
@@ -471,6 +478,8 @@ begin
 end;
 
 procedure TMainController.ApplyClick(Sender: TObject);
+var
+  obj: TImageConfig;
   procedure SelectCurrentImage;
   var
     a: integer;
@@ -490,7 +499,9 @@ procedure TMainController.ApplyClick(Sender: TObject);
     end;
   end;
 begin
-  FormToObj;
+  obj := FormToObj;
+  if Assigned(obj) then
+    obj.FreeOnChange := false;
   SelectCurrentImage;
   if Assigned(fImageConfig) then
     fImageConfig.RecordModified := false;
@@ -659,6 +670,13 @@ begin
       LoadSelectedFromFile;
       cbCompressClick(Sender);
       cbApplyGraphicsClick(Sender);
+      if fImageConfigList.TryGetValue(fSelectedFilename, fImageConfig) then begin
+        if fImageConfig.FreeOnChange then begin
+          fImageConfig.Free;
+          fImageConfig := nil;
+          fImageConfigList.Remove(fSelectedFilename);
+        end;
+      end;
       if fImageChanged then
         btnApply.Enabled := true;
       cblFilesClickCheck(Sender);
@@ -712,6 +730,7 @@ begin
         with TJPEGCompressor.Create do begin
           try
             CreateThumbnail := cbCreateThumbnails.Checked;
+            ThumbnailSizePx := fThumbnailSizePx;
             Compress := fImageConfig.Compress;
             ApplyGraphics := fImageConfig.ApplyGraphics;
             CompressionQuality := fImageConfig.Quality;
@@ -983,13 +1002,13 @@ begin
         replacingOriginals := (FormData.ReplaceOriginals) or
                               (IncludeTrailingPathDelimiter(ebStartPath.Text) = IncludeTrailingPathDelimiter(ebOutputDir.Text));
         if replacingOriginals then begin
-          ok := mrYes = MessageDlg('Outputing to the source directory will result in the original .jpg(s) becoming overwritten.'+#13+#10+
-                                   'Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
+          ok := mrYes = MessageDlg('Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
         end else
           ok := true;
         if ok and ValidSelection(Sender) then begin
-          if runScript and
-            (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
+          if (runScript) and
+             (not FormData.ReplaceOriginals) and
+             (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
             runScript := false;
           Screen.Cursor := crHourGlass;
           dlgProgrss := TDlgProgress.Create(fMainView);
@@ -1019,7 +1038,7 @@ begin
             end;
             if cbIncludeInJSONFile.Checked then
               CreateJSONFile(fJSON);
-            if runScript then
+            if runScript and not FormData.ReplaceOriginals then
               RunDeploymentScript;
           finally
             dlgProgrss.Free;
@@ -1176,8 +1195,13 @@ begin
     if (fSelectedFilename <> '') or Assigned(AImageConfig) then begin
       if Assigned(AImageConfig) then
         result := AImageConfig
-      else
+      else begin
+        if not Assigned(fImageConfig) then begin
+          fImageConfig := TImageConfig.Create;
+          fImageConfigList.Add(fSelectedFilename, fImageConfig);
+        end;
         result := fImageConfig;
+      end;
       if Assigned(result) then begin
         with result do begin
           Compress := cbCompress.Checked;
@@ -1206,6 +1230,7 @@ begin
               SourceDir := ebStartPath.Text;
               OutputDir := ebOutputDir.Text;
               FilterSizeKB := fFilterSizeKB;
+              ThumbnailSizePx := fThumbnailSizePx;
               PnlFilesWidth := pnlFiles.Width;
               PnlOriginalWidth := pnlOriginal.Width;
               ApplyToAll := cbApplyToAll.Checked;
@@ -1268,15 +1293,14 @@ procedure TMainController.ReplaceOriginals(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
     miReplaceOriginals.Checked := not miReplaceOriginals.Checked;
-    FormData.ReplaceOriginals := miReplaceOriginals.Checked;
-    if ValidSelection(Sender) then begin
-      ebOutputDir.Enabled := not FormData.ReplaceOriginals;
-      ebFilename.Enabled := not FormData.ReplaceOriginals;
-      cbIncludeInJSONFile.Enabled := not FormData.ReplaceOriginals;
-      if cbIncludeInJSONFile.Checked then
-        cbIncludeInJSONFile.Checked := false;
+    if (not FormData.RunScript) or
+       ((not miReplaceOriginals.Checked) or
+        (MessageDlg(cMsgReplaceOriginalsScriptWarning, mtWarning, mbOKCancel, 0) = mrOk)) then begin
+      if not ValidSelection(Sender) then
+        miReplaceOriginals.Checked := false;
     end else
       miReplaceOriginals.Checked := false;
+    FormData.ReplaceOriginals := miReplaceOriginals.Checked;
   end;
 end;
 
@@ -1647,6 +1671,20 @@ begin
       lbRotation.Enabled := cbApplyGraphics.Checked;
       CheckCompressPreviewLoad(Sender);
       btnStart.Enabled := AllowStart;
+    end;
+  end;
+end;
+
+procedure TMainController.ShowDlgThumbnailSize(Sender: TObject);
+begin
+  with TDlgThumbnailSize.Create(fMainView) do begin
+    try
+      SizePx := fThumbnailSizePx;
+      ShowModal;
+      if RecordModified then
+        fThumbnailSizePx := SizePx;
+    finally
+      Free;
     end;
   end;
 end;

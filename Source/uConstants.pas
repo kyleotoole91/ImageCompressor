@@ -3,8 +3,8 @@ unit uConstants;
 interface
 
 const
-  cThumnailMaxSizePx=160;
-  cThumbnailSuffix='_Thumbnail';
+  cDefaultThumbnailMaxSizePx=160;
+  cThumbnailSuffix='_thumbnail';
   //uFrmShellScript
   cShellOutputPathVar='[OUTPUT_DIR]';
   cShellPrefixVar='[SOURCE_PREFIX]';
@@ -145,6 +145,11 @@ const
 
   cMsgNewerVersionAvailble='There is a newer version of this software (%s)'+sLineBreak+sLineBreak+
                            'Would you like to download it now? ';
+
+  cMsgReplaceOriginalsScriptWarning = 'Replacing originals will disable the running of the deployment script. '+sLineBreak+sLineBreak+
+                                      'Would you like to continue?';
+
+  cMsgScriptWillNotRun='The deployment script will not run while replacing originals is enabled.';
 
 implementation
 

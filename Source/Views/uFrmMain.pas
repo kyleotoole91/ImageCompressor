@@ -110,7 +110,7 @@ type
     Panel5: TPanel;
     ebStartPath: TEdit;
     ebOutputDir: TEdit;
-    Label1: TLabel;
+    lbOutputDir: TLabel;
     Label2: TLabel;
     pnlConfigFlow: TFlowPanel;
     pnlCompression: TPanel;
@@ -158,6 +158,8 @@ type
     cbCreateThumbnails: TCheckBox;
     rbByWidth: TRadioButton;
     rbByHeight: TRadioButton;
+    cbSetThumbnailSize: TMenuItem;
+    N11: TMenuItem;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);
@@ -239,6 +241,7 @@ type
     procedure StretchandSplit1Click(Sender: TObject);
     procedure rbTargetClick(Sender: TObject);
     procedure rbQualityClick(Sender: TObject);
+    procedure cbSetThumbnailSizeClick(Sender: TObject);
   strict private
     fMainController: TMainController;
     fDirectoryScanned,
@@ -859,6 +862,11 @@ end;
 procedure TFrmMain.cbApplyGraphicsClick(Sender: TObject);
 begin
   fMainController.ApplyGraphicsClick(Sender);
+end;
+
+procedure TFrmMain.cbSetThumbnailSizeClick(Sender: TObject);
+begin
+  fMainController.ShowDlgThumbnailSize(Sender);
 end;
 
 procedure TFrmMain.cbStretchClick(Sender: TObject);

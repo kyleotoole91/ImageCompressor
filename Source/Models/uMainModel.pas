@@ -54,6 +54,7 @@ begin
         json.B['runScript'] := RunScript;
         json.B['autoPrefix'] := FormData.AutoPrefix;
         json.B['createThumbnails'] := FormData.CreateThumbnails;
+        json.I['thumbnailSizePx'] := FormData.ThumbnailSizePx;
         json.SaveTo(cSettingsFilename);
       end;
     end;
@@ -96,6 +97,7 @@ begin
               ebPrefix.Text := json.S['prefix'];
               FormData.AutoPrefix := json.B['autoPrefix'];
               FormData.CreateThumbnails := json.B['createThumbnails'];
+              FormData.ThumbnailSizePx := json.I['thumbnailSizePx'];
               if sl.Text.Contains('pnlOriginalWidth') then
                 pnlOriginal.Width := json.I['pnlOriginalWidth']
               else

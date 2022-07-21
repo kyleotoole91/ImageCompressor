@@ -14,7 +14,8 @@ uses
   uMainController in 'Source\Controllers\uMainController.pas',
   uMainModel in 'Source\Models\uMainModel.pas',
   uJPEGCompressor in 'Source\Utilis\uJPEGCompressor.pas',
-  uLicenseValidator in 'Source\Utilis\uLicenseValidator.pas';
+  uLicenseValidator in 'Source\Utilis\uLicenseValidator.pas',
+  uDlgThumbnailSize in 'Source\Views\uDlgThumbnailSize.pas' {DlgThumbnailSize};
 
 {$R *.res}
 

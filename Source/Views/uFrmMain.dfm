@@ -376,7 +376,7 @@ object FrmMain: TFrmMain
           DesignSize = (
             1508
             60)
-          object Label1: TLabel
+          object lbOutputDir: TLabel
             Left = 13
             Top = 42
             Width = 85
@@ -1210,8 +1210,12 @@ object FrmMain: TFrmMain
         OnClick = miReplaceOriginalsClick
       end
       object miAutoPrefix: TMenuItem
-        Caption = 'Auto complete prefix (append output dir name)'
+        Caption = 'Auto source prefix (append output dir name)'
         OnClick = miAutoPrefixClick
+      end
+      object cbSetThumbnailSize: TMenuItem
+        Caption = 'Set thumbnail size'
+        OnClick = cbSetThumbnailSizeClick
       end
       object N7: TMenuItem
         Caption = '-'
@@ -1242,6 +1246,9 @@ object FrmMain: TFrmMain
       object miEnterLicense: TMenuItem
         Caption = 'Enter license key'
         OnClick = miEnterLicenseClick
+      end
+      object N11: TMenuItem
+        Caption = '-'
       end
       object miDownload: TMenuItem
         Caption = 'Download latest version'

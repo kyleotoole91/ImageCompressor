@@ -21,6 +21,7 @@ type
     fSourcePrefix: string;
     fRunScript: boolean;
     fAutoPrefix: boolean;
+    fThumbnailSizePx: integer;
   public
     constructor Create;
     procedure Reset; override;
@@ -37,6 +38,7 @@ type
     property RunScript: boolean read fRunScript write fRunScript;
     property AutoPrefix: boolean read fAutoPrefix write fAutoPrefix;
     property CreateThumbnails: boolean read fCreateThumbnails write fCreateThumbnails;
+    property ThumbnailSizePx: integer read fThumbnailSizePx write fThumbnailSizePx;
   end;
 
 implementation
@@ -52,6 +54,7 @@ end;
 procedure TFormData.Reset;
 begin
   inherited;
+  fThumbnailSizePx := cDefaultThumbnailMaxSizePx;
   fApplyToAll := true;
   fCreateThumbnails := false;
   fJSONFilename := cJSONFilename;

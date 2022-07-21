@@ -39,6 +39,8 @@ type
     fThumbnailFilename,
     fOutputFilename: string;
     fShrinkByBoth: boolean;
+    fThumbnailSizePx: integer;
+    function SaveOriginalToOutput: string;
     function DoCreateThumbnail: boolean;
     procedure CompressJPG(const AJPEG: TJPEGImage; const ACompressionQuality: integer);
     function SizeOfJPEG(const AJPEG: TJPEGImage): Int64;
@@ -78,6 +80,7 @@ type
     property ThumbnailFilename: string read fThumbnailFilename write fThumbnailFilename;
     property OutputFilename: string read fOutputFilename write fOutputFilename;
     property ShrinkByBoth: boolean read fShrinkByBoth write fShrinkByBoth;
+    property ThumbnailSizePx: integer read fThumbnailSizePx write fThumbnailSizePx;
   end;
 
 implementation
@@ -87,6 +90,7 @@ implementation
 constructor TJPEGCompressor.Create;
 begin
   inherited;
+  fThumbnailSizePx := cDefaultThumbnailMaxSizePx;
   fShrinkByBoth := false;
   fOutputFilename := '';
   fThumbnailFilename := '';
@@ -129,20 +133,25 @@ end;
 function TJPEGCompressor.DoCreateThumbnail: boolean;
 var
   compressor: TJPEGCompressor;
+  sourceFile: string;
 begin
+  if not fileExists(sourceFile) then
+    sourceFile := fSourceFilename;
   if (fCreateThumbnail) and
      (fThumbnailFilename = '') then
-    fThumbnailFilename := ChangeFileExt((ChangeFileExt(fOutputFilename, ''))+cThumbnailSuffix, ExtractFileExt(fOutputFilename));
-  result := fCreateThumbnail and (fThumbnailfilename <> '');
+    fThumbnailFilename := ChangeFileExt((ChangeFileExt(sourceFile, ''))+cThumbnailSuffix, ExtractFileExt(sourceFile));
+  if fOutputDir <> '' then
+    fThumbnailFilename := IncludeTrailingPathDelimiter(fOutputDir) + ExtractFilename(fThumbnailFilename);
+  result := fCreateThumbnail and (fThumbnailfilename <> '') and FileExists(sourceFile);
   if result then begin
     compressor := TJPEGCompressor.Create;
     try
       compressor.Compress := false;
       compressor.ApplyGraphics := true;
-      compressor.ShrinkByMaxPx := cThumnailMaxSizePx;
+      compressor.ShrinkByMaxPx := fThumbnailSizePx;
       compressor.ShrinkByBoth := true;
       compressor.OutputFilename := fThumbnailfilename;
-      result := compressor.Process(fOutputFilename);
+      result := compressor.Process(sourceFile);
     finally
       compressor.Free;
     end;
@@ -194,16 +203,16 @@ begin
       if ASaveToDisk then begin
         if fCompressedFilesize >= fOriginalFilesize then begin
           result := false;
-          fMessages.Add('File not compressed: '+fSourceFilename);
+          fMessages.Add('JPEG saved to (uncompressed): '+SaveOriginalToOutput);
         end else begin
           result := SaveToDisk;
           fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+SecondsBetween(fStartTime, fEndTime).ToString+'ms');
           fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
           fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
           fMessages.Add('JPEG saved to: '+fOutputFilename);
-          if DoCreateThumbnail then
-            fMessages.Add('JPEG thumbnail saved to: '+fThumbnailFilename);
         end;
+        if DoCreateThumbnail then
+          fMessages.Add('JPEG thumbnail saved to: '+fThumbnailFilename);
       end else
         SaveToStream;
     end else
@@ -355,6 +364,24 @@ begin
     if (fTargetKB > 0) and
        ((fCompressedFilesize = 0) or (fCompressedFilesize > fTargetKB)) then
         TryCompression(AQuality-cTargetInterval);
+  end;
+end;
+
+function TJPEGCompressor.SaveOriginalToOutput: string;
+begin
+  if fReplaceOriginal then
+    result := fSourceFilename
+  else begin
+    result := fOutputDir + ExtractFileName(fSourceFilename);
+    if result <> fSourceFilename then begin //dont replace the original with the original
+      fJPEG.LoadFromFile(fSourceFilename); //save original to the output directory
+      if FileExists(result) then
+        DeleteFile(result);
+      ForceDirectories(ExtractFilePath(result));
+      fJPEG.SaveToFile(result);
+      if not FileExists(result) then
+        result := '';
+    end;
   end;
 end;
 

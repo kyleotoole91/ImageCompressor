@@ -8,6 +8,7 @@ uses
 type
   TImageConfig = class(TObject)
   strict private
+    fFreeOnChange: boolean;
     fPreviewModified: boolean;
     fPreviewCompression: boolean;
     fStretch: boolean;
@@ -54,6 +55,7 @@ type
     property RotateAmount: TRotateAmount read fRotateAmount write SetRotateAmount;
     property RecordModified: boolean read fRecordModified write SetRecordModified;
     property PreviewModified: boolean read fPreviewModified write SetPreviewModified;
+    property FreeOnChange: boolean read fFreeOnChange write fFreeOnChange;
   end;
 
 implementation
@@ -83,6 +85,7 @@ begin
   fTargetKB := cDefaultTargetKB;
   fShrinkByWidth := true;
   fShrinkByValue := cDefaultMaxWidth;
+  fFreeOnChange := true;
 end;
 
 procedure TImageConfig.SetCompress(const Value: boolean);
