@@ -341,7 +341,12 @@ begin
       with OwnerView(fMainView) do begin
         FileTypes.Add.FileMask := cJpgExt;
         FileTypes.Add.FileMask := cJpegExt;
-        DefaultFolder := ebStartPath.Text;
+        if Sender = ebOutputDir then
+          DefaultFolder := ebOutputDir.Text
+        else if Sender = ebStartPath then
+          DefaultFolder := ebStartPath.Text
+        else if Sender is TEdit then
+          DefaultFolder := TEdit(Sender).Text;
         Options := [fdoPickFolders];
         if Execute then begin
           result := FileName;
