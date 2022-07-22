@@ -37,6 +37,7 @@ type
     fOrigPnlIncludeFileWidth,
     fOrigPnlCompressionWidth: integer;
     fPersistFilename: string;
+    function AddPath(const AFilename: string): string;
     function ValidFormSelection: boolean;
     procedure LoadImageConfig(const AFilename: string);
     procedure HasPayWallConfig(out AHasRotation, AHasResampling, AHasMultipleImages, AHasReplaceOriginals, AHasScript: boolean);
@@ -49,7 +50,8 @@ type
     destructor Destroy; override;
     procedure ScanDisk;
     procedure CheckAddPath;
-    procedure Scan(Sender: TObject);
+    procedure AddMissingPaths;
+    procedure Scan(Sender: TObject; const AClearItems: boolean=true);
     procedure ShowDlgThumbnailSize(Sender: TObject);
     procedure QualityRadioClick(Sender: TObject);
     procedure Refresh(Sender: TObject);
@@ -266,12 +268,21 @@ begin
   end;
 end;
 
+function TMainController.AddPath(const AFilename: string): string;
+begin
+  result := AFilename;
+  if ExtractFilePath(result) = '' then
+    result := IncludeTrailingPathDelimiter(OwnerView(fMainView).ebStartPath.Text)+result;
+end;
+
 function TMainController.ShowFileSelect(Sender: TObject): string;
 var
-  a: integer;
+  a,
+  idxExisting: integer;
   fileOpenDlg: TFileOpenDialog;
 begin
   result := '';
+  idxExisting := -1;
   fileOpenDlg := TFileOpenDialog.Create(fMainView);
   try
     try
@@ -291,10 +302,18 @@ begin
           SetControlState(false);
           if FileExists(result) then begin
             btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
-            LoadImagePreview(result);
-            for a := 0 to Files.Count-1 do
-              cblFiles.Items.Insert(0, (Files.Strings[a]));
-            cblFiles.Checked[0] := true;
+            for a := 0 to Files.Count-1 do begin
+              idxExisting := cblFiles.Items.IndexOf(Files.Strings[a]);
+              if idxExisting = -1 then
+                cblFiles.Items.Insert(0, (Files.Strings[a]));
+            end;
+            if idxExisting >= 0 then begin
+              cblFiles.Selected[idxExisting] := true;
+              LoadImagePreview(AddPath(cblFiles.Items[idxExisting]));
+            end else if Files.Count > 0 then begin
+              cblFiles.Selected[Files.Count-1] := true;
+              LoadImagePreview(AddPath(cblFiles.Items[Files.Count-1]));
+            end;
             SetControlState(true);
           end else begin
             result := '';
@@ -492,9 +511,7 @@ var
   begin
     with OwnerView(fMainView) do begin
       for a := 0 to cblFiles.Items.Count-1 do begin
-        filename := cblFiles.Items[a];
-        if ExtractFilePath(filename) = '' then
-          filename := IncludeTrailingPathDelimiter(ebStartPath.Text)+filename;
+        filename := AddPath(cblFiles.Items[a]);
         if filename = fSelectedFilename then begin
           cblFiles.Selected[a] := true;
           cblFiles.Checked[a] := true;
@@ -538,10 +555,8 @@ begin
   with OwnerView(fMainView) do begin
     if (cblFiles.Items.Count >= 1) and
        (ExtractFilePath(cblFiles.Items[0]) = '') then begin
-      for a := 0 to cblFiles.Items.Count-1 do begin
-        if ExtractFilePath(cblFiles.Items[a]) = '' then
-          cblFiles.Items[a] := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
-      end;
+      for a := 0 to cblFiles.Items.Count-1 do
+        cblFiles.Items[a] := AddPath(cblFiles.Items[a])
     end;
   end;
 end;
@@ -784,6 +799,7 @@ begin
     tbQuality.Enabled := rbQuality.Checked;
     if not seTargetKBs.Enabled then
       seTargetKBs.Value := 0;
+    CheckCompressPreviewLoad(Sender);
   end;
 end;
 
@@ -1139,6 +1155,24 @@ begin
   end;
 end;
 
+procedure TMainController.AddMissingPaths;
+var
+  a: integer;
+  imgConfig: TImageConfig;
+begin
+  with OwnerView(fMainView) do begin
+    for a := 0 to cblFiles.Items.Count-1 do begin
+      if ExtractFilePath(cblFiles.Items[a]) = '' then begin
+        cblFiles.Items[a] := AddPath(cblFiles.Items[a]);
+        if fImageConfigList.TryGetValue(ExtractFilename(cblFiles.Items[a]), imgConfig) then begin
+          fImageConfigList.Remove(ExtractFilename(cblFiles.Items[a]));
+          fImageConfigList.Add(cblFiles.Items[a], imgConfig);
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TMainController.AddToJSONFile(const AOriginalFileSize: Int64; const ACompressedFileSize: Int64; const AThumbnailFilename: string='');
 var
   sourcePrefix: string;
@@ -1294,19 +1328,13 @@ begin
   with OwnerView(fMainView) do begin
     for a := 0 to cblFiles.Count-1 do begin
       if cblFiles.Selected[a] then begin
-        result := cblFiles.Items[a];
-        if ExtractFilePath(result) = '' then
-          result := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[a];
+        result := AddPath(cblFiles.Items[a]);
         Break;
       end;
     end;
     if (result = '') and
-       (cblFiles.Count > 0) then begin
-      if ExtractFilePath(cblFiles.Items[0]) = '' then
-        result := IncludeTrailingPathDelimiter(ebStartPath.Text)+cblFiles.Items[0]
-      else
-        result := cblFiles.Items[0];
-    end;
+       (cblFiles.Count > 0) then
+      result := AddPath(cblFiles.Items[0]);
   end;
   fImageChanged := result <> fSelectedFilename;
 end;
@@ -1556,10 +1584,11 @@ begin
   fMainModel.SaveFormSettings;
 end;
 
-procedure TMainController.Scan(Sender: TObject);
+procedure TMainController.Scan(Sender: TObject; const AClearItems: boolean=true);
 var
   a: integer;
-  filename: string;
+  filename,
+  newFilename: string;
   imageLoaded: boolean;
   badFilenames: TStringList;
 begin
@@ -1575,18 +1604,23 @@ begin
       if (fWorkingDir <> ebStartPath.Text) or
          (Sender <> ebStartPath) then begin
         fWorkingDir := ebStartPath.Text;
-        cblFiles.Items.Clear;
-        ClearConfigList;
+        if AClearItems then begin
+          cblFiles.Items.Clear;
+          ClearConfigList;
+        end;
         for filename in FilenameList do begin
           if (not filename.Contains('!')) and
              (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
             if (fFilterSizeKB <= 0) or
                (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
               if FormData.DeepScan or fDragAndDropping then
-                cblFiles.Items.Add(filename)
+                newFilename := filename
               else
-                cblFiles.Items.Add(ExtractFileName(filename));
-              cblFiles.Checked[cblFiles.Count-1] := false;
+                newFilename := ExtractFileName(filename);
+              if cblFiles.Items.IndexOf(newFilename) = -1 then begin
+                cblFiles.Items.Insert(0, newFilename);
+                cblFiles.Checked[0] := false;
+              end;
             end;
           end else
             badFilenames.Add(filename);

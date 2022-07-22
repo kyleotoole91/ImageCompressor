@@ -1284,6 +1284,7 @@ object FrmMain: TFrmMain
     end
     object StretchandSplit1: TMenuItem
       Caption = 'Stretch and Split'
+      Visible = False
       OnClick = StretchandSplit1Click
     end
     object N4: TMenuItem

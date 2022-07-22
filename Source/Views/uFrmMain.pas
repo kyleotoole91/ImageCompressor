@@ -422,7 +422,7 @@ var
   errCount: integer;
   fileCount: integer;
   filename: string;
-  selectedIndex: integer;
+  //selectedIndex: integer;
   filenames: TStringDynArray;
   caFilename: array [0..cnMaxCharArrayLen] of char;
   function Validate(const AFilename: string): string;
@@ -445,16 +445,12 @@ var
   end;
   procedure AddFile(const AFilename: string);
   begin
-    if AFilename <> '' then begin
-      if fFilenameList.IndexOf(AFilename) = -1 then
-        fFilenameList.Insert(0, AFilename)
-      else
-        selectedIndex := fFilenameList.IndexOf(AFilename);
-    end;
+    if (AFilename <> '') and
+       (fFilenameList.IndexOf(AFilename) = -1) then
+      fFilenameList.Insert(0, AFilename)
   end;
 begin
   errCount := 0;
-  selectedIndex := -1;
   fMainController.DragAndDropping := true;
   try
     fileCount := DragQueryFile(AMsg.WParam, $FFFFFFFF, caFilename, cnMaxCharArrayLen);
@@ -480,19 +476,15 @@ begin
     end;
     if errCount > 0 then
       MessageDlg(IntToStr(errCount)+ ' unsupported files were not added' , TMsgDlgType.mtError, [mbOk], 0);
-    fMainController.Scan(nil);
-    fMainController.LoadSelectedFromFile;
-    if (selectedIndex > -1) then begin
-      cblFiles.Selected[selectedIndex] := true;
-      fMainController.SelectedFilename := cblFiles.Items[selectedIndex];
-    end else if (fileCount > 0) then begin
-      for a := 0 to cblFiles.Count-1 do begin
-        if cblFiles.Items[a] = fMainController.SelectedFilename then begin
-          cblFiles.Selected[a] := true;
-          break;
-        end;
+    fMainController.AddMissingPaths;
+    fMainController.Scan(nil, false);
+    for a := 0 to cblFiles.Count-1 do begin
+      if cblFiles.Items[a] = filename then begin
+        cblFiles.Selected[a] := true;
+        break;
       end;
     end;
+    fMainController.LoadSelectedFromFile;
   finally
     fMainController.DragAndDropping := false;
     DragFinish(AMsg.WParam);
