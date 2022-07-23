@@ -699,7 +699,7 @@ end;
 procedure TMainController.FilesClick(Sender: TObject);
 begin
   if (GetSelectedFileName <> '') and
-     (ImageChanged) then begin
+     (fImageChanged) then begin
     with OwnerView(fMainView) do begin
       cbCompressPreview.Checked := false;
       LoadSelectedFromFile;
@@ -720,13 +720,10 @@ begin
 end;
 
 procedure TMainController.LoadImageConfig(const AFilename: string);
-var
-  key: string;
 begin
   with OwnerView(fMainView) do begin
     if fSelectedFilename <> '' then begin
-      key := fSelectedFilename;
-      fImageConfigList.TryGetValue(key, fImageConfig);
+      fImageConfigList.TryGetValue(fSelectedFilename, fImageConfig);
       if not Assigned(fImageConfig) then begin
         fImageConfig := TImageConfig.Create;
         fImageConfig.Filename := fSelectedFilename;
@@ -1030,18 +1027,31 @@ end;
 
 procedure TMainController.StartClick(Sender: TObject);
 var
+  currImageConfig: TImageConfig;
   filename,
   durationMsg: string;
   startTime: TDateTime;
   dlgProgrss: TDlgProgress;
   runScript: boolean;
   replacingOriginals, ok: boolean;
+  origSelectedFilename: string;
+  procedure ReloadSelectedImage;
+  begin
+    if origSelectedFilename <> '' then begin
+      fSelectedFilename := origSelectedFilename;
+      LoadImageConfig(fSelectedFilename);
+      ObjToForm;
+      LoadImagePreview(fSelectedFilename);
+    end;
+  end;
 begin
   with OwnerView(fMainView) do begin
     fJSON := TSuperObject.Create(stArray);
     btnStart.Enabled := false;
     startTime := Now;
     runScript := fRunScript;
+    origSelectedFilename := fSelectedFilename;
+    fImageConfigList.TryGetValue(fSelectedFilename, currImageConfig);
     try
       if ValidFormSelection then begin
         replacingOriginals := (FormData.ReplaceOriginals) or
@@ -1122,6 +1132,7 @@ begin
       end;
     finally
       fJSON := nil;
+      ReloadSelectedImage;
       btnStart.Enabled := true;
     end;
   end;
