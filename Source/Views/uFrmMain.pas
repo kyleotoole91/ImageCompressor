@@ -453,38 +453,44 @@ begin
   errCount := 0;
   fMainController.DragAndDropping := true;
   try
-    fileCount := DragQueryFile(AMsg.WParam, $FFFFFFFF, caFilename, cnMaxCharArrayLen);
-    if fDirectoryScanned then begin
-      fMainController.CheckAddPath;
-      ebStartPath.Text := '';
-      fDirectoryScanned := false;
-    end;
-    for a := 0 to fileCount-1 do begin
-      DragQueryFile(AMsg.WParam, a, caFilename, cnMaxCharArrayLen);
-      SetString(filename, PChar(@caFilename[0]), Length(caFilename));
-      filename := Validate(filename);
-      if filename <> '' then begin
-        if ExtractFileExt(filename) <> '' then
-          AddFile(filename)
-        else begin
-          filenames := TDirectory.GetFiles(filename, cJPAllExt, TSearchOption.soAllDirectories);
-          for filename in filenames do
-            AddFile(Validate(filename));
-        end;
-      end else
-        Inc(errCount);
-    end;
-    if errCount > 0 then
-      MessageDlg(IntToStr(errCount)+ ' unsupported files were not added' , TMsgDlgType.mtError, [mbOk], 0);
-    fMainController.AddMissingPaths;
-    fMainController.Scan(nil, false);
-    for a := 0 to cblFiles.Count-1 do begin
-      if cblFiles.Items[a] = filename then begin
-        cblFiles.Selected[a] := true;
-        break;
+    try
+      fileCount := DragQueryFile(AMsg.WParam, $FFFFFFFF, caFilename, cnMaxCharArrayLen);
+      if fDirectoryScanned then begin
+        fMainController.CheckAddPath;
+        ebStartPath.Text := '';
+        fDirectoryScanned := false;
       end;
+      for a := 0 to fileCount-1 do begin
+        DragQueryFile(AMsg.WParam, a, caFilename, cnMaxCharArrayLen);
+        SetString(filename, PChar(@caFilename[0]), Length(caFilename));
+        filename := Validate(filename);
+        if filename <> '' then begin
+          if ExtractFileExt(filename) <> '' then
+            AddFile(filename)
+          else begin
+            filenames := TDirectory.GetFiles(filename, cJPAllExt, TSearchOption.soAllDirectories);
+            for filename in filenames do
+              AddFile(Validate(filename));
+          end;
+        end else
+          Inc(errCount);
+      end;
+      if errCount > 0 then
+        MessageDlg(IntToStr(errCount)+ ' unsupported files were not added' , TMsgDlgType.mtError, [mbOk], 0);
+      fMainController.AddMissingPaths;
+      fMainController.Scan(nil, false);
+      for a := 0 to cblFiles.Count-1 do begin
+        if cblFiles.Items[a] = filename then begin
+          cblFiles.Selected[a] := true;
+          break;
+        end;
+      end;
+      fMainController.LoadSelectedFromFile;
+      cblFiles.SetFocus;
+    except
+      on e: exception do
+        MessageDlg(e.ClassName+' '+e.Message, TMsgDlgType.mtError, [mbOk], 0);
     end;
-    fMainController.LoadSelectedFromFile;
   finally
     fMainController.DragAndDropping := false;
     DragFinish(AMsg.WParam);

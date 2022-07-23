@@ -1028,7 +1028,9 @@ object FrmMain: TFrmMain
       Top = 3
       Width = 80
       Height = 25
-      Hint = 'Start processing all of the selected images'
+      Hint = 
+        'Start processing all of the selected images. Replaces existing f' +
+        'iles'
       Anchors = [akTop, akRight]
       Caption = 'Start'
       Enabled = False
@@ -1210,29 +1212,29 @@ object FrmMain: TFrmMain
     end
     object Settings1: TMenuItem
       Caption = 'Settings'
-      object miDeepScan: TMenuItem
-        Caption = 'Deep scan '
-        ShortCut = 117
-        OnClick = miDeepScanClick
+      object cbSetThumbnailSize: TMenuItem
+        Caption = 'Set thumbnail size'
+        OnClick = cbSetThumbnailSizeClick
       end
       object miReplaceOriginals: TMenuItem
-        Caption = 'Replace originals (save disk space)'
+        Caption = 'Replace original images'
         Hint = 'Save disk space'
         OnClick = miReplaceOriginalsClick
+      end
+      object miDeepScan: TMenuItem
+        Caption = 'Deep scan (scan sub folders)'
+        ShortCut = 117
+        OnClick = miDeepScanClick
       end
       object miAutoPrefix: TMenuItem
         Caption = 'Auto source prefix (append output dir name)'
         OnClick = miAutoPrefixClick
       end
-      object cbSetThumbnailSize: TMenuItem
-        Caption = 'Set thumbnail size'
-        OnClick = cbSetThumbnailSizeClick
-      end
       object N7: TMenuItem
         Caption = '-'
       end
       object miSaveSettings: TMenuItem
-        Caption = 'Save current settings'
+        Caption = 'Save current settings (including layout)'
         OnClick = miSaveSettingsClick
       end
       object miRestoreDefaults: TMenuItem

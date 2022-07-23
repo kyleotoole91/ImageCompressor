@@ -319,6 +319,7 @@ begin
             result := '';
             SetControlState(false);
           end;
+          cblFiles.SetFocus;
         end;
       end;
     except
@@ -339,24 +340,33 @@ begin
   with TFileOpenDialog.Create(fMainView) do begin
     try
       with OwnerView(fMainView) do begin
-        FileTypes.Add.FileMask := cJpgExt;
-        FileTypes.Add.FileMask := cJpegExt;
-        if Sender = ebOutputDir then
-          DefaultFolder := ebOutputDir.Text
-        else if Sender = ebStartPath then
-          DefaultFolder := ebStartPath.Text
-        else if Sender is TEdit then
-          DefaultFolder := TEdit(Sender).Text;
-        Options := [fdoPickFolders];
-        if Execute then begin
-          result := FileName;
-          if (Sender = ebOutputDir) or
-             (Sender = miSelectOutputDir) then
-            ebOutputDir.Text := result
-          else begin
-            ebStartPath.Text := result;
-            Scan(Sender);
+        try
+          FileTypes.Add.FileMask := cJpgExt;
+          FileTypes.Add.FileMask := cJpegExt;
+          if Sender = ebOutputDir then
+            result := ebOutputDir.Text
+          else if Sender = ebStartPath then
+            result := ebStartPath.Text
+          else if Sender is TEdit then
+            result := TEdit(Sender).Text
+          else
+            result := ebStartPath.Text;
+          DefaultFolder := result;
+          Options := [fdoPickFolders];
+          if Execute then begin
+            result := FileName;
+            if (Sender = ebOutputDir) or
+               (Sender = miSelectOutputDir) then
+              ebOutputDir.Text := result
+            else begin
+              ebStartPath.Text := result;
+              Scan(Sender);
+            end;
+            cblFiles.SetFocus;
           end;
+        except
+          on e: exception do
+            MessageDlg(e.ClassName+' '+e.Message, TMsgDlgType.mtError, [mbOk], 0);
         end;
       end;
     finally
