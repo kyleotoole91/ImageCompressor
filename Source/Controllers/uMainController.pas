@@ -519,17 +519,19 @@ end;
 procedure TMainController.ApplyClick(Sender: TObject);
 var
   obj: TImageConfig;
-  procedure SelectCurrentImage;
+  function SelectCurrentImage: boolean;
   var
     a: integer;
     filename: string;
   begin
+    result := false;
     with OwnerView(fMainView) do begin
       for a := 0 to cblFiles.Items.Count-1 do begin
         filename := AddPath(cblFiles.Items[a]);
         if filename = fSelectedFilename then begin
           cblFiles.Selected[a] := true;
           cblFiles.Checked[a] := true;
+          result := true;
           Break;
         end;
       end;
@@ -539,11 +541,12 @@ begin
   obj := FormToObj;
   if Assigned(obj) then
     obj.FreeOnChange := false;
-  SelectCurrentImage;
-  if Assigned(fImageConfig) then
+  if SelectCurrentImage and Assigned(fImageConfig) then begin
     fImageConfig.RecordModified := false;
-  OwnerView(fMainView).cbApplyToAll.Checked := false;
-  OwnerView(fMainView).btnApply.Enabled := false;
+    OwnerView(fMainView).cbApplyToAll.Checked := false;
+    OwnerView(fMainView).btnApply.Enabled := false;
+    OwnerView(fMainView).btnStart.Enabled := true;
+  end;
 end;
 
 procedure TMainController.ApplyGraphicsClick(Sender: TObject);
@@ -1662,6 +1665,7 @@ begin
         imgOriginal.Picture.Assign(nil);
         ClearImagePreviewLabels;
       end;
+      btnApply.Enabled := fSelectedFilename <> '';
       if Trim(fMessages.Text) <> '' then
         mmMessages.Lines.Add(fMessages.Text);
       fMessages.Clear;
