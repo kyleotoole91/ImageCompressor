@@ -1027,7 +1027,6 @@ end;
 
 procedure TMainController.StartClick(Sender: TObject);
 var
-  currImageConfig: TImageConfig;
   filename,
   durationMsg: string;
   startTime: TDateTime;
@@ -1051,7 +1050,6 @@ begin
     startTime := Now;
     runScript := fRunScript;
     origSelectedFilename := fSelectedFilename;
-    fImageConfigList.TryGetValue(fSelectedFilename, currImageConfig);
     try
       if ValidFormSelection then begin
         replacingOriginals := (FormData.ReplaceOriginals) or
