@@ -422,7 +422,6 @@ var
   errCount: integer;
   fileCount: integer;
   filename: string;
-  //selectedIndex: integer;
   filenames: TStringDynArray;
   caFilename: array [0..cnMaxCharArrayLen] of char;
   function Validate(const AFilename: string): string;

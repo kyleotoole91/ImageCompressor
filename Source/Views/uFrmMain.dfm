@@ -845,7 +845,7 @@ object FrmMain: TFrmMain
               Top = 23
               Width = 58
               Height = 17
-              Hint = 'Use the same settings for all the selected images'
+              Hint = 'Use the current settings displayed for all the selected images'
               Caption = 'Global'
               Checked = True
               ParentShowHint = False

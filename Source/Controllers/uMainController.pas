@@ -652,11 +652,30 @@ begin
 end;
 
 procedure TMainController.ClearFilesClick(Sender: TObject);
+var
+  key: string;
+  imgConfig: TImageConfig;
 begin
   with OwnerView(fMainView) do begin
     ebStartPath.Text := '';
     FilenameList.Clear;
-    Scan(Sender);
+    cblFiles.Items.BeginUpdate;
+    try
+      cblFiles.Items.Clear;
+    finally
+      cblFiles.Items.EndUpdate;
+    end;
+    fSelectedFilename := '';
+    imgHome.Picture.Assign(nil);
+    imgOriginal.Picture.Assign(nil);
+    for key in fImageConfigList.Keys do begin
+      if fImageConfigList.TryGetValue(key, imgConfig) then
+        imgConfig.Free;
+    end;
+    fImageConfigList.Clear;
+    fImageConfig := nil;
+    SetControlState(false);
+    ClearImagePreviewLabels;
   end;
 end;
 
