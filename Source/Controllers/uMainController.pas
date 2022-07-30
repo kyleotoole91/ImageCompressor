@@ -493,7 +493,8 @@ begin
         if ALoadForm and
            fImageChanged then begin
           LoadImageConfig(fSelectedFilename);
-          ObjToForm;
+          if fSelectedFilename <> '' then
+            ObjToForm;
         end;
       end;
     finally
@@ -1675,36 +1676,33 @@ begin
     cblFiles.Items.BeginUpdate;
     badFilenames := TStringList.Create;
     try
-      if (fWorkingDir <> ebStartPath.Text) or
-         (Sender <> ebStartPath) then begin
-        fWorkingDir := ebStartPath.Text;
-        if AClearItems then begin
-          cblFiles.Items.Clear;
-          ClearConfigList;
-        end;
-        for filename in FilenameList do begin
-          if (not filename.Contains('!')) and
-             (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
-            if (fFilterSizeKB <= 0) or
-               (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
-              if FormData.DeepScan or fDragAndDropping then
-                newFilename := filename
-              else
-                newFilename := ExtractFileName(filename);
-              if cblFiles.Items.IndexOf(newFilename) = -1 then begin
-                cblFiles.Items.Insert(0, newFilename);
-                cblFiles.Checked[0] := false;
-              end;
-            end;
-          end else
-            badFilenames.Add(filename);
-        end;
-        for a:=0 to badFilenames.Count-1 do
-          FilenameList.Delete(FilenameList.IndexOf(badFilenames.Strings[a]));
-        imageLoaded := LoadSelectedFromFile;
-        cbApplyToAll.Checked := true;
-        SetControlState(imageLoaded);
+      fWorkingDir := ebStartPath.Text;
+      if AClearItems then begin
+        cblFiles.Items.Clear;
+        ClearConfigList;
       end;
+      for filename in FilenameList do begin
+        if (not filename.Contains('!')) and
+           (LowerCase(filename).EndsWith('.jpg') or LowerCase(filename).EndsWith('.jpeg')) then begin
+          if (fFilterSizeKB <= 0) or
+             (SizeOfFileKB(filename) >= fFilterSizeKB) then begin
+            if FormData.DeepScan or fDragAndDropping then
+              newFilename := filename
+            else
+              newFilename := ExtractFileName(filename);
+            if cblFiles.Items.IndexOf(newFilename) = -1 then begin
+              cblFiles.Items.Insert(0, newFilename);
+              cblFiles.Checked[0] := false;
+            end;
+          end;
+        end else
+          badFilenames.Add(filename);
+      end;
+      for a:=0 to badFilenames.Count-1 do
+        FilenameList.Delete(FilenameList.IndexOf(badFilenames.Strings[a]));
+      imageLoaded := LoadSelectedFromFile;
+      cbApplyToAll.Checked := true;
+      SetControlState(imageLoaded);
     finally
       if cblFiles.Items.Count = 0 then begin
         imgHome.Picture.Assign(nil);
@@ -1732,20 +1730,22 @@ begin
   try
     with OwnerView(fMainView) do begin
       FilenameList.Clear;
-      if fFormData.DeepScan then begin
-        dlgProgress.Text := cMsgScanningDisk;
-        dlgProgress.Show;
-        Application.ProcessMessages;
-      end;
       try
-        if ebStartPath.Text <> '' then begin
+        if (ebStartPath.Text <> '') and
+           (DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text)) then begin
+          if fFormData.DeepScan then begin
+            dlgProgress.Text := cMsgScanningDisk;
+            dlgProgress.Show;
+            Application.ProcessMessages;
+          end;
           if fFormData.DeepScan then
             filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soAllDirectories)
           else
             filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soTopDirectoryOnly);
           for filename in filenames do
             FilenameList.Add(filename);
-        end;
+        end else if not (DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text)) then
+          MessageDlg(cMsgPathNotFound, TMsgDlgType.mtError, [mbOk], 0);
         DirectoryScanned := true;
       except
         on e: exception do

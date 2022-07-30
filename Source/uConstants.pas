@@ -151,6 +151,8 @@ const
 
   cMsgScriptWillNotRun='The deployment script will not run while replacing originals is enabled.';
 
+  cMsgPathNotFound='Path not found';
+
 implementation
 
 end.
