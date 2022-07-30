@@ -55,7 +55,7 @@ type
     procedure ShowDlgThumbnailSize(Sender: TObject);
     procedure QualityRadioClick(Sender: TObject);
     procedure Refresh(Sender: TObject);
-    procedure OpenWith(Sender: TObject);
+    procedure OpenWithPaint(Sender: TObject);
     procedure CheckListPopup(Sender: TObject);
     procedure OpenSelectedExplorer(Sender: TObject);
     procedure OpenSelectedImage(Sender: TObject);
@@ -512,7 +512,8 @@ begin
   with OwnerView(fMainView) do begin
     result := (FileIsSelected or fImageChanged) and
               (cbIncludeInJSONFile.Checked or cbCompress.Checked or cbApplyGraphics.Checked) and
-              (ExtractFilePath(ebOutputDir.Text) <> '');
+              (ExtractFilePath(ebOutputDir.Text) <> '') and
+              (SelectedFileCount > 0);
   end;
 end;
 
@@ -635,8 +636,14 @@ end;
 procedure TMainController.CheckListPopup(Sender: TObject);
 begin
   with OwnerView(fMainView) do begin
+    mniSelectAll.Enabled := cblFiles.Count > 0;
+    mniUnSelectAll.Enabled := cblFiles.Count > 0;
+    miHideSelectedImages.Enabled := cblFiles.Count > 0;
+    miClearFiles.Enabled := cblFiles.Count > 0;
+    miOpenWithPaint.Enabled := cblFiles.Count > 0;
     miShowInGallery.Enabled := cblFiles.Count > 0;
     miShowInExplorer.Enabled := cblFiles.Count > 0;
+    btnApply.Enabled := cblFiles.Count > 0;
   end;
 end;
 
@@ -657,6 +664,7 @@ var
   imgConfig: TImageConfig;
 begin
   with OwnerView(fMainView) do begin
+    lbFiles.Caption := 'Selected: ';
     ebStartPath.Text := '';
     FilenameList.Clear;
     cblFiles.Items.BeginUpdate;
@@ -1620,7 +1628,7 @@ begin
   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOWNORMAL);
 end;
 
-procedure TMainController.OpenWith(Sender: TObject);
+procedure TMainController.OpenWithPaint(Sender: TObject);
 begin
   ShellExecute(OwnerView(fMainView).Handle, 'open', PChar('mspaint'), PChar(fSelectedFilename), nil, SW_SHOW);
 end;
@@ -1675,7 +1683,6 @@ begin
           FilenameList.Delete(FilenameList.IndexOf(badFilenames.Strings[a]));
         imageLoaded := LoadSelectedFromFile;
         cbApplyToAll.Checked := true;
-        btnStart.Enabled := false;
         SetControlState(imageLoaded);
       end;
     finally

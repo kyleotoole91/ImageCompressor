@@ -136,10 +136,8 @@ object FrmMain: TFrmMain
             PopupMenu = pmViews
             Proportional = True
             ShowHint = False
-            ExplicitLeft = 5
-            ExplicitTop = 27
-            ExplicitWidth = 908
-            ExplicitHeight = 691
+            ExplicitLeft = 1
+            ExplicitTop = 30
           end
           object lbImage: TLabel
             Left = 3
@@ -1081,12 +1079,14 @@ object FrmMain: TFrmMain
     end
     object Refresh1: TMenuItem
       Caption = 'Refresh'
+      Visible = False
       OnClick = Refresh1Click
     end
     object N5: TMenuItem
       Caption = '-'
+      Visible = False
     end
-    object Hide1: TMenuItem
+    object miHideSelectedImages: TMenuItem
       Caption = 'Hide'
       OnClick = miHideImageListClick
     end
@@ -1101,9 +1101,9 @@ object FrmMain: TFrmMain
       Caption = 'Open in Gallery'
       OnClick = miShowInGalleryClick
     end
-    object miOpenWith: TMenuItem
+    object miOpenWithPaint: TMenuItem
       Caption = 'Open in Paint'
-      OnClick = miOpenWithClick
+      OnClick = miOpenWithPaintClick
     end
     object N9: TMenuItem
       Caption = '-'
@@ -1143,7 +1143,7 @@ object FrmMain: TFrmMain
         Caption = '-'
       end
       object miFileSaveSettings: TMenuItem
-        Caption = 'Save current settings'
+        Caption = 'Save form settings'
         OnClick = miFileSaveSettingsClick
       end
       object N12: TMenuItem
@@ -1195,10 +1195,12 @@ object FrmMain: TFrmMain
       end
       object N3: TMenuItem
         Caption = '-'
+        Visible = False
       end
       object miRefresh: TMenuItem
         Caption = 'Refresh'
         ShortCut = 116
+        Visible = False
         OnClick = miRefreshClick
       end
     end
@@ -1234,7 +1236,7 @@ object FrmMain: TFrmMain
         Caption = '-'
       end
       object miSaveSettings: TMenuItem
-        Caption = 'Save current settings (including layout)'
+        Caption = 'Save form settings'
         OnClick = miSaveSettingsClick
       end
       object miRestoreDefaults: TMenuItem

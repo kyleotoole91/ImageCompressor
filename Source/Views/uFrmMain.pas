@@ -76,7 +76,7 @@ type
     Filter1: TMenuItem;
     miFilesSizeFilter: TMenuItem;
     N5: TMenuItem;
-    Hide1: TMenuItem;
+    miHideSelectedImages: TMenuItem;
     miImgFullscreen: TMenuItem;
     CloseApplication1: TMenuItem;
     N6: TMenuItem;
@@ -147,7 +147,7 @@ type
     ebPrefix: TEdit;
     lbClientWidth: TLabel;
     lbClientHeight: TLabel;
-    miOpenWith: TMenuItem;
+    miOpenWithPaint: TMenuItem;
     N9: TMenuItem;
     ClearImageList1: TMenuItem;
     N10: TMenuItem;
@@ -238,7 +238,7 @@ type
     procedure miShowInExplorerClick(Sender: TObject);
     procedure pmCheckBoxListPopup(Sender: TObject);
     procedure spFilesMoved(Sender: TObject);
-    procedure miOpenWithClick(Sender: TObject);
+    procedure miOpenWithPaintClick(Sender: TObject);
     procedure ClearImageList1Click(Sender: TObject);
     procedure StretchandSplit1Click(Sender: TObject);
     procedure rbTargetClick(Sender: TObject);
@@ -721,9 +721,9 @@ begin
   fMainController.ResizeEvent(Sender);
 end;
 
-procedure TFrmMain.miOpenWithClick(Sender: TObject);
+procedure TFrmMain.miOpenWithPaintClick(Sender: TObject);
 begin
-  fMainController.OpenWith(Sender);
+  fMainController.OpenWithPaint(Sender);
 end;
 
 procedure TFrmMain.cbCompressClick(Sender: TObject);
