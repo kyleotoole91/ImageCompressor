@@ -304,8 +304,10 @@ begin
             btnStart.Enabled := cbCompress.Checked or cbApplyGraphics.Checked or cbIncludeInJSONFile.Checked;
             for a := 0 to Files.Count-1 do begin
               idxExisting := cblFiles.Items.IndexOf(Files.Strings[a]);
-              if idxExisting = -1 then
+              if idxExisting = -1 then begin
                 cblFiles.Items.Insert(0, (Files.Strings[a]));
+                FilenameList.Add(Files.Strings[a]);
+              end;
             end;
             if idxExisting >= 0 then begin
               cblFiles.Selected[idxExisting] := true;
@@ -1076,20 +1078,15 @@ var
   function ProcessFileList(const AProcessFiles: boolean=true): Int64;
   var
     filename: string;
+    checkListHasPath,
+    filenameHasPath: boolean;
   begin
     result := 0;
     with OwnerView(fMainView) do begin
+      checkListHasPath := (cblFiles.Items.Count > 0) and (ExtractFilePath(cblFiles.Items[0]) <> '');
       for filename in FilenameList do begin
-        if FormData.DeepScan or (not DirectoryScanned) then begin
-          if (cblFiles.Items.IndexOf(filename) >= 0) and
-             (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then begin
-            if AProcessFiles then begin
-              ProcessFile(filename);
-              dlgProgress.ProgressBar.StepIt;
-            end;
-            Inc(result);
-          end;
-        end else begin
+        filenameHasPath  := ExtractFilePath(filename) <> '';
+        if filenameHasPath and not checkListHasPath then begin
           if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
              (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then begin
             if AProcessFiles then begin
@@ -1098,6 +1095,13 @@ var
             end;
             Inc(result);
           end;
+        end else if (cblFiles.Items.IndexOf(filename) >= 0) and
+                    (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then begin
+          if AProcessFiles then begin
+            ProcessFile(filename);
+            dlgProgress.ProgressBar.StepIt;
+          end;
+          Inc(result);
         end;
       end;
     end;
