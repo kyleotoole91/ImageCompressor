@@ -399,6 +399,7 @@ object FrmMain: TFrmMain
             ShowHint = True
             TabOrder = 0
             OnDblClick = ebStartPathDblClick
+            OnExit = ebStartPathExit
             OnKeyDown = ebStartPathKeyDown
           end
           object ebOutputDir: TEdit

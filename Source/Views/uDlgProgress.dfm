@@ -3,8 +3,8 @@ object DlgProgress: TDlgProgress
   Top = 0
   BorderStyle = bsNone
   Caption = 'Compressing Images'
-  ClientHeight = 124
-  ClientWidth = 425
+  ClientHeight = 101
+  ClientWidth = 341
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,16 +14,32 @@ object DlgProgress: TDlgProgress
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 122
-    Top = 52
+    Left = 82
+    Top = 34
     Width = 170
     Height = 13
     Alignment = taCenter
     Caption = 'Compressing images, please wait...'
+  end
+  object pbProgress: TProgressBar
+    AlignWithMargins = True
+    Left = 6
+    Top = 78
+    Width = 329
+    Height = 17
+    Margins.Left = 6
+    Margins.Right = 6
+    Margins.Bottom = 6
+    Align = alBottom
+    TabOrder = 0
+    ExplicitLeft = 8
+    ExplicitTop = 88
+    ExplicitWidth = 409
   end
 end

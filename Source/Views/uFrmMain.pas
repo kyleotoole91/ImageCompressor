@@ -246,7 +246,9 @@ type
     procedure cbSetThumbnailSizeClick(Sender: TObject);
     procedure miFileSaveSettingsClick(Sender: TObject);
     procedure cbApplyToAllClick(Sender: TObject);
+    procedure ebStartPathExit(Sender: TObject);
   strict private
+    fPrevScanPath: string;
     fMainController: TMainController;
     fDirectoryScanned,
     fEvaluationMode,
@@ -303,6 +305,7 @@ begin
   tmrOnShow.Enabled := false;
   fMainController := TMainController.Create(Self);
   ebOutputDir.Text := fMainController.OutputDir;
+  fPrevScanPath := '';
 end;
 
 procedure TFrmMain.FormDestroy(Sender: TObject);
@@ -638,10 +641,20 @@ begin
   fMainController.ShowFolderSelect(Sender);
 end;
 
+procedure TFrmMain.ebStartPathExit(Sender: TObject);
+begin
+  if fPrevScanPath <> ebStartPath.Text then begin
+    fMainController.Scan(Sender);
+    fPrevScanPath := ebStartPath.Text;
+  end;
+end;
+
 procedure TFrmMain.ebStartPathKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = VK_RETURN then
+  if Key = VK_RETURN then begin
     fMainController.Scan(Sender);
+    fPrevScanPath := ebStartPath.Text;
+  end;
 end;
 
 procedure TFrmMain.Refresh1Click(Sender: TObject);

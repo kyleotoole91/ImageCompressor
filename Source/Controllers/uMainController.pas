@@ -1057,10 +1057,9 @@ end;
 
 procedure TMainController.StartClick(Sender: TObject);
 var
-  filename,
   durationMsg: string;
   startTime: TDateTime;
-  dlgProgrss: TDlgProgress;
+  dlgProgress: TDlgProgress;
   runScript: boolean;
   replacingOriginals, ok: boolean;
   origSelectedFilename: string;
@@ -1071,6 +1070,35 @@ var
       LoadImageConfig(fSelectedFilename);
       ObjToForm;
       LoadImagePreview(fSelectedFilename);
+    end;
+  end;
+  function ProcessFileList(const AProcessFiles: boolean=true): Int64;
+  var
+    filename: string;
+  begin
+    result := 0;
+    with OwnerView(fMainView) do begin
+      for filename in FilenameList do begin
+        if FormData.DeepScan or (not DirectoryScanned) then begin
+          if (cblFiles.Items.IndexOf(filename) >= 0) and
+             (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then begin
+            if AProcessFiles then begin
+              ProcessFile(filename);
+              dlgProgress.ProgressBar.StepIt;
+            end;
+            Inc(result);
+          end;
+        end else begin
+          if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
+             (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then begin
+            if AProcessFiles then begin
+              ProcessFile(filename);
+              dlgProgress.ProgressBar.StepIt;
+            end;
+            Inc(result);
+          end;
+        end;
+      end;
     end;
   end;
 begin
@@ -1088,43 +1116,36 @@ begin
           ok := mrYes = MessageDlg('Are you sure you want to overwrite the original images? ', mtWarning, [mbYes, mbNo], 0)
         end else
           ok := true;
-        if ok and ValidSelection(Sender) then begin
+        if ok and
+           ValidSelection(Sender) then begin
           if (runScript) and
              (not FormData.ReplaceOriginals) and
              (mrYes <> MessageDlg(cMsgDeploymentWarning, mtWarning, [mbYes, mbNo], 0)) then
             runScript := false;
           Screen.Cursor := crHourGlass;
-          dlgProgrss := TDlgProgress.Create(fMainView);
+          dlgProgress := TDlgProgress.Create(fMainView);
           try
-            dlgProgrss.Show;
+            dlgProgress.Show;
             Application.ProcessMessages;
             fOutputDir := IncludeTrailingPathDelimiter(ebOutputDir.Text);
             fTotalSavedKB := 0;
             fNumProcessed := 0;
             mmMessages.Lines.BeginUpdate;
             fMessages.Add('--------------------- Start ---------------------------');
-            filename := ebStartPath.Text;
-            if LowerCase(ExtractFileExt(filename)) = '.jpg' then
-              ProcessFile(filename)
-            else begin
-              for filename in FilenameList do begin
-                if FormData.DeepScan or (not DirectoryScanned) then begin
-                  if (cblFiles.Items.IndexOf(filename) >= 0) and
-                     (cblFiles.Checked[cblFiles.Items.IndexOf(filename)]) then
-                    ProcessFile(filename);
-                end else begin
-                  if (cblFiles.Items.IndexOf(ExtractFileName(filename)) >= 0) and
-                     (cblFiles.Checked[cblFiles.Items.IndexOf(ExtractFileName(filename))]) then
-                    ProcessFile(filename);
-                end;
-              end;
+            if ExtractFileExt(ebStartPath.Text) <> '' then begin
+              dlgProgress.ProgressBar.Max := 1;
+              ProcessFile(ebStartPath.Text);
+              dlgProgress.ProgressBar.StepIt;
+            end else begin
+              dlgProgress.ProgressBar.Max := ProcessFileList(false);
+              ProcessFileList;
             end;
             if cbIncludeInJSONFile.Checked then
               CreateJSONFile(fJSON);
             if runScript and not FormData.ReplaceOriginals then
               RunDeploymentScript;
           finally
-            dlgProgrss.Free;
+            dlgProgress.Free;
             if SecondsBetween(startTime, Now) = 0 then
               durationMsg := 'Total duration (ms): '+MilliSecondsBetween(startTime, Now).ToString
             else
@@ -1132,7 +1153,6 @@ begin
             if fNumProcessed = 0 then
               MessageDlg('No .jpg files processed', mtWarning, [mbOK], 0)
             else if (cbApplyGraphics.Checked or cbCompress.Checked) then begin
-
               fMessages.Add('Finished processing '+fNumProcessed.ToString+' .jpg files. ');
               fMessages.Add('Total saved (KB): '+fTotalSavedKB.ToString);
               MessageDlg('Finished processing '+fNumProcessed.ToString+' .jpg files. '+sLineBreak+
