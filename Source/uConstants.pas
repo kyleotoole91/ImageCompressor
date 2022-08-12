@@ -85,9 +85,9 @@ const
 
   cMsgPleaseSelect='Please select an image to open';
 
-  cMsgNoImagesFound='No images found in the default source directory. '+sLineBreak+sLineBreak+
+  {cMsgNoImagesFound='No images found in the default source directory. '+sLineBreak+sLineBreak+
                     'Please drag and drop images or folders to build a compression queue.'+sLineBreak+sLineBreak+
-                    'Alternatively, use the File menu.';
+                    'Alternatively, use the File menu.';}
 
   cUnSupportedClassType='Unsupported class type';
 

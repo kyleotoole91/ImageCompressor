@@ -1736,7 +1736,9 @@ begin
       FilenameList.Clear;
       try
         if (ebStartPath.Text <> '') and
-           (DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text)) then begin
+           (not (DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text))) then
+          MessageDlg(cMsgPathNotFound, TMsgDlgType.mtError, [mbOk], 0)
+        else if DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text) then begin
           if fFormData.DeepScan then begin
             dlgProgress.Text := cMsgScanningDisk;
             dlgProgress.Show;
@@ -1748,8 +1750,7 @@ begin
             filenames := TDirectory.GetFiles(ebStartPath.Text, cJPAllExt, TSearchOption.soTopDirectoryOnly);
           for filename in filenames do
             FilenameList.Add(filename);
-        end else if not (DirectoryExists(ebStartPath.Text) or FileExists(ebStartPath.Text)) then
-          MessageDlg(cMsgPathNotFound, TMsgDlgType.mtError, [mbOk], 0);
+        end;
         DirectoryScanned := true;
       except
         on e: exception do

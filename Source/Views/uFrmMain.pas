@@ -347,7 +347,8 @@ begin
   finally
     Screen.Cursor := crDefault;
     fMainController.LoadFormSettings;
-    fMainController.Scan(Sender);
+    if ebStartPath.Text <> '' then
+      fMainController.Scan(Sender);
     fFormOpenClose := false;
     mmMessages.Lines.Clear;
     mmScript.Lines.Clear;
@@ -785,7 +786,7 @@ end;
 procedure TFrmMain.tmrOnShowTimer(Sender: TObject);
 begin
   tmrOnShow.Enabled := false;
-  MessageDlg(cMsgNoImagesFound, TMsgDlgType.mtInformation, mbOKCancel, 0);
+  //MessageDlg(cMsgNoImagesFound, TMsgDlgType.mtInformation, mbOKCancel, 0);
 end;
 
 procedure TFrmMain.tmrResizeTimer(Sender: TObject);

@@ -264,6 +264,7 @@ object FrmMain: TFrmMain
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Size (KB):'
+            Enabled = False
             ExplicitLeft = 144
           end
           object lbImgOrigSizeKBVal: TLabel
@@ -274,6 +275,7 @@ object FrmMain: TFrmMain
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = '0'
+            Enabled = False
             ExplicitLeft = 229
           end
           object lbImgOrigWidth: TLabel
@@ -283,6 +285,7 @@ object FrmMain: TFrmMain
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Width (px):'
+            Enabled = False
             ExplicitLeft = 231
           end
           object lbImgOrigWidthVal: TLabel
@@ -293,6 +296,7 @@ object FrmMain: TFrmMain
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = '0'
+            Enabled = False
             ExplicitLeft = 324
           end
           object lbImgOrigHeight: TLabel
@@ -302,6 +306,7 @@ object FrmMain: TFrmMain
             Height = 13
             Anchors = [akTop, akRight]
             Caption = 'Height (px):'
+            Enabled = False
             ExplicitLeft = 325
           end
           object lbImgOrigHeightVal: TLabel
@@ -312,6 +317,7 @@ object FrmMain: TFrmMain
             Alignment = taRightJustify
             Anchors = [akTop, akRight]
             Caption = '0'
+            Enabled = False
             ExplicitLeft = 422
           end
           object imgOriginal: TImage
@@ -337,6 +343,7 @@ object FrmMain: TFrmMain
             Width = 40
             Height = 13
             Caption = 'Original:'
+            Enabled = False
             WordWrap = True
           end
           object cbStretchOriginal: TCheckBox
@@ -346,6 +353,7 @@ object FrmMain: TFrmMain
             Height = 17
             Hint = 'May reduce image preview qualty'
             Caption = 'Stretch'
+            Enabled = False
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
@@ -543,10 +551,10 @@ object FrmMain: TFrmMain
           object cbCompress: TCheckBox
             Left = 9
             Top = -2
-            Width = 80
+            Width = 66
             Height = 17
             Hint = 'Maintaines aspect ratio'
-            Caption = 'Compression'
+            Caption = 'Compress'
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
@@ -711,10 +719,10 @@ object FrmMain: TFrmMain
           object cbApplyGraphics: TCheckBox
             Left = 9
             Top = -1
-            Width = 61
+            Width = 88
             Height = 17
             Hint = 'Reduce size, rotate and resample for improved image quality'
-            Caption = 'Graphics'
+            Caption = 'Alter Graphics'
             ParentShowHint = False
             ShowHint = True
             TabOrder = 0
@@ -816,7 +824,7 @@ object FrmMain: TFrmMain
             Margins.Right = 0
             Margins.Bottom = 0
             Align = alClient
-            Caption = ' Globals '
+            Caption = ' Global Settings'
             TabOrder = 0
             DesignSize = (
               370
