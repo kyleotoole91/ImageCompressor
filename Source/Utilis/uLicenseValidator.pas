@@ -85,7 +85,7 @@ begin
          (Assigned(fJSON.O['purchase'])) then begin
         with fJSON.O['purchase'] do begin
           if B['refunded'] or B['chargebacked'] then
-            fMessage := 'This key is no longer valid, you have been refuded for this product'
+            fMessage := 'This key is no longer valid, you have been refunded for this product'
           else if B['disputed'] or B['dispute_won'] then
             fMessage := 'This key is not currently valid due to a dispute'
           else if (S['subscription_id'] <> '') and
