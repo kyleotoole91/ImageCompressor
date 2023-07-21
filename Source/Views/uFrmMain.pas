@@ -162,6 +162,8 @@ type
     N11: TMenuItem;
     N12: TMenuItem;
     miFileSaveSettings: TMenuItem;
+    lbFileCount: TLabel;
+    lbFileCountVal: TLabel;
     procedure btnStartClick(Sender: TObject);
     procedure seTargetKBsChange(Sender: TObject);
     procedure cbCompressClick(Sender: TObject);

@@ -1011,11 +1011,13 @@ object FrmMain: TFrmMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitLeft = -3
+    ExplicitTop = 914
     DesignSize = (
       1522
       35)
     object lbClientWidth: TLabel
-      Left = 7
+      Left = 263
       Top = 16
       Width = 63
       Height = 13
@@ -1023,12 +1025,25 @@ object FrmMain: TFrmMain
       Visible = False
     end
     object lbClientHeight: TLabel
-      Left = 111
+      Left = 367
       Top = 14
       Width = 66
       Height = 13
       Caption = 'lbClientHeight'
       Visible = False
+    end
+    object lbFileCount: TLabel
+      Left = 15
+      Top = 14
+      Width = 52
+      Height = 13
+      Caption = 'File Count:'
+    end
+    object lbFileCountVal: TLabel
+      Left = 73
+      Top = 14
+      Width = 56
+      Height = 13
     end
     object btnStart: TButton
       Left = 1437

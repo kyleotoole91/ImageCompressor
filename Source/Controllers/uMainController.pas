@@ -45,6 +45,7 @@ type
     procedure LoadCompressedPreview(Sender: TObject);
     procedure ApplyResponsiveLogic(Sender: TObject);
     procedure ClearImagePreviewLabels;
+    procedure SetFileCountLabel(const AVal: uInt64);
   public
     constructor Create(const AOwnerView: TComponent);
     destructor Destroy; override;
@@ -333,6 +334,7 @@ begin
   finally
     fSelectedFilename := result;
     fileOpenDlg.Free;
+    SetFileCountLabel(OwnerView(fMainView).cblFiles.Items.Count);
   end;
 end;
 
@@ -674,6 +676,7 @@ begin
     try
       cblFiles.Items.Clear;
     finally
+      SetFileCountLabel(0);
       cblFiles.Items.EndUpdate;
     end;
     fSelectedFilename := '';
@@ -1719,6 +1722,7 @@ begin
       fMessages.Clear;
       badFilenames.Free;
       cblFiles.Items.EndUpdate;
+      SetFileCountLabel(OwnerView(fMainView).cblFiles.Items.Count);
       Screen.Cursor := crDefault;
     end;
   end;
@@ -1789,6 +1793,11 @@ begin
     cbStretchOriginal.Enabled := AEnabled;
     imgHome.Enabled := AEnabled;
   end;
+end;
+
+procedure TMainController.SetFileCountLabel(const AVal: uInt64);
+begin
+  OwnerView(fMainView).lbFileCountVal.Caption := AVal.ToString;
 end;
 
 procedure TMainController.SetShrinkState(Sender: TObject);
