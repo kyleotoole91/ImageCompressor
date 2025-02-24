@@ -86,6 +86,9 @@ TurboImageCompressorCLI.exe C:\Photos C:\Output 500 -t -s 200
 
 ## Output
 
+The tool provides detailed feedback in the terminal for each operation:
+
+### Processing Output
 For each processed image, the tool will display:
 - Original file path
 - Output file path
@@ -93,7 +96,57 @@ For each processed image, the tool will display:
 - Original file size in KB
 - Compressed file size in KB
 
-The compressed images will be saved in the output directory, maintaining the same folder structure as the input directory.
+Example terminal output:
+```
+Scanning directory: C:\Photos
+Found 3 JPEG files
+Starting compression...
+
+Compressed: C:\Photos\image1.jpg
+Output: C:\Output\image1.jpg
+Thumbnail: C:\Output\image1_thumb.jpg
+Original size: 1024 KB
+Compressed size: 500 KB
+
+Compressed: C:\Photos\image2.jpg
+Output: C:\Output\image2.jpg
+Thumbnail: C:\Output\image2_thumb.jpg
+Original size: 2048 KB
+Compressed size: 500 KB
+
+Failed to process C:\Photos\image3.jpg
+Error: Unable to compress file to target size
+
+Summary:
+Total files processed: 3
+Successful: 2
+Failed: 1
+Exit Code: 2
+```
+
+### Error Messages
+The tool will display clear error messages for common issues:
+- "Error: Input and output paths are required."
+- "Error: Input file must be a JPEG file"
+- "Error: Input path does not exist: [path]"
+- "Error: No JPEG files found to process."
+- "Error: Failed to create output directory: [error details]"
+
+## Exit Codes
+
+The application returns the following exit codes:
+- 0: Success (all images processed successfully)
+- 1: General error (invalid parameters, input/output paths issues, or no files found)
+- 2: Partial failure (some images failed to process)
+- 3: Complete failure (all images failed to process)
+
+These exit codes can be used in scripts to determine if the compression was successful:
+```batch
+TurboImageCompressorCLI.exe input output 500
+IF %ERRORLEVEL% EQU 0 echo All images processed successfully
+IF %ERRORLEVEL% EQU 2 echo Warning: Some images failed to process
+IF %ERRORLEVEL% EQU 3 echo Error: All images failed to process
+```
 
 ## Requirements
 

@@ -20,6 +20,25 @@ uses
   uJPEGCompressor in '.\Source\Utilis\uJPEGCompressor.pas',
   uImageConfig in '.\Source\Serialized\uImageConfig.pas';
 
+const
+  // Exit codes
+  EXIT_SUCCESS = 0;           // All files processed successfully
+  EXIT_GENERAL_ERROR = 1;     // Invalid parameters, paths, or no files found
+  EXIT_PARTIAL_FAILURE = 2;   // Some files failed to process
+  EXIT_COMPLETE_FAILURE = 3;  // All files failed to process
+
+  // Command line parameter indexes
+  PARAM_EXE_NAME = 0;        // Index of executable name (ParamStr(0))
+  PARAM_INPUT_PATH = 1;      // Index of input path parameter
+  PARAM_OUTPUT_PATH = 2;     // Index of output path parameter
+  PARAM_TARGET_KB = 3;       // Index of target KB parameter
+  PARAM_MIN_COUNT = 3;       // Minimum number of required parameters
+
+  // Command line parameter values
+  PARAM_THUMBNAIL_FLAG = '-t';     // Flag to enable thumbnails
+  PARAM_THUMBNAIL_SIZE = '-s';     // Flag to set thumbnail size
+  DEFAULT_THUMBNAIL_SIZE = 150;    // Default thumbnail size in pixels
+
 type
   TConsoleCompressor = class
   private
@@ -31,14 +50,17 @@ type
     fCreateThumbnails: Boolean;
     fThumbnailSizePx: Integer;
     fFilePaths: TArray<string>;
+    fFailedCount: Integer;
+    fProcessedCount: Integer;
     procedure ScanDirectory;
     procedure ProcessFiles;
     procedure SetupConfig;
     procedure ProcessSingleFile(const AFilePath: string);
+    function GetExitCode: Integer;
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Execute;
+    function Execute: Integer;
     property InputPath: string read fInputPath write fInputPath;
     property OutputPath: string read fOutputPath write fOutputPath;
     property TargetKB: Integer read fTargetKB write fTargetKB;
@@ -63,14 +85,31 @@ begin
   inherited;
 end;
 
-procedure TConsoleCompressor.Execute;
+function TConsoleCompressor.GetExitCode: Integer;
 begin
+  if fProcessedCount = 0 then
+    Result := EXIT_GENERAL_ERROR
+  else if fFailedCount = fProcessedCount then
+    Result := EXIT_COMPLETE_FAILURE
+  else if fFailedCount > 0 then
+    Result := EXIT_PARTIAL_FAILURE
+  else
+    Result := EXIT_SUCCESS;
+end;
+
+function TConsoleCompressor.Execute: Integer;
+var
+  ExitCode: integer;
+begin
+  fFailedCount := 0;
+  fProcessedCount := 0;
+
   if (fInputPath = '') or (fOutputPath = '') then
   begin
     WriteLn('Error: Input and output paths are required.');
-    Exit;
+    Exit(EXIT_GENERAL_ERROR);
   end;
-  
+
   // Check if input is a file or directory
   if FileExists(fInputPath) then
   begin
@@ -79,7 +118,7 @@ begin
        not SameText(ExtractFileExt(fInputPath), '.jpeg') then
     begin
       WriteLn('Error: Input file must be a JPEG file');
-      Exit;
+      Exit(EXIT_GENERAL_ERROR);
     end;
     SetLength(fFilePaths, 1);
     fFilePaths[0] := fInputPath;
@@ -92,15 +131,43 @@ begin
   else
   begin
     WriteLn('Error: Input path does not exist: ' + fInputPath);
-    Exit;
+    Exit(EXIT_GENERAL_ERROR);
+  end;
+
+  if Length(fFilePaths) = 0 then
+  begin
+    WriteLn('Error: No JPEG files found to process.');
+    Exit(EXIT_GENERAL_ERROR);
   end;
   
   // Create output directory if it doesn't exist
   if not DirectoryExists(fOutputPath) then
-    ForceDirectories(fOutputPath);
+  begin
+    try
+      ForceDirectories(fOutputPath);
+    except
+      on E: Exception do
+      begin
+        WriteLn('Error: Failed to create output directory: ' + E.Message);
+        Exit(EXIT_GENERAL_ERROR);
+      end;
+    end;
+  end;
     
   SetupConfig;
   ProcessFiles;
+
+  ExitCode := GetExitCode;
+
+  // Print summary
+  WriteLn('');
+  WriteLn('Summary:');
+  WriteLn('Total files processed: ' + fProcessedCount.ToString);
+  WriteLn('Successful: ' + (fProcessedCount - fFailedCount).ToString);
+  WriteLn('Failed: ' + fFailedCount.ToString);
+  WriteLn('Exit Code: ' + fFailedCount.ToString);
+
+  Result := ExitCode;
 end;
 
 procedure TConsoleCompressor.SetupConfig;
@@ -146,7 +213,9 @@ procedure TConsoleCompressor.ProcessSingleFile(const AFilePath: string);
 var
   RelativePath: string;
   OutputFileName: string;
+  Success: Boolean;
 begin
+  Inc(fProcessedCount);
   try
     // Get relative path to preserve directory structure
     RelativePath := ExtractRelativePath(fInputPath, AFilePath);
@@ -165,8 +234,16 @@ begin
     if not DirectoryExists(fJPEGCompressor.OutputDir) then
       ForceDirectories(fJPEGCompressor.OutputDir);
     
-    // Process the file
-    fJPEGCompressor.Process(AFilePath);
+    // Process the file and check result
+    Success := fJPEGCompressor.Process(AFilePath);
+    if not Success then
+    begin
+      Inc(fFailedCount);
+      WriteLn('Failed to process ' + AFilePath);
+      if fJPEGCompressor.Messages.Count > 0 then
+        WriteLn(fJPEGCompressor.Messages.Text);
+      Exit;
+    end;
     
     WriteLn('Compressed: ' + AFilePath);
     WriteLn('Output: ' + fJPEGCompressor.OutputFilename);
@@ -179,7 +256,10 @@ begin
     WriteLn('');
   except
     on E: Exception do
+    begin
+      Inc(fFailedCount);
       WriteLn('Error processing ' + AFilePath + ': ' + E.Message);
+    end;
   end;
 end;
 
@@ -199,6 +279,7 @@ end;
 
 var
   Compressor: TConsoleCompressor;
+  ExitCode: Integer;
   
 procedure PrintUsage;
 begin
@@ -217,40 +298,47 @@ end;
 
 begin
   try
-    if ParamCount < 3 then
+    if ParamCount < PARAM_MIN_COUNT then
     begin
       PrintUsage;
-      Exit;
-    end;
-    
-    Compressor := TConsoleCompressor.Create;
-    try
-      // Parse required parameters
-      Compressor.InputPath := ParamStr(1);
-      Compressor.OutputPath := ParamStr(2);
-      Compressor.TargetKB := StrToIntDef(ParamStr(3), 0);
-      
-      // Parse optional parameters
-      var i := 4;
-      while i <= ParamCount do
-      begin
-        if ParamStr(i) = '-t' then
-          Compressor.CreateThumbnails := True
-        else if (ParamStr(i) = '-s') and (i < ParamCount) then
+      ExitCode := EXIT_GENERAL_ERROR;
+    end
+    else
+    begin
+      Compressor := TConsoleCompressor.Create;
+      try
+        // Parse required parameters
+        Compressor.InputPath := ParamStr(PARAM_INPUT_PATH);
+        Compressor.OutputPath := ParamStr(PARAM_OUTPUT_PATH);
+        Compressor.TargetKB := StrToIntDef(ParamStr(PARAM_TARGET_KB), 0);
+        
+        // Parse optional parameters
+        var i := PARAM_TARGET_KB + 1;
+        while i <= ParamCount do
         begin
+          if ParamStr(i) = PARAM_THUMBNAIL_FLAG then
+            Compressor.CreateThumbnails := True
+          else if (ParamStr(i) = PARAM_THUMBNAIL_SIZE) and (i < ParamCount) then
+          begin
+            Inc(i);
+            Compressor.ThumbnailSizePx := StrToIntDef(ParamStr(i), DEFAULT_THUMBNAIL_SIZE);
+          end;
           Inc(i);
-          Compressor.ThumbnailSizePx := StrToIntDef(ParamStr(i), 150);
         end;
-        Inc(i);
+        
+        ExitCode := Compressor.Execute;
+      finally
+        Compressor.Free;
       end;
-      
-      Compressor.Execute;
-    finally
-      Compressor.Free;
     end;
     
   except
     on E: Exception do
+    begin
       WriteLn('Error: ' + E.Message);
+      ExitCode := EXIT_GENERAL_ERROR;
+    end;
   end;
+  
+  Halt(ExitCode);
 end.
