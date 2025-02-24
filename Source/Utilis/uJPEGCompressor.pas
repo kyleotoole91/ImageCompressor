@@ -3,7 +3,8 @@ unit uJPEGCompressor;
 interface
 
 uses
-  Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, DateUtils, Img32, Img32.Fmt.JPG, uConstants;
+  Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, System.IOUtils, 
+  DateUtils, Img32, Img32.Fmt.JPG, uConstants;
 
 type
   TResampleMode = (rmNone=0, rmFastest=1, rmRecommended=2, rmBest=3);
@@ -133,25 +134,30 @@ end;
 function TJPEGCompressor.DoCreateThumbnail: boolean;
 var
   compressor: TJPEGCompressor;
-  sourceFile: string;
+  thumbnailPath: string;
 begin
-  if not fileExists(sourceFile) then
-    sourceFile := fSourceFilename;
-  if (fCreateThumbnail) and
-     (fThumbnailFilename = '') then
-    fThumbnailFilename := ChangeFileExt((ChangeFileExt(sourceFile, ''))+cThumbnailSuffix, ExtractFileExt(sourceFile));
-  if fOutputDir <> '' then
-    fThumbnailFilename := IncludeTrailingPathDelimiter(fOutputDir) + ExtractFilename(fThumbnailFilename);
-  result := fCreateThumbnail and (fThumbnailfilename <> '') and FileExists(sourceFile);
-  if result then begin
+  if fCreateThumbnail then
+  begin
+    // Create unique thumbnail filename based on source file
+    thumbnailPath := ChangeFileExt(fSourceFilename, '') + cThumbnailSuffix + ExtractFileExt(fSourceFilename);
+    fThumbnailFilename := TPath.Combine(fOutputDir, ExtractFileName(thumbnailPath));
+    WriteLn('Debug: Creating thumbnail at ' + fThumbnailFilename);
+  end;
+  
+  result := fCreateThumbnail and FileExists(fSourceFilename);
+  if result then 
+  begin
     compressor := TJPEGCompressor.Create;
     try
       compressor.Compress := false;
       compressor.ApplyGraphics := true;
       compressor.ShrinkByMaxPx := fThumbnailSizePx;
       compressor.ShrinkByBoth := true;
-      compressor.OutputFilename := fThumbnailfilename;
-      result := compressor.Process(sourceFile);
+      compressor.OutputDir := fOutputDir;
+      compressor.OutputFilename := fThumbnailFilename;
+      result := compressor.Process(fSourceFilename);
+      if not result then
+        WriteLn('Debug: Failed to create thumbnail');
     finally
       compressor.Free;
     end;
@@ -162,6 +168,9 @@ function TJPEGCompressor.Process(const AFilename: string=''; const ASaveToDisk: 
 begin
   try
     fMessages.Clear;
+    fStartTime := Now;
+    WriteLn('Debug: Processing file ' + AFilename);
+    WriteLn('Debug: Output dir is ' + fOutputDir);
     fOriginalFilesize := 0;
     fCompressedFilesize := 0;
     fImageWidth := 0;
@@ -203,16 +212,27 @@ begin
       if ASaveToDisk then begin
         if fCompressedFilesize >= fOriginalFilesize then begin
           result := false;
+          WriteLn('Debug: Saving uncompressed because compressed size is larger');
           fMessages.Add('JPEG saved to (uncompressed): '+SaveOriginalToOutput);
         end else begin
+          WriteLn('Debug: About to save compressed file');
           result := SaveToDisk;
+          if result then
+            WriteLn('Debug: Successfully saved to ' + fOutputFilename)
+          else
+            WriteLn('Debug: Failed to save to ' + fOutputFilename);
           fMessages.Add('Processed '+ExtractFileName(fSourceFilename)+' in '+SecondsBetween(fStartTime, fEndTime).ToString+'ms');
           fMessages.Add('Uncompressed file size (KB): '+fOriginalFilesize.ToString);
           fMessages.Add('Compressed file size (KB): '+fCompressedFilesize.ToString);
           fMessages.Add('JPEG saved to: '+fOutputFilename);
         end;
-        if DoCreateThumbnail then
-          fMessages.Add('JPEG thumbnail saved to: '+fThumbnailFilename);
+        if fCreateThumbnail then begin
+          WriteLn('Debug: Creating thumbnail');
+          if DoCreateThumbnail then
+            WriteLn('Debug: Created thumbnail at ' + fThumbnailFilename)
+          else
+            WriteLn('Debug: Failed to create thumbnail');
+        end;
       end else
         SaveToStream;
     end else
@@ -220,6 +240,7 @@ begin
   except
     on e: Exception do begin
       result := false;
+      WriteLn('Debug: Exception - ' + e.Message);
       fMessages.Add('Error processing '+ExtractFileName(SourceFilename)+e.Classname+' '+e.Message);
     end;
   end;
@@ -391,21 +412,25 @@ begin
     if fReplaceOriginal then
       fJPEG.SaveToFile(fSourceFilename)
     else begin
+      // Always use the provided output filename if it exists
       if fOutputFilename = '' then
-        fOutputFilename := fOutputDir + ExtractFileName(fSourceFilename)
-      else if ExtractFilePath(fOutputFilename) <> '' then
-        fOutputDir := ExtractFilePath(fOutputFilename);
+        fOutputFilename := TPath.Combine(fOutputDir, ExtractFileName(fSourceFilename));
+      
+      // Create output directory
+      ForceDirectories(ExtractFilePath(fOutputFilename));
+      
+      // Remove existing file if it exists
       if FileExists(fOutputFilename) then
-        DeleteFile(fOutputFilename)
-      else
-        ForceDirectories(fOutputDir);
+        DeleteFile(fOutputFilename);
+      
+      // Save the compressed image
       fJPEG.SaveToFile(fOutputFilename);
     end;
     result := FileExists(fOutputFilename);
   except
     on e: exception do begin
       result := false;
-      fMessages.Add('Error saving JPEG to '+fOutputDir+fOutputFilename)
+      fMessages.Add('Error saving JPEG to ' + fOutputFilename + ': ' + e.Message);
     end;
   end;
 end;

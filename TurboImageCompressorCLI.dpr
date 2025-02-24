@@ -101,28 +101,48 @@ begin
 end;
 
 procedure TConsoleCompressor.ScanDirectory;
+var
+  AllFiles: TArray<string>;
+  FilePath: string;
+  OutputDirName: string;
 begin
   WriteLn('Scanning directory: ' + fInputPath);
-  fFilePaths := TDirectory.GetFiles(fInputPath, '*.jp*g', TSearchOption.soAllDirectories);
+  AllFiles := TDirectory.GetFiles(fInputPath, '*.jp*g', TSearchOption.soAllDirectories);
+  SetLength(fFilePaths, 0);
+  OutputDirName := ExtractFileName(ExcludeTrailingPathDelimiter(fOutputPath));
+  
+  // Filter out files that are in the output directory
+  for FilePath in AllFiles do
+  begin
+    // Only include files that are not in or under the output directory
+    if Pos(OutputDirName + PathDelim, ExtractRelativePath(fInputPath, FilePath)) = 0 then
+    begin
+      SetLength(fFilePaths, Length(fFilePaths) + 1);
+      fFilePaths[High(fFilePaths)] := FilePath;
+    end;
+  end;
+  
   WriteLn('Found ' + Length(fFilePaths).ToString + ' JPEG files');
 end;
 
 procedure TConsoleCompressor.ProcessSingleFile(const AFilePath: string);
 var
   RelativePath: string;
-  tmp: string;
+  OutputFileName: string;
 begin
   try
-    tmp := ExtractRelativePath(fInputPath, AFilePath);
-    // Preserve directory structure in output
-    RelativePath := TPath.GetDirectoryName(
-             tmp
-    );
+    // Get relative path to preserve directory structure
+    RelativePath := ExtractRelativePath(fInputPath, AFilePath);
     
-    if RelativePath <> '' then
-      fJPEGCompressor.OutputDir := TPath.Combine(fOutputPath, RelativePath)
+    // Set output directory
+    if TPath.GetDirectoryName(RelativePath) <> '' then
+      fJPEGCompressor.OutputDir := TPath.Combine(fOutputPath, TPath.GetDirectoryName(RelativePath))
     else
       fJPEGCompressor.OutputDir := fOutputPath;
+      
+    // Set output filename explicitly
+    OutputFileName := TPath.Combine(fJPEGCompressor.OutputDir, TPath.GetFileName(AFilePath));
+    fJPEGCompressor.OutputFilename := OutputFileName;
       
     // Create output directory if needed
     if not DirectoryExists(fJPEGCompressor.OutputDir) then
@@ -132,8 +152,7 @@ begin
     fJPEGCompressor.Process(AFilePath);
     
     WriteLn('Compressed: ' + AFilePath);
-    WriteLn('Output: ' + TPath.Combine(fJPEGCompressor.OutputDir, 
-      TPath.GetFileName(AFilePath)));
+    WriteLn('Output: ' + fJPEGCompressor.OutputFilename);
     
     if fCreateThumbnails and (fJPEGCompressor.ThumbnailFilename <> '') then
       WriteLn('Thumbnail: ' + fJPEGCompressor.ThumbnailFilename);
