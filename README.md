@@ -161,6 +161,74 @@ To build the project, you need:
    - SuperObject library
    - Image32 library
 
+## Batch Processing
+
+A batch script (`process_parallel.bat`) is included for processing multiple images in parallel:
+
+### Configuration
+The script settings can be customized through `process_parallel.ini`:
+
+```ini
+[Settings]
+; Maximum number of concurrent processes
+MaxProcesses=10
+
+; Default output directory (relative to working directory)
+OutputDir=compressed
+
+; Default compression settings for TurboImageCompressorCLI
+TargetKB=500
+CreateThumbnails=false
+ThumbnailSize=150
+
+; Logging settings
+EnableLogging=true
+LogPath=%OutputDir%\*.log
+```
+
+### Features
+- Automatically processes all JPEG files in the current directory
+- Runs up to 10 compression processes simultaneously
+- Creates individual log files for each processed image
+- Shows progress and final summary
+- Preserves exit codes from individual processes
+- Reports total processing time
+
+### Usage
+```batch
+process_parallel.bat
+```
+
+The script will:
+1. Create a `compressed` subdirectory for output
+2. Process all `.jpg` and `.jpeg` files in parallel
+3. Store individual process logs in the output directory
+4. Show a summary when complete
+
+### Output Example
+```
+Found 25 JPEG files to process
+Starting compression with maximum 10 parallel processes...
+Using settings from process_parallel.ini:
+- Target size: 500 KB
+- Output directory: compressed
+- Thumbnails enabled: 150 px
+
+Started processing: image1.jpg [0 completed of 25]
+Started processing: image2.jpg [0 completed of 25]
+...
+
+Processing complete!
+--------------------------------
+Total files processed: 25
+Successful: 23
+Partial failures: 2
+Complete failures: 0
+Total time: 45.367 seconds
+
+Log files can be found in: compressed/*.log
+```
+
 ## Notes
 
 - The tool processes all JPEG files recursively in the input directory
