@@ -71,9 +71,27 @@ begin
     Exit;
   end;
   
-  if not DirectoryExists(fInputPath) then
+  // Check if input is a file or directory
+  if FileExists(fInputPath) then
   begin
-    WriteLn('Error: Input directory does not exist: ' + fInputPath);
+    // Single file mode
+    if not SameText(ExtractFileExt(fInputPath), '.jpg') and 
+       not SameText(ExtractFileExt(fInputPath), '.jpeg') then
+    begin
+      WriteLn('Error: Input file must be a JPEG file');
+      Exit;
+    end;
+    SetLength(fFilePaths, 1);
+    fFilePaths[0] := fInputPath;
+  end
+  else if DirectoryExists(fInputPath) then
+  begin
+    // Directory mode
+    ScanDirectory;
+  end
+  else
+  begin
+    WriteLn('Error: Input path does not exist: ' + fInputPath);
     Exit;
   end;
   
@@ -82,7 +100,6 @@ begin
     ForceDirectories(fOutputPath);
     
   SetupConfig;
-  ScanDirectory;
   ProcessFiles;
 end;
 
@@ -185,12 +202,16 @@ var
   
 procedure PrintUsage;
 begin
-  WriteLn('Usage: TurboImageCompressorCLI.exe <input_dir> <output_dir> <target_kb> [options]');
+  WriteLn('Usage: TurboImageCompressorCLI.exe <input> <output_dir> <target_kb> [options]');
+  WriteLn('Input can be:');
+  WriteLn('  - Path to a single JPEG file');
+  WriteLn('  - Path to a directory (will process all JPEG files in directory)');
   WriteLn('Options:');
   WriteLn('  -t           Create thumbnails');
   WriteLn('  -s <size>    Thumbnail size in pixels (default: 150)');
   WriteLn('');
-  WriteLn('Example:');
+  WriteLn('Examples:');
+  WriteLn('  TurboImageCompressorCLI.exe C:\Images\photo.jpg C:\Output 500 -t -s 200');
   WriteLn('  TurboImageCompressorCLI.exe C:\Images C:\Output 500 -t -s 200');
 end;
 

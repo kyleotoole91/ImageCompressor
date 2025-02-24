@@ -48,12 +48,12 @@ A command-line interface for compressing JPEG images to target file sizes while 
 ## Usage
 
 ```
-TurboImageCompressorCLI.exe <input_dir> <output_dir> <target_kb> [options]
+TurboImageCompressorCLI.exe <input> <output_dir> <target_kb> [options]
 ```
 
 ### Parameters
 
-- `input_dir`: Directory containing the JPEG images to compress
+- `input`: Path to a single JPEG file or a directory containing JPEG images
 - `output_dir`: Directory where compressed images will be saved
 - `target_kb`: Target file size in kilobytes (0 for quality-based compression)
 
@@ -64,14 +64,19 @@ TurboImageCompressorCLI.exe <input_dir> <output_dir> <target_kb> [options]
 
 ### Examples
 
+Process a single image, targeting 500KB file size:
+```
+TurboImageCompressorCLI.exe C:\Photos\image.jpg C:\Output 500
+```
+
 Process all images in a directory, targeting 500KB file size:
 ```
 TurboImageCompressorCLI.exe C:\Photos C:\Output 500
 ```
 
-Process images and create thumbnails:
+Process a single image and create thumbnail:
 ```
-TurboImageCompressorCLI.exe C:\Photos C:\Output 500 -t
+TurboImageCompressorCLI.exe C:\Photos\image.jpg C:\Output 500 -t
 ```
 
 Process images with custom thumbnail size:
