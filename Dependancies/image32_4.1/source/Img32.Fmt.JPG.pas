@@ -1,5 +1,7 @@
 unit Img32.Fmt.JPG;
 
+{$R-}
+
 (*******************************************************************************
 * Author    :  Angus Johnson                                                   *
 * Version   :  4.0                                                             *
@@ -15,7 +17,7 @@ interface
 {$IFNDEF FPC}
 {$I Img32.inc}
 uses
-  SysUtils, Classes, Windows, Math, Img32, JPEG;
+  SysUtils, Classes, Windows, Math, Img32, Vcl.Imaging.jpeg;
 
 type
 

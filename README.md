@@ -33,6 +33,83 @@ Published on Softpedia: https://www.softpedia.com/get/Multimedia/Graphic/Digital
 
 Please ignore the Windows Smart Screen warning, the file is not dangerous, it simply hasn't been signed yet or downloaded enough times.
 
+# Turbo Image Compressor CLI
+
+A command-line interface for compressing JPEG images to target file sizes while maintaining the best possible quality. The tool can also generate thumbnails and preserves the original directory structure in the output.
+
+## Features
+
+- Compress JPEG images to a target file size in kilobytes
+- Generate thumbnails with customizable dimensions
+- Preserve directory structure when processing folders
+- Process multiple images in batch
+- Detailed console output with compression statistics
+
+## Usage
+
+```
+TurboImageCompressorCLI.exe <input_dir> <output_dir> <target_kb> [options]
+```
+
+### Parameters
+
+- `input_dir`: Directory containing the JPEG images to compress
+- `output_dir`: Directory where compressed images will be saved
+- `target_kb`: Target file size in kilobytes (0 for quality-based compression)
+
+### Options
+
+- `-t`: Create thumbnails for each processed image
+- `-s <size>`: Set thumbnail size in pixels (default: 150)
+
+### Examples
+
+Process all images in a directory, targeting 500KB file size:
+```
+TurboImageCompressorCLI.exe C:\Photos C:\Output 500
+```
+
+Process images and create thumbnails:
+```
+TurboImageCompressorCLI.exe C:\Photos C:\Output 500 -t
+```
+
+Process images with custom thumbnail size:
+```
+TurboImageCompressorCLI.exe C:\Photos C:\Output 500 -t -s 200
+```
+
+## Output
+
+For each processed image, the tool will display:
+- Original file path
+- Output file path
+- Thumbnail path (if enabled)
+- Original file size in KB
+- Compressed file size in KB
+
+The compressed images will be saved in the output directory, maintaining the same folder structure as the input directory.
+
+## Requirements
+
+- Windows operating system
+- Delphi runtime
+
+## Building from Source
+
+To build the project, you need:
+1. Delphi IDE
+2. The following dependencies:
+   - SuperObject library
+   - Image32 library
+
+## Notes
+
+- The tool processes all JPEG files recursively in the input directory
+- Files with extensions `.jpg` and `.jpeg` are supported
+- The original files are never modified
+- Output directory structure mirrors the input directory structure
+
 # License
 
 Distributed under the MIT License. See LICENSE.txt for more information.
