@@ -4,7 +4,7 @@ interface
 
 uses
   Vcl.Imaging.JPEG, VCL.Graphics, System.Classes, System.SysUtils, System.IOUtils, 
-  DateUtils, Img32, Img32.Fmt.JPG, uConstants;
+  DateUtils, Img32, Img32.Fmt.JPG, uConstants, CCR.Exif;
 
 type
   TResampleMode = (rmNone=0, rmFastest=1, rmRecommended=2, rmBest=3);
@@ -52,6 +52,7 @@ type
     function SaveToDisk: boolean;
     function SaveToStream: boolean;
     procedure CompressToTarget;
+    //procedure HandleExifOrientation;
   public
     constructor Create;
     destructor Destroy; override;
@@ -407,26 +408,39 @@ begin
 end;
 
 function TJPEGCompressor.SaveToDisk: boolean;
+var 
+  ExifData: TExifData;
+  TargetFile: string;
 begin
   try
     if fReplaceOriginal then
-      fJPEG.SaveToFile(fSourceFilename)
+      TargetFile := fSourceFilename
     else begin
-      // Always use the provided output filename if it exists
       if fOutputFilename = '' then
         fOutputFilename := TPath.Combine(fOutputDir, ExtractFileName(fSourceFilename));
-      
-      // Create output directory
-      ForceDirectories(ExtractFilePath(fOutputFilename));
-      
-      // Remove existing file if it exists
-      if FileExists(fOutputFilename) then
-        DeleteFile(fOutputFilename);
-      
-      // Save the compressed image
-      fJPEG.SaveToFile(fOutputFilename);
+      TargetFile := fOutputFilename;
+      ForceDirectories(ExtractFilePath(TargetFile));
     end;
-    result := FileExists(fOutputFilename);
+
+    if FileExists(TargetFile) then
+      DeleteFile(TargetFile);
+
+    fJPEG.SaveToFile(TargetFile);
+
+    // Apply EXIF from original
+    ExifData := TExifData.Create;
+    try
+      // Get EXIF from original image
+      ExifData.LoadFromGraphic(fJPEGOriginal);
+      // Save with original EXIF to JPEG object
+      ExifData.SaveToGraphic(TJPEGImage(fJPEG));
+      // Save JPEG to disk
+      fJPEG.SaveToFile(TargetFile);
+    finally
+      ExifData.Free;
+    end;
+    
+    result := FileExists(TargetFile);
   except
     on e: exception do begin
       result := false;

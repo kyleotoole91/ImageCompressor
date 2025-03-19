@@ -3,7 +3,7 @@
         <ProjectGuid>{24AD0603-3F89-49E5-8A7C-F6118731E9D2}</ProjectGuid>
         <MainSource>TurboImageCompressorCLI.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <ProjectName Condition="'$(ProjectName)'==''">TurboImageCompressorCLI</ProjectName>
         <TargetedPlatforms>32769</TargetedPlatforms>
         <AppType>Console</AppType>
@@ -76,10 +76,10 @@
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <DCC_UnitSearchPath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_ResourcePath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_IncludePath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;.\Dependancies\ccr-exif-master;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_ResourcePath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;.\Dependancies\ccr-exif-master;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ObjPath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;.\Dependancies\ccr-exif-master;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_IncludePath>.\Dependancies\superobject;.\Dependancies\image32_4.1\source;.\Dependancies\ccr-exif-master;$(BDS)\source\vcl;$(BDS)\source\rtl;$(DCC_IncludePath)</DCC_IncludePath>
         <DCC_UsePackage>vcl;rtl;vclimg;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_DcuOutput>.\DCU\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\Bin\$(Platform)\$(Config)</DCC_ExeOutput>
@@ -160,6 +160,7 @@
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <Manifest_File>(None)</Manifest_File>
         <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
+        <Debugger_RunParams>portrait.jpg .\compressed 160</Debugger_RunParams>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

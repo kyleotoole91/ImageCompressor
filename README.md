@@ -166,24 +166,22 @@ To build the project, you need:
 A batch script (`process_parallel.bat`) is included for processing multiple images in parallel:
 
 ### Configuration
-The script settings can be customized through `process_parallel.ini`:
+The script settings can be customized by editing the variables at the top of the script:
 
-```ini
-[Settings]
-; Maximum number of concurrent processes
-MaxProcesses=10
+```batch
+:: Maximum number of parallel compression processes
+set "MaxProcesses=10"
 
-; Default output directory (relative to working directory)
-OutputDir=compressed
+:: Output directory (relative to working directory)
+set "OutputDir=compressed"
 
-; Default compression settings for TurboImageCompressorCLI
-TargetKB=500
-CreateThumbnails=false
-ThumbnailSize=150
+:: Compression settings
+set "TargetKB=500"
+set "CreateThumbnails=false"
+set "ThumbnailSize=150"
 
-; Logging settings
-EnableLogging=true
-LogPath=%OutputDir%\*.log
+:: Enable logging of individual process output
+set "EnableLogging=true"
 ```
 
 ### Features
@@ -209,7 +207,7 @@ The script will:
 ```
 Found 25 JPEG files to process
 Starting compression with maximum 10 parallel processes...
-Using settings from process_parallel.ini:
+Using configured settings:
 - Target size: 500 KB
 - Output directory: compressed
 - Thumbnails enabled: 150 px
@@ -228,6 +226,121 @@ Total time: 45.367 seconds
 
 Log files can be found in: compressed/*.log
 ```
+
+## Linux Usage
+
+A Linux version of the batch processing script (`process_parallel.sh`) is also available. You can either use the native Linux script or run the Windows executable through Wine.
+
+### Using the Windows CLI with Wine
+
+1. Ensure Wine is installed:
+```bash
+sudo apt update
+sudo apt install wine64
+```
+
+2. Run the CLI tool using Wine:
+```bash
+# Basic usage
+wine TurboImageCompressorCLI.exe input.jpg output/ 500
+
+# Process directory
+wine TurboImageCompressorCLI.exe "~/Pictures" "~/compressed" 500
+
+# With thumbnails
+wine TurboImageCompressorCLI.exe input.jpg output/ 500 -t -s 200
+
+# Note: Use forward slashes (/) for paths, Wine will convert them correctly
+```
+
+### Path Handling with Wine
+When using the Windows executable through Wine:
+- Both Windows-style (backslash) and Unix-style (forward slash) paths are accepted
+- For paths with spaces, use double quotes: `"My Photos/image.jpg"`
+- Environment variables like %UserProfile% won't work; use full paths
+- Wine automatically maps some common paths:
+  - `Z:\` points to `/`
+  - `~/` maps to your home directory
+  - Windows drives are available as `C:\`, `D:\`, etc.
+
+Examples with different path styles:
+```bash
+# Using Unix paths (recommended)
+wine TurboImageCompressorCLI.exe ~/Pictures/photo.jpg ~/compressed 500
+
+# Using Windows paths
+wine TurboImageCompressorCLI.exe "C:\users\username\Pictures\photo.jpg" "C:\output" 500
+
+# Using absolute Unix paths
+wine TurboImageCompressorCLI.exe /home/user/Pictures/photo.jpg /home/user/output 500
+```
+
+### Using the Parallel Processing Script with Wine
+
+1. Install required dependencies:
+```bash
+# Install Wine and bc
+sudo apt update
+sudo apt install wine64 bc
+```
+
+2. Place the Windows executable and script in your working directory:
+```bash
+# Ensure both files are in your working directory
+ls
+TurboImageCompressorCLI.exe  process_parallel.sh
+```
+
+3. Make the script executable and run:
+```bash
+chmod +x process_parallel.sh
+./process_parallel.sh
+```
+
+The script will automatically:
+- Check for Wine installation
+- Verify the Windows executable exists
+- Convert paths for Wine compatibility
+- Process files in parallel using Wine
+
+### Using the Native Linux Script
+
+### Prerequisites
+Before running the script, ensure you have the required dependencies:
+```bash
+# Install bc for floating-point calculations
+sudo apt-get install bc
+
+# Install grep and find (usually pre-installed on most Linux distributions)
+sudo apt-get install grep findutils
+```
+
+### Setup and Usage
+1. Make the script executable:
+```bash
+chmod +x process_parallel.sh
+```
+
+2. Run the script:
+```bash
+./process_parallel.sh
+```
+
+The Linux version has the same features and configuration options as the Windows version, but is adapted for bash shell:
+- Uses native Linux process management
+- Handles file paths according to Linux conventions
+- Uses `bc` for floating-point calculations (required)
+- Uses `date` command for high-precision timing
+- Uses `grep` and `find` for file operations
+
+The configuration variables can be edited at the top of the script just like in the Windows version.
+
+### Dependencies
+- `bc`: Required for floating-point calculations
+- `grep`: For log file processing
+- `find`: For file discovery
+- Bash shell
+- The Delphi runtime compiled for Linux (for the TurboImageCompressorCLI executable)
 
 ## Notes
 
