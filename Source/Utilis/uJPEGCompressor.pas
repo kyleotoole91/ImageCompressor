@@ -52,7 +52,6 @@ type
     function SaveToDisk: boolean;
     function SaveToStream: boolean;
     procedure CompressToTarget;
-    //procedure HandleExifOrientation;
   public
     constructor Create;
     destructor Destroy; override;
@@ -427,14 +426,11 @@ begin
 
     fJPEG.SaveToFile(TargetFile);
 
-    // Apply EXIF from original
     ExifData := TExifData.Create;
     try
-      // Get EXIF from original image
-      ExifData.LoadFromGraphic(fJPEGOriginal);
       // Save with original EXIF to JPEG object
+      ExifData.LoadFromGraphic(fJPEGOriginal);
       ExifData.SaveToGraphic(TJPEGImage(fJPEG));
-      // Save JPEG to disk
       fJPEG.SaveToFile(TargetFile);
     finally
       ExifData.Free;
